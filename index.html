@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v2.0</title>
+<title>영어회화 코치 v2.6</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,8 +113,8 @@ textarea{flex:1;min-width:0;resize:none;font:inherit;font-family:var(--f-en);fon
 .send{padding:11px 20px;font-size:14px}
 .mic{display:flex;align-items:center;gap:8px;padding:11px 16px;font-size:14px;font-weight:700}
 .micdot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
-.mic.rec{background:#e5484d;border-color:#e5484d;color:#fff}
-.mic.rec .micdot{background:#fff;animation:pulse 1s ease-in-out infinite}
+.mic.recording{background:#e5484d;border-color:#e5484d;color:#fff}
+.mic.recording .micdot{background:#fff;animation:pulse 1s ease-in-out infinite}
 .mic.busy{opacity:.6}
 @keyframes pulse{50%{opacity:.3}}
 .hint{padding:0 14px 10px;color:var(--muted);font-size:12px}
@@ -209,7 +209,7 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
 .mic{background:var(--coral);border-color:var(--coral);color:#fff}
 .mic:hover{background:var(--coral-deep);border-color:var(--coral-deep);color:#fff}
 .mic .micdot{background:#fff}
-.mic.rec{background:var(--navy);border-color:var(--navy)}
+.mic.recording{background:var(--navy);border-color:var(--navy)}
 .ph-row .score{color:var(--coral-deep)}
 .coachPill{background:var(--coral)!important;color:#fff}
 .coachPill .bars i{background:#fff}
@@ -264,12 +264,62 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:900px){header{gap:6px}header .gear{padding:6px 10px;font-size:12px}}
 .pane.side{overflow-y:auto}
 .log{min-height:96px}
+
+/* v2.3 UI */
+.ver-h{display:inline-block;vertical-align:middle;font-family:var(--f-display);font-weight:600;font-size:12px;color:var(--accent);background:#eaf0fa;border:1px solid #d3def1;border-radius:7px;padding:1px 7px;margin-left:4px;letter-spacing:0}
+.callbar{position:relative}
+.callbar .sp{flex:1 1 auto!important;flex-basis:auto!important;height:auto!important}
+.more{background:transparent!important;border:0!important;color:var(--navy-fg)!important;font-size:22px;line-height:1;padding:0 6px!important;min-width:34px}
+.menu{position:absolute;right:4px;top:30px;z-index:20;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(15,25,45,.18);padding:6px;display:flex;flex-direction:column;gap:2px;min-width:140px}
+.menu button{background:transparent!important;color:var(--fg)!important;border:0!important;text-align:left;border-radius:8px;padding:9px 12px;font-size:13.5px}
+.menu button:hover{background:var(--soft)!important}
+.menu button:disabled{opacity:.4}
+.bubble.jb{display:flex;align-items:flex-start;gap:10px}
+.bubble.jb .jt{flex:1;min-width:0}
+.spk{flex:none;width:30px;height:30px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d3def1;color:var(--navy)}
+.spk:hover{color:var(--coral-deep);border-color:var(--coral)}
+.coach .lbl{display:flex;align-items:center;gap:6px;font-size:12px}
+.coach .lbl svg{color:var(--coral)}
+.modelbox{display:flex;align-items:center;gap:10px;background:var(--coral-soft);border-radius:12px;padding:12px 14px}
+.modelbox .model{flex:1;min-width:0;font-size:18px}
+.wave{flex:none;width:38px;height:38px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--coral-line);color:var(--coral)}
+.wave:hover{color:#fff;background:var(--coral);border-color:var(--coral)}
+.more-d{align-self:flex-start;background:transparent;border:0;color:var(--navy);font-weight:600;padding:2px 0;font-size:13px}
+.more-d:hover{color:var(--coral-deep)}
+.more-d .chev{display:inline-block;transition:transform .2s}
+.more-d[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.detail{font-size:13.5px;line-height:1.6;color:var(--fg);background:#fff;border:1px solid var(--coral-line);border-radius:10px;padding:8px 10px}
+.wave-t{display:flex;align-items:center;gap:6px}
+.compose{display:grid!important;grid-template-columns:1fr 1fr 72px;grid-template-areas:"t t t" "m a s";gap:8px!important;padding:10px 14px!important;align-items:stretch}
+.compose textarea{grid-area:t;min-height:44px;height:44px}
+.compose .mic{grid-area:m;justify-content:center;gap:8px;padding:10px 12px;border-radius:999px}
+.compose .autob{grid-area:a;justify-content:center;gap:8px;padding:10px 12px;border-radius:999px}
+.compose .send{grid-area:s;display:flex;align-items:center;justify-content:center;padding:0!important;border-radius:999px}
+.mic svg,.autob svg{flex:none}
+.mic .micdot,.autob .autodot{display:none}
+.mic.recording{background:var(--navy)!important;border-color:var(--navy)!important}
+.autob.on{background:var(--coral-soft)}
+.autob.on svg{animation:pulse 1.4s ease-in-out infinite}
+.hint{display:none}
+@media (max-width:900px){
+  .callbar{flex-wrap:nowrap!important}
+  .compose{grid-template-columns:1fr 1fr 64px!important;grid-template-areas:"t t t" "m a s"!important;padding:8px 10px!important}
+  body.kb .compose{grid-template-columns:1fr 56px!important;grid-template-areas:"t s"!important}
+  body.kb .compose .send{height:44px}
+}
+
+/* v2.5: the call is a floating rounded card; the chat flows underneath */
+.call{margin:10px 10px 2px;border-radius:20px;box-shadow:none}
+.chat,.log{background:#fff}
+.log{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 18px);mask-image:linear-gradient(to bottom,transparent 0,#000 18px)}
+.log{padding-top:12px}
+@media (max-width:900px){.call{margin:8px 8px 2px;border-radius:18px}body.kb .call{margin:6px 6px 2px;border-radius:16px}}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">- v2.0</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v2.6</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear" id="reloadBtn" aria-label="새로고침">새로고침</button>
     <button class="gear only-m" id="openSide">기록</button>
@@ -282,10 +332,11 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         <span class="rec"></span><span class="t" id="timer">00:00</span><span class="topic" id="topicName">Daily small talk</span>
         <span class="coachPill" id="coachPill"><span class="bars"><i></i><i></i><i></i></span>Coach Sam</span>
         <span class="sp"></span>
-        <button class="fixed" id="skipAudio" disabled>음성 넘기기</button>
-        <button class="fixed" id="replayJulia">다시 듣기</button>
-        <button class="fixed" id="toggleKo">해석 켜기</button>
-        <button class="fixed primary" id="startBtn">통화 시작</button>
+        <button class="more" id="moreBtn" aria-label="더보기" aria-haspopup="menu" aria-expanded="false">&#8943;</button>
+        <div class="menu" id="moreMenu" role="menu" hidden>
+          <button role="menuitem" id="toggleKo">해석 켜기</button>
+          <button role="menuitem" id="skipAudio" disabled>음성 넘기기</button>
+        </div>
       </div>
       <div class="tiles">
         <div class="tile" id="juliaTile">
@@ -305,12 +356,11 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     <div class="log" id="log"></div>
     <div class="target" id="target" hidden><span>따라 말해보세요</span><b id="targetText"></b><button id="targetListen">듣기</button><button id="skipBtn">건너뛰기</button></div>
     <div class="compose">
-      <button class="mic" id="micBtn" aria-label="말하기"><span class="micdot"></span><span id="micLabel">말하기</span></button>
-      <button class="autob" id="autoBtn" aria-pressed="false"><span class="autodot"></span><span id="autoLabel">자동 듣기</span></button>
-      <textarea id="msg" rows="1" placeholder="Reply to Julia"></textarea>
-      <button class="send primary" id="send">보내기</button>
+      <textarea id="msg" rows="1" placeholder="Reply to Julia..."></textarea>
+      <button class="mic" id="micBtn" aria-label="말하기"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="micLabel">말하기</span></button>
+      <button class="autob" id="autoBtn" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg><span id="autoLabel">자동 듣기</span></button>
+      <button class="send primary" id="send" aria-label="보내기"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></button>
     </div>
-    <div class="hint">말하기 버튼을 누르고 말한 뒤 다시 누르면 보내져요. 자동 듣기를 켜면 말을 멈출 때 저절로 보내져요.</div>
   </section>
 
   <aside class="pane side" id="side" aria-label="기록">
@@ -405,6 +455,7 @@ const AVATAR=`<svg viewBox="0 0 120 120" aria-hidden="true">
 <path d="M54 69 Q60 73 66 69" stroke="#c4545f" stroke-width="2" fill="none" stroke-linecap="round"/>
 </svg>`;
 const $=id=>document.getElementById(id);
+const I_SPK=`<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`, I_WAVE=`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`, I_SPARK=`<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z" fill="currentColor"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" fill="currentColor"/></svg>`;
 
 /* ---------- Config ---------- */
 const DEFAULTS={chat:"gpt-6-luna",tts:"gpt-4o-mini-tts",stt:"gpt-4o-mini-transcribe"};
@@ -588,7 +639,8 @@ function lockUI(){$("send").disabled=busy||chain;$("micBtn").disabled=auto.on||(
 function toast(t){const d=document.createElement("div");d.className="err";d.textContent=t;log.append(d);scroll()}
 function addJulia(en,ko){
   const row=document.createElement("div"); row.className="row julia";
-  row.innerHTML=`<span class="who-l">JULIA</span><div class="bubble">${esc(en)}</div><div class="small ko-line" ${showKo?"":"hidden"}>${esc(clean(ko))}</div>`;
+  row.innerHTML=`<span class="who-l">JULIA</span><div class="bubble jb"><span class="jt">${esc(en)}</span><button class="spk" aria-label="다시 듣기">${I_SPK}</button></div><div class="small ko-line" ${showKo?"":"hidden"}>${esc(clean(ko))}</div>`;
+  row.querySelector(".spk").onclick=()=>{if(!chain)playSeq([{text:en,ko,who:"julia"}])};
   log.append(row); scroll();
 }
 function addMe(text,rep){
@@ -599,9 +651,11 @@ function addMe(text,rep){
 function addCoach({kind="",say="",model="",point="",listen=null,repeat=false}){
   const c=document.createElement("div"); c.className="coach "+kind;
   const lbl=kind==="review"?"Coach Sam / 반복 실수":kind==="teach"?"Coach Sam / 질문 답변":"Coach Sam";
-  c.innerHTML=`<span class="lbl">${lbl}</span>${say?`<div class="say">${esc(clean(say))}</div>`:""}${model?`<div class="model">${model}</div>`:""}${point?`<div class="say">${esc(clean(point))}</div>`:""}`;
-  if(listen||repeat){const a=document.createElement("div");a.className="acts";
-    if(listen){const b=document.createElement("button");b.textContent="다시 듣기";b.onclick=()=>{if(!chain)playSeq(listen)};a.append(b)}
+  c.innerHTML=`<span class="lbl">${I_SPARK}${lbl}</span>${say?`<div class="say">${esc(clean(say))}</div>`:""}${model?`<div class="modelbox"><div class="model">${model}</div>${listen?`<button class="wave" aria-label="다시 듣기">${I_WAVE}</button>`:""}</div>`:""}${point?`<button class="more-d" aria-expanded="false">자세히 보기 <span class="chev">&#8964;</span></button><div class="detail" hidden>${esc(clean(point))}</div>`:""}`;
+  const wv=c.querySelector(".wave"); if(wv)wv.onclick=()=>{if(!chain)playSeq(listen)};
+  const md=c.querySelector(".more-d"); if(md)md.onclick=()=>{const d=c.querySelector(".detail");d.hidden=!d.hidden;md.setAttribute("aria-expanded",!d.hidden);md.firstChild.textContent=d.hidden?"자세히 보기 ":"간단히 보기 ";if(pinned)scroll()};
+  if((listen&&!model)||repeat){const a=document.createElement("div");a.className="acts";
+    if(listen&&!model){const b=document.createElement("button");b.className="wave-t";b.innerHTML=I_SPK+"<span>다시 듣기</span>";b.onclick=()=>{if(!chain)playSeq(listen)};a.append(b)}
     if(repeat){const t=document.createElement("span");t.className="rep-tag";t.textContent="이 문장을 따라 말해보세요";a.prepend(t);
       const k=document.createElement("button");k.textContent="건너뛰기";k.onclick=()=>{if(phase==="repeat")$("skipBtn").click()};a.append(k)}
     c.append(a)}
@@ -652,34 +706,49 @@ function rules(ctx){
   const labels=Object.keys(patterns);
   return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text, so ignore capitalization, punctuation and obvious transcription glitches. Two people talk with Jun:
 JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant, often adds a small personal detail or opinion of her own, then asks ONE easy follow-up question. 1 to 3 short sentences. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}. Level: ${LEVEL_EN[$("level").value]}.
-COACH SAM: a warm, experienced English teacher who explains in KOREAN, like a real human 선생님 talking (해요체, casual and kind, never stiff or textbook-like). He tells Jun the better English sentence and explains WHY natives say it that way, in plain Korean. English sentences stay in English.
+COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and explains WHY natives say it that way in plain Korean. English sentences stay in English.
 ${ctx||""}
 First decide what Jun's LATEST message is:
 - "question": Jun is asking the teacher something about English instead of answering Julia, in Korean or English. e.g. "왜 how is it going을 써?", "이거 무슨 뜻이야?", "how are you랑 뭐가 달라?", "can I say it like this?".
 - "answer": Jun is replying to Julia (English, Korean, or mixed).
-Reply with ONLY this JSON object:
-{"intent":"answer" or "question",
-"teach":"question only: Sam's spoken answer in natural Korean 해요체, like a real teacher explaining, 2 to 5 short sentences. English words or example sentences may appear inside. Empty string for answer.",
+Reply with ONLY this JSON object (always include "emotion"):
+{"emotion":"see the emotion rules below","intent":"answer" or "question",
+"teach":"question only: Sam's direct answer in Korean 해요체, 2 to 4 short sentences, starting with the answer itself (no 좋은 질문이에요 or similar). English words or example sentences may appear inside. Empty string for answer.",
 "teach_examples":["question only: 1 to 3 short English example sentences to show on screen"],
 "mode":"ko" if the message contains any Korean else "en",
 "perfect":true only if intent is answer, mode is en, and the message is correct and natural enough for a real conversation (small style differences are fine),
 "model":"answer only: what Jun should say, natural casual spoken English keeping his meaning, at his level. If perfect, repeat his message. Empty string for question.",
-"coach_intro":"answer and not perfect: Sam's short spoken Korean line said right before the model sentence. e.g. 오, 거의 맞았어요! 이렇게 말하면 더 자연스러워요. / 그 말은 영어로 이렇게 하면 돼요. Empty if perfect.",
-"coach_point":"answer and not perfect: 1 or 2 short spoken Korean sentences: why natives say it this way and the key point to remember. Empty if perfect.",
+"coach_intro":"always exactly: 이렇게 말하면 자연스러워요.",
+"coach_point":"answer and not perfect: 1 short Korean sentence explaining why natives say it this way. No praise or sympathy. Empty if perfect.",
 "mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
 "reply":"answer: Julia's next line. question: Julia's short natural line to get back into the conversation, usually re-asking her last question in an easy way.",
 "reply_ko":"natural casual Korean subtitle of Julia's line",
-"emotion":"Julia's facial expression while saying her line, exactly one of: calm, joy, happy, sad, empathy, sorry, surprised, angry, anxious, pondering, thoughtful, shy, charmed, relieved, lonely, love. Vary it like a real person reacting on camera: joy for playful or teasing moments, happy for good news or excitement, empathy when Jun shares a feeling or a hard day, sorry for bad luck, sad for sad news, surprised for unexpected things, anxious when something sounds stressful, pondering when she is curious or asks something thoughtful, thoughtful for reflective moments, shy when complimented, charmed when she is enjoying a fun or interesting story, empathy (a warm understanding smile) when encouraging Jun, relieved when things turned out fine, lonely when talking about missing someone, love for sweet or warm moments, angry only when something is clearly unfair. Use calm only for plain neutral small talk."}
+"emotion":"Julia's facial expression while saying her line, exactly one of: calm, joy, happy, sad, empathy, sorry, surprised, angry, anxious, pondering, thoughtful, shy, charmed, relieved, lonely, love. Vary it like a real person reacting on camera: joy for playful or teasing moments, happy for good news or excitement, empathy when Jun shares a feeling or a hard day, sorry for bad luck, sad for sad news, surprised for unexpected things, anxious when something sounds stressful, pondering when she is curious or asks something thoughtful, thoughtful for reflective moments, shy when complimented, charmed when she is enjoying a fun or interesting story, empathy (a warm understanding smile) when encouraging Jun, relieved when things turned out fine, lonely when talking about missing someone, love for sweet or warm moments, angry only when something is clearly unfair. Use calm only for plain neutral small talk. Her previous expression was ${lastEmo}; real faces change with the mood, so pick a different one whenever the feeling of her new line is different."}
 mistakes: real English errors only (empty if perfect, if intent is question, and when mode is ko). Reuse these existing labels when they fit: ${labels.length?labels.join(", "):"(none yet)"}. Typical labels: 과거형 시제, 현재완료, 관사 a/the, 전치사, 복수형, 주어 동사 일치, 동사 형태, 단어 선택, 어순, 콩글리시/직역.
 Korean strings: natural 해요체 (Julia's subtitle may be casual 반말 like a friend), never 하십시오체, never the middle dot character, never 「」, never circled numbers.`;
 }
 
 /* ---------- Flow ---------- */
 function tick(){const s=Math.floor((Date.now()-t0)/1000);$("timer").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+let lastEmo="calm", sameCount=0;
+function guessEmotion(t){
+  t=String(t||"").toLowerCase();
+  const rules=[["love",/\b(love|sweet|adorable|so cute|aww+)\b/],["joy",/\b(haha+|lol|funny|hilarious|kidding|joking)\b/],["surprised",/\b(no way|wow|whoa|really\?|seriously|what\?!?|oh my god|omg)\b/],["sorry",/\b(oh no|that's awful|that sucks|i'm so sorry|bummer|ugh)\b/],["sad",/\b(sad|miss (you|her|him|them)|lonely|cry)\b/],["anxious",/\b(nervous|stress|worried|scary|anxious)\b/],["relieved",/\b(phew|glad (it|that)|thank goodness|relieved)\b/],["happy",/\b(awesome|amazing|great|congrats|congratulations|so fun|exciting|yay|nice)\b/],["shy",/\b(thank you so much|you're too kind|stop it|blush)\b/],["pondering",/\b(hmm|i wonder|curious|let me think)\b/],["empathy",/\b(i get (it|that)|i feel (you|that)|totally understand|makes sense)\b/]];
+  for(const [k,re] of rules)if(re.test(t))return k;
+  return null;
+}
+function pickEmotion(emo,text){
+  let e=EMO[emo]?emo:null; const g=guessEmotion(text);
+  if(!e||e==="calm")e=g||e||"charmed";
+  else if(g&&["happy","charmed","empathy","joy"].includes(e)&&g!==e)e=g;
+  if(e===lastEmo){sameCount++; if(sameCount>=1&&g&&g!==e)e=g; else if(sameCount>=2)e=["charmed","empathy","joy","happy"].find(x=>x!==lastEmo)}
+  else sameCount=0;
+  lastEmo=e; return e;
+}
 async function juliaSay(en,ko,emo){
   turns.push({role:"assistant",content:en});
   lastJulia={en,ko}; addJulia(en,ko); setPhase("answer");
-  setEmotion(EMO[emo]?emo:"calm");
+  setEmotion(pickEmotion(emo,en));
   await chained([{text:en,ko,who:"julia"}]);
   restEmotion(1800);
 }
@@ -690,13 +759,12 @@ function startTalk(silent){
   $("topicName").textContent=TOPIC_NAME[$("topic").value];
   t0=Date.now(); clearInterval(timerId); timerId=setInterval(tick,1000); tick();
   const [en,ko]=OPENERS[$("topic").value];
-  $("startBtn").textContent="새로 시작";
-  if(silent){turns.push({role:"assistant",content:en});lastJulia={en,ko};addJulia(en,ko);setPhase("answer")}
+  if(silent){turns.push({role:"assistant",content:en});lastJulia={en,ko};addJulia(en,ko);setPhase("answer");caption({text:en,ko,who:"julia"})}
   else juliaSay(en,ko,"happy");
   return true;
 }
 function coachSeq(r){
-  return [{text:r.coach_intro||"이렇게 말하면 더 자연스러워요.",who:"coach"},{text:r.model,who:"coach"},{text:r.coach_point,who:"coach"}];
+  return [{text:"이렇게 말하면 자연스러워요.",who:"coach"},{text:r.model,who:"coach"},{text:r.coach_point,who:"coach"}];
 }
 function recordMistakes(r,said){
   let review=null;
@@ -718,8 +786,8 @@ async function continueTalk(){
   if(!r){setPhase("answer");return}
   if(r._review){
     const v=r._review;
-    const say=`넘어가기 전에 잠깐만요. ${v.label} 부분을 벌써 ${v.n}번 헷갈렸어요.`;
-    const parts=[{text:say,who:"coach"},{text:v.tipKo,who:"coach"},{text:"이것만 신경 쓰면 훨씬 자연스러워질 거예요.",who:"coach"}];
+    const say=`${v.label} 부분을 ${v.n}번 틀렸어요.`;
+    const parts=[{text:say,who:"coach"},{text:v.tipKo,who:"coach"}];
     addCoach({kind:"review",say,model:v.ex?`${esc(v.ex.from)} → <ins>${esc(v.ex.to)}</ins>`:"",point:v.tipKo,listen:parts});
     await chained(parts);
   }
@@ -842,7 +910,7 @@ async function toggleMic(){
     recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
     recorder.onstop=async()=>{
       stream.getTracks().forEach(t=>t.stop()); recording=false;
-      $("micBtn").classList.remove("rec"); $("junTile").classList.remove("speaking");
+      $("micBtn").classList.remove("recording"); $("junTile").classList.remove("speaking");
       const blob=new Blob(chunks,{type:recorder.mimeType||type||"audio/webm"});
       if(blob.size<2000){$("micLabel").textContent="말하기";lockUI();return}
       $("micLabel").textContent="듣는 중..."; $("micBtn").classList.add("busy");
@@ -851,7 +919,7 @@ async function toggleMic(){
       finally{$("micLabel").textContent="말하기";$("micBtn").classList.remove("busy");lockUI()}
     };
     recorder.start(); recording=true;
-    $("micBtn").classList.add("rec"); $("micLabel").textContent="다 말했어요"; $("junTile").classList.add("speaking");
+    $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; $("junTile").classList.add("speaking");
   }catch(e){toast("마이크를 쓸 수 없어요. 브라우저 주소창의 마이크 권한을 허용해 주세요.")}
 }
 
@@ -1020,10 +1088,11 @@ log.addEventListener("scroll",()=>{pinned=log.scrollHeight-log.scrollTop-log.cli
 if(window.ResizeObserver)new ResizeObserver(()=>{if(pinned)scroll()}).observe(log);
 $("micBtn").onclick=toggleMic;
 $("autoBtn").onclick=toggleAuto;
-$("startBtn").onclick=()=>startTalk();
-$("replayJulia").onclick=()=>{if(lastJulia.en&&!chain)playSeq([{text:lastJulia.en,ko:lastJulia.ko,who:"julia"}])};
-$("skipAudio").onclick=()=>{stopAudio();$("skipAudio").disabled=true};
-$("toggleKo").onclick=e=>{showKo=!showKo;e.target.textContent=showKo?"해석 끄기":"해석 켜기";log.querySelectorAll(".ko-line").forEach(n=>n.hidden=!showKo);caption(lastJulia.en?{text:lastJulia.en,ko:lastJulia.ko,who:"julia"}:null)};
+$("skipAudio").onclick=()=>{stopAudio();$("skipAudio").disabled=true;closeMore()};
+function closeMore(){$("moreMenu").hidden=true;$("moreBtn").setAttribute("aria-expanded","false")}
+$("moreBtn").onclick=e=>{e.stopPropagation();const m=$("moreMenu");m.hidden=!m.hidden;$("moreBtn").setAttribute("aria-expanded",!m.hidden)};
+document.addEventListener("click",e=>{if(!$("moreMenu").hidden&&!e.target.closest("#moreMenu"))closeMore()});
+$("toggleKo").onclick=e=>{showKo=!showKo;e.currentTarget.textContent=showKo?"해석 끄기":"해석 켜기";closeMore();log.querySelectorAll(".ko-line").forEach(n=>n.hidden=!showKo);caption(lastJulia.en?{text:lastJulia.en,ko:lastJulia.ko,who:"julia"}:null)};
 $("targetListen").onclick=()=>{if(pending&&!chain)playSeq([{text:pending.model,who:"coach"}])};
 $("skipBtn").onclick=async()=>{if(chain)return;stopAudio();addCoach({say:"괜찮아요, 이번 건 넘어가요. 표현 노트에 넣어뒀어요."});setPhase("answer");await continueTalk()};
 $("clearAll").onclick=()=>{patterns={};notes=[];store("oc_patterns",patterns);store("oc_notes",notes);renderSide()};
@@ -1054,9 +1123,11 @@ $("closeSide").onclick=()=>$("side").classList.remove("open");
 })();
 /* Opening screen */
 lastJulia={en:OPENERS.daily[0],ko:OPENERS.daily[1]};
-caption({text:"Press 통화 시작 and Julia will say hi!",who:"julia"});
-addCoach({say:"안녕하세요, 코치 Sam이에요. Julia랑 친구처럼 편하게 영어로 얘기하세요. 막히면 한국어로 말해도 되고, 궁금한 게 있으면 왜 이렇게 말해요? 처럼 언제든 저한테 물어보세요. 맞게 말하면 저는 조용히 있고, 더 자연스러운 표현이 있을 때만 알려드릴게요."});
+caption({text:OPENERS[$("topic").value][0],who:"julia"});
+
 renderSide();
+if(cfg.key)startTalk(true);
+log.prepend(addCoach({say:"안녕하세요, 코치 Sam이에요. Julia랑 친구처럼 편하게 영어로 얘기하세요. 막히면 한국어로 말해도 되고, 궁금한 게 있으면 왜 이렇게 말해요? 처럼 언제든 저한테 물어보세요. 맞게 말하면 저는 조용히 있고, 더 자연스러운 표현이 있을 때만 알려드릴게요."}));
 if(!cfg.key)openSettings();
 
 </script>
