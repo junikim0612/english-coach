@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v4.5</title>
+<title>영어회화 코치 v4.6</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -442,12 +442,13 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .typing .dots{display:inline-flex;gap:4px;padding:4px 2px}.typing .dots i{width:7px;height:7px;border-radius:50%;background:#b5bccb;animation:tdot 1s infinite ease-in-out}.typing .dots i:nth-child(2){animation-delay:.15s}.typing .dots i:nth-child(3){animation-delay:.3s}
 @keyframes tdot{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 .sysnote{align-self:center;font-size:12px;color:#6b7280;background:#f5f6f8;border-radius:999px;padding:4px 12px}
+.okbtn{color:var(--good)!important;border-color:#cfe9d6!important}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v4.5</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v4.6</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -736,7 +737,7 @@ function parseJSONText(txt){
 async function chatStream(messages,onPart){
   const body={model:cfg.chat,messages,response_format:{type:"json_object"},stream:true};
   if(/^(gpt-5|gpt-6|o\d)/.test(cfg.chat))body.reasoning_effort=/luna|nano|mini/.test(cfg.chat)?"none":"low";
-  const ctl=new AbortController(); let idle=setTimeout(()=>ctl.abort(),20000*TSCALE()); const hard=setTimeout(()=>ctl.abort(),45000*TSCALE());
+  const ctl=new AbortController(); curChatCtl=ctl; chatCancelled=false; let idle=setTimeout(()=>ctl.abort(),20000*TSCALE()); const hard=setTimeout(()=>ctl.abort(),45000*TSCALE());
   try{
     const res=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",signal:ctl.signal,headers:{Authorization:"Bearer "+cfg.key,"Content-Type":"application/json"},body:JSON.stringify(body)});
     if(!res.ok){const e=new Error("stream "+res.status);e.status=res.status;throw e}
@@ -757,7 +758,7 @@ async function chatStream(messages,onPart){
       }
     }
     const r=parseJSONText(txt); if(!r)throw new Error("stream unreadable"); return r;
-  }finally{clearTimeout(idle);clearTimeout(hard)}
+  }finally{clearTimeout(idle);clearTimeout(hard);if(curChatCtl===ctl)curChatCtl=null}
 }
 /* while the answer is still being written, start making the voices for the corrected sentence and Julia's line */
 function earlyVoices(){
@@ -770,7 +771,7 @@ function earlyVoices(){
 }
 async function chatFast(messages){
   try{return await chatStream(messages,earlyVoices())}
-  catch(e){logErr("chat","빠른 응답 실패, 일반 방식으로 다시 요청 ("+(e.message||e)+")");return chatJSON(messages)}
+  catch(e){if(chatCancelled){chatCancelled=false;throw new Superseded()}logErr("chat","빠른 응답 실패, 일반 방식으로 다시 요청 ("+(e.message||e)+")");return chatJSON(messages)}
 }
 async function chatJSON(messages){
   const body={model:cfg.chat,messages,response_format:{type:"json_object"}};
@@ -956,6 +957,7 @@ async function chained(items){chain=true;lockUI();try{await playSeq(items)}catch
 function lockUI(){$("send").disabled=busy||chain;$("micBtn").disabled=auto.on||(busy||chain)&&!recording}
 function toast(t){const d=document.createElement("div");d.className="err";d.textContent=t;log.append(d);scroll()}
 function addJulia(en,ko,emo){
+  if(curTurn&&curTurn.active)curTurn.rendered=true;
   const row=document.createElement("div"); row.className="row julia";
   row.innerHTML=`<span class="who-l">JULIA</span><div class="bubble jb"><span class="jt">${esc(en)}</span><button class="spk" aria-label="다시 듣기">${I_SPK}</button></div><div class="small ko-line" ${showKo?"":"hidden"}>${esc(clean(ko))}</div>`;
   row.dataset.emo=emo||"happy";
@@ -967,7 +969,8 @@ function addMe(text,rep){
   row.innerHTML=`<span class="who-l">${rep?"JUN (따라 말하기)":"JUN"}</span><div class="bubble">${esc(text)}</div>`;
   log.append(row); scroll(); return row;
 }
-function addCoach({kind="",say="",model="",point="",listen=null,repeat=false}){
+function addCoach({kind="",say="",model="",point="",listen=null,repeat=false,okBtn=null,clearLabel=""}){
+  if(curTurn&&curTurn.active)curTurn.rendered=true;
   const c=document.createElement("div"); c.className="coach "+kind;
   const lbl=kind==="review"?"Coach Sam / 반복 실수":kind==="teach"?"Coach Sam / 질문 답변":"Coach Sam";
   c.innerHTML=`<span class="lbl">${I_SPARK}${lbl}</span>${say?`<div class="say">${esc(clean(say))}</div>`:""}${model?`<div class="modelbox"><div class="model">${model}</div>${listen?`<button class="wave" aria-label="다시 듣기">${I_WAVE}</button>`:""}</div>`:""}${point?`<button class="more-d" aria-expanded="false">자세히 보기 <span class="chev">&#8964;</span></button><div class="detail" hidden>${esc(clean(point))}</div>`:""}`;
@@ -976,8 +979,10 @@ function addCoach({kind="",say="",model="",point="",listen=null,repeat=false}){
   if((listen&&!model)||repeat){const a=document.createElement("div");a.className="acts";
     if(listen&&!model){const b=document.createElement("button");b.className="wave-t";b.innerHTML=I_SPK+"<span>다시 듣기</span>";b.onclick=()=>{if(!chain)playSeq(listen)};a.append(b)}
     if(repeat){log.querySelectorAll(".rep-acts").forEach(n=>n.remove());a.classList.add("rep-acts");const t=document.createElement("span");t.className="rep-tag";t.textContent="따라 말하면 Julia가 이어서 대답해요";a.prepend(t);
-      const k=document.createElement("button");k.textContent="건너뛰기";k.onclick=()=>{if(phase==="repeat")$("skipBtn").click()};a.append(k)}
+      const k=document.createElement("button");k.textContent="건너뛰기";k.onclick=()=>{if(phase==="repeat")$("skipBtn").click()};a.append(k);
+      if(okBtn){const o=document.createElement("button");o.className="okbtn";o.textContent="맞게 말했어요";o.onclick=()=>okBtn();a.append(o)}}
     c.append(a)}
+  if(clearLabel){const a=document.createElement("div");a.className="acts";const b=document.createElement("button");b.textContent="틀린 적 없어요, 기록 지우기";b.onclick=()=>{delete patterns[clearLabel];store("oc_patterns",patterns);renderSide();b.textContent="기록에서 지웠어요";b.disabled=true};a.append(b);c.append(a)}
   log.append(c); scroll(); return c;
 }
 function setPhase(p){
@@ -1028,7 +1033,7 @@ function liveContext(ctx,latest){
   return `CURRENT CONTEXT\nJun's LATEST message (the only one to classify, correct or translate): "${latest||""}"\nJulia's last line: "${lastJulia&&lastJulia.en||""}"\nJulia's previous expression: ${lastEmo}\nExisting mistake labels: ${labels.length?labels.join(", "):"(none yet)"}${ctx?"\n"+ctx:""}`;
 }
 function rules(){
-  return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text of accented English, so words are often mis-heard (e.g. "work" heard as "walk", "I'm fine" as "I'm find"). Always work out what he most likely MEANT from the conversation (especially Julia's last question) and answer that meaning; never react to a mis-heard word literally. If you really cannot tell what he meant, Julia asks a short natural check like "Sorry, did you mean ...?" instead of guessing wildly. Ignore capitalization and punctuation. Two people talk with Jun:
+  return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text of accented English, so words are often mis-heard (e.g. "work" heard as "walk", "I'm fine" as "I'm find"). Always work out what he most likely MEANT from the conversation (especially Julia's last question) and answer that meaning; never react to a mis-heard word literally. NEVER count a likely speech-recognition slip as Jun's grammar mistake: words listed as "not sure" in CURRENT CONTEXT, and small sound-alike slips such as I/It, a/the dropped, and/in, can/can't, missing -s or -ed, when the rest of his sentence shows he knows the grammar. In that case assume he said it right: if nothing else is wrong, perfect=true and no mistakes. If you really cannot tell what he meant, Julia asks a short natural check like "Sorry, did you mean ...?" instead of guessing wildly. Ignore capitalization and punctuation. Two people talk with Jun:
 JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant and remembers what he said earlier in the call. Not an interview: build on his answer, often add a small related detail or story of her own, and ask ONE natural follow-up question most of the time (sometimes just react and leave room for him to keep talking). Keep the topic flowing like a real chat instead of jumping to new topics. Sentence length, words and question type follow the LEVEL rules. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}.
 ${LEVEL_RULES[$("level").value]||LEVEL_RULES.beginner}
 COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and one short grammar point. English sentences stay in English.
@@ -1084,8 +1089,18 @@ async function holdUntilReady(text,who){
   chain=true; lockUI();
   const t0=performance.now();
   let dot=null; const tm=setTimeout(()=>{if(who==="julia"){dot=document.createElement("div");dot.className="row julia typing";dot.innerHTML='<span class="who-l">JULIA</span><div class="bubble jb"><span class="dots"><i></i><i></i><i></i></span></div>';log.append(dot);scroll()}},250);
-  try{await Promise.race([tts(text,who).catch(()=>null),sleep(6000)])}
+  try{await Promise.race([tts(text,who).catch(()=>null),sleep(6000),supersedeWait()])}
   finally{clearTimeout(tm);if(dot)dot.remove();if(who==="julia")perfMark("voice",performance.now()-t0)}
+}
+function markCorrect(r,said,meRow){
+  if(busy||pending!==r)return;
+  stopAudio(); chain=false;
+  (r.mistakes||[]).forEach(m=>{const k=clean(m&&m.label||"").trim();if(k&&patterns[k]){patterns[k].n--;if(patterns[k].n<=0)delete patterns[k]}});
+  notes=notes.filter(n=>!(n.said===said&&n.model===r.model)); store("oc_patterns",patterns); store("oc_notes",notes); renderSide();
+  const bb=meRow&&meRow.querySelector(".bubble"); if(bb){bb.textContent=said;meRow.classList.remove("marked")}
+  if(meRow){const m=document.createElement("span");m.className="okmark";m.textContent="맞게 말한 걸로 처리했어요";meRow.append(m)}
+  turns.push({role:"user",content:"(Jun says the coach was wrong: he said it correctly, it was a speech-recognition slip)"});
+  r._review=null; setPhase("answer"); continueTalk().catch(e=>logErr("맞게 말했어요",e));
 }
 function sysNote(t){const d=document.createElement("div");d.className="sysnote";d.textContent=t;log.append(d);scroll()}
 function slowJulia(){
@@ -1094,10 +1109,11 @@ function slowJulia(){
   $("rate").value=nx; cfg.rate=nx; saveCfg(); $("rateV").textContent=nx.toFixed(1)+"배";
   sysNote(`Julia 말 속도를 ${nx.toFixed(1)}배로 낮췄어요. 설정에서 다시 바꿀 수 있어요.`);
 }
-async function juliaSay(en,ko,emo){
-  turns.push({role:"assistant",content:en});
+async function juliaSay(en,ko,emo,T){
   const fe=pickEmotion(emo,en);
   await holdUntilReady(en,"julia");
+  checkTurn(T);
+  turns.push({role:"assistant",content:en});
   lastJulia={en,ko}; addJulia(en,ko,fe); setPhase("answer");
   setEmotion(fe);
   await chained([{text:en,ko,who:"julia"}]);
@@ -1134,7 +1150,7 @@ function recordMistakes(r,said){
   store("oc_patterns",patterns); store("oc_notes",notes); renderSide();
   return review;
 }
-async function continueTalk(){
+async function continueTalk(T){
   const r=pending; pending=null; tries=0;
   if(!r){setPhase("answer");return}
   if(r._review){
@@ -1142,11 +1158,12 @@ async function continueTalk(){
     const say=`${v.label} 부분을 ${v.n}번 틀렸어요.`;
     const parts=[{text:say,who:"coach"},{text:v.tipKo,who:"coach"}];
     if(voiceOn)parts.forEach(x=>tts(x.text,"coach").catch(()=>{}));
-    await holdUntilReady(say,"coach");
-    addCoach({kind:"review",say,model:v.ex?`${esc(v.ex.from)} → <ins>${esc(v.ex.to)}</ins>`:"",point:v.tipKo,listen:parts});
+    await holdUntilReady(say,"coach"); checkTurn(T);
+    addCoach({clearLabel:v.label,kind:"review",say,model:v.ex?`${esc(v.ex.from)} → <ins>${esc(v.ex.to)}</ins>`:"",point:v.tipKo,listen:parts});
     await chained(parts);
   }
-  await juliaSay(r.reply,r.reply_ko,r.emotion);
+  checkTurn(T);
+  await juliaSay(r.reply,r.reply_ko,r.emotion,T);
 }
 function historyFor(){
   if(turns.length>200)turns=turns.slice(-120);
@@ -1174,6 +1191,7 @@ async function askAI(text,ctx){
     if(r.intent==="answer"){r.model=String(r.model||"").trim();if(!r.model){r.model=text;r.perfect=true}}
     return r;
   }catch(e){
+    if(e instanceof Superseded){turns.pop();wait.remove();throw e}
     logErr("대화",e);
     turns.pop(); setEmotion("calm"); wait.className="err"; wait.textContent=e instanceof ApiError?e.message:"인터넷 연결을 확인하고 다시 보내주세요.";
     msg.value=text; autosize(); return null;
@@ -1210,20 +1228,54 @@ function showTeach(r){
   return parts;
 }
 
-async function send(textIn,audio){
-  try{await sendInner(textIn,audio)}
-  catch(e){logErr("보내기",e);busy=false;chain=false;lockUI();toast("문제가 생겨서 이번 문장은 건너뛰었어요. 다시 말해주세요.")}
+/* ---------- Turn control: if Jun keeps talking, the answer in progress is dropped and he is heard again ---------- */
+class Superseded extends Error{}
+let turnSeq=0, curTurn=null, supersedeResolvers=[], curChatCtl=null, chatCancelled=false;
+function beginTurn(text){
+  supersedeResolvers=[];
+  curTurn={id:++turnSeq,text,marker:log.lastElementChild,turnsLen:turns.length,pending,phase,tries,patterns:JSON.stringify(patterns),notes:JSON.stringify(notes),rendered:false,active:true};
+  return curTurn;
 }
-async function sendInner(textIn,audio){
+function checkTurn(t){if(t&&t.id!==turnSeq)throw new Superseded()}
+function supersedeWait(){return new Promise(r=>supersedeResolvers.push(r))}
+function supersedeTurn(){
+  if(!curTurn||!curTurn.active)return null;
+  const t=curTurn; turnSeq++;
+  supersedeResolvers.splice(0).forEach(f=>f());
+  if(curChatCtl){chatCancelled=true;try{curChatCtl.abort()}catch(e){}}
+  stopAudio(); return t;
+}
+function rollbackTurn(t){
+  let n=t.marker?t.marker.nextElementSibling:log.firstElementChild;
+  while(n){const nx=n.nextElementSibling;n.remove();n=nx}
+  turns.length=Math.min(turns.length,t.turnsLen); pending=t.pending; tries=t.tries;
+  patterns=JSON.parse(t.patterns); notes=JSON.parse(t.notes); store("oc_patterns",patterns); store("oc_notes",notes); renderSide();
+  setPhase(t.phase);
+}
+async function send(textIn,audio){
+  let t=null;
+  try{await sendInner(textIn,audio,x=>t=x)}
+  catch(e){
+    if(e instanceof Superseded){busy=false;chain=false;if(t&&!t.rendered)rollbackTurn(t);lockUI()}
+    else{logErr("보내기",e);busy=false;chain=false;lockUI();toast("문제가 생겨서 이번 문장은 건너뛰었어요. 다시 말해주세요.")}
+  }finally{if(t)t.active=false}
+}
+async function sendWhenFree(text,audio){
+  for(let i=0;i<200;i++){if(!busy&&!chain&&!(curTurn&&curTurn.active))break;await sleep(100)}
+  return send(text,audio);
+}
+async function sendInner(textIn,audio,onTurn){
   const text=(textIn??msg.value).trim(); if(!text||busy||chain)return;
   if(phase==="idle"&&!startTalk(true))return;
   msg.value=""; autosize(); stopAudio();
+  const T=beginTurn(text); onTurn&&onTurn(T);
 
   if(phase==="repeat"&&pending){
     const sim=hasKo(text)?0:similarity(text,pending.model);
     if(sim<0.75&&looksLikeQuestion(text)){
       const qRow=addMe(text,false);
       const r=await askAI(text,`Right now Jun is practicing saying this sentence after Sam: "${pending.model}". If he asks about it, explain it.`);
+      checkTurn(T);
       if(!r){qRow.remove();return}
       if(r.intent==="question"){
         turns.push({role:"assistant",content:"(Sam answered) "+r.teach});
@@ -1238,30 +1290,32 @@ async function sendInner(textIn,audio){
     if(audio&&!hasKo(text)){pron=scorePron(pending.model,text,audio.words);pronCard(pron,pending.model);savePron(pron.total)}
     if(sim>=0.75){
       const m=document.createElement("span"); m.className="okmark"; m.textContent="따라 말하기 완료"; repRow.append(m);
-      setPhase("answer"); await continueTalk();
+      setPhase("answer"); await continueTalk(T);
     }else if(++tries<2){
       const parts=[{text:pending.model,who:"coach"}];
       addCoach({model:highlightModel(text,pending.model),listen:parts,repeat:true});
       await chained(parts);
     }else{
       addCoach({say:"표현 노트에 저장했어요."}); setPhase("answer");
-      await continueTalk();
+      await continueTalk(T);
     }
     return;
   }
 
   const meRow=addMe(text,false);
   if(audio&&audio.words&&audio.words.length&&!hasKo(text))markClarity(meRow,audio.words);
-  const r=await askAI(text,"");
+  const unsure=audio&&Array.isArray(audio.words)?audio.words.filter(w=>w.p<0.6).map(w=>w.raw):[];
+  const r=await askAI(text,unsure.length?`Speech recognizer was NOT sure about these words, they may be mis-heard: ${unsure.join(", ")}`:"");
+  checkTurn(T);
   if(!r){meRow.remove();return}
   if(r.slow_down===true)slowJulia();
   if(r.intent==="question"){
     turns.pop(); turns.push({role:"user",content:"(asked the teacher) "+text});
-    await holdUntilReady(r.teach,"coach");
+    await holdUntilReady(r.teach,"coach"); checkTurn(T);
     const parts=showTeach(r);
     if(voiceOn)tts(r.reply,"julia").catch(()=>{});
-    await chained(parts);
-    await juliaSay(r.reply,r.reply_ko,r.emotion);
+    await chained(parts); checkTurn(T);
+    await juliaSay(r.reply,r.reply_ko,r.emotion,T);
     return;
   }
   r.mistakes=Array.isArray(r.mistakes)?r.mistakes:[];
@@ -1271,13 +1325,13 @@ async function sendInner(textIn,audio){
   if(voiceOn)tts(r.reply,"julia").catch(()=>{});
   if(r.perfect){
     const m=document.createElement("span"); m.className="okmark"; m.textContent="자연스러운 문장이에요"; meRow.append(m);
-    await continueTalk();
+    await continueTalk(T);
   }else{
     const seq=coachSeq(r);
     if(voiceOn)seq.forEach(x=>x.text&&tts(x.text,"coach").catch(()=>{}));
-    await holdUntilReady(seq[0].text,"coach");
+    await holdUntilReady(seq[0].text,"coach"); checkTurn(T);
     if(r.mode!=="ko"){const bb=meRow.querySelector(".bubble");bb.innerHTML=markupDiff(text,r.model);meRow.classList.add("marked")}
-    addCoach({say:r.mode==="ko"?"이렇게 말해보세요.":"",model:highlightModel(text,r.model),point:r.coach_point,listen:seq,repeat:true});
+    addCoach({say:r.mode==="ko"?"이렇게 말해보세요.":"",model:highlightModel(text,r.model),point:r.coach_point,listen:seq,repeat:true,okBtn:r.mode==="en"&&r.mistakes.length?()=>markCorrect(r,text,meRow):null});
     setPhase("repeat");
     await chained(seq);
   }
@@ -1433,6 +1487,7 @@ function autoStartSeg(){
   auto.rec=new MediaRecorder(auto.stream,auto.type?{mimeType:auto.type}:undefined);
   auto.rec.ondataavailable=e=>{if(e.data&&e.data.size)auto.chunks.push(e.data)};
   auto.rec.start(); auto.startedAt=performance.now(); auto.speaking=false; auto.speechMs=0; auto.silenceMs=0;
+  auto.segDuringPlay=!!endCurrent&&!player.paused;
 }
 function autoDiscard(){const r=auto.rec;auto.rec=null;auto.speaking=false;if(r){r.onstop=null;try{r.stop()}catch(e){}}}
 function autoFinish(){
@@ -1443,33 +1498,52 @@ function autoFinish(){
     try{
       if(blob.size>2000){
         $("autoLabel").textContent="듣는 중...";
-        const t=await transcribe(blob);
+        auto.sttBusy=true; auto.contDuringStt=false;
+        let t; try{t=await transcribe(blob)}finally{auto.sttBusy=false}
         $("autoLabel").textContent=auto.on?"자동 듣기 켜짐":"자동 듣기";
-        if(t.text&&!NOISE.test(t.text.trim()))await send(t.text,t);
+        const part=(t.text&&!NOISE.test(t.text.trim()))?t.text.trim():"";
+        if(auto.contDuringStt){auto.contDuringStt=false;auto.mergePrefix=((auto.mergePrefix||"")+" "+part).trim();return}  // he kept talking: wait for the rest
+        const full=((auto.mergePrefix||"")+" "+part).trim(); auto.mergePrefix="";
+        if(full)await sendWhenFree(full,t);
       }
     }catch(e){logErr("자동 듣기",e);toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
     finally{autoSending=false;autoUI()}
   };
   try{r.stop()}catch(e){autoSending=false}
 }
+function autoSpeechStart(playing){
+  if(auto.sttBusy)auto.contDuringStt=true;
+  const t=(curTurn&&curTurn.active)?supersedeTurn():null;
+  if(t&&!t.rendered)auto.mergePrefix=((auto.mergePrefix||"")+" "+t.text).trim();   // answer the whole thing, not just the first half
+  else if(playing)stopAudio();
+}
 function autoLoop(t){
   if(!auto.on)return;
   auto.raf=requestAnimationFrame(autoLoop);
-  const dt=auto.last?Math.min(100,t-auto.last):16; auto.last=t;
+  const now=performance.now(), dt=auto.last?Math.min(100,t-auto.last):16; auto.last=t;
   if(auto.stream&&!auto.stream.getAudioTracks().some(t=>t.readyState==="live")){stopAuto();toast("마이크 연결이 끊겨서 자동 듣기를 껐어요. 다시 눌러주세요.");return}
-  const canListen=!busy&&!chain&&!recording&&!autoSending&&phase!=="idle";
-  if(!canListen){auto.blockedAt=performance.now();if(auto.rec)autoDiscard();return}
-  if(performance.now()-(auto.blockedAt||0)<900)return;
+  if(recording||phase==="idle"){auto.blockedAt=now;if(auto.rec)autoDiscard();return}
+  const playing=!!endCurrent&&!player.paused;
+  if(playing)auto.blockedAt=now;
+  const processing=!playing&&(busy||chain||autoSending);
+  if(!auto.speaking&&!playing&&!processing&&now-(auto.blockedAt||0)<400){
+    // a voice just ended: start a fresh recording (no echo in it) but wait 0.4 s before deciding Jun is talking
+    if(auto.rec&&auto.segDuringPlay)autoDiscard();
+    if(!auto.rec)autoStartSeg();
+    return;
+  }
   if(!auto.rec)autoStartSeg();
-  const lv=autoLevel(), thr=Math.max(0.012,auto.floor*2.6);
-  const age=performance.now()-auto.startedAt;
+  const lv=autoLevel(), base=Math.max(0.012,auto.floor*2.6);
+  const nearVoice=playing||now-(auto.blockedAt||0)<1200;   // during a voice and just after it, only clear speech counts (speaker echo is quieter)
+  const thr=nearVoice?Math.max(0.04,base*3):base, need=playing?450:250;
+  const age=now-auto.startedAt;
   if(!auto.speaking){
-    if(lv<thr)auto.floor=auto.floor*0.97+lv*0.03;
-    if(lv>thr){auto.speechMs+=dt;if(auto.speechMs>250){auto.speaking=true;auto.silenceMs=0;$("junTile").classList.add("speaking");stopAudio()}}
+    if(!playing&&lv<base)auto.floor=auto.floor*0.97+lv*0.03;
+    if(lv>thr){auto.speechMs+=dt;if(auto.speechMs>need){auto.speaking=true;auto.silenceMs=0;$("junTile").classList.add("speaking");autoSpeechStart(playing)}}
     else auto.speechMs=Math.max(0,auto.speechMs-dt);
-    if(age>12000)autoDiscard();
+    if(age>(playing?2500:12000))autoDiscard();
   }else{
-    if(lv<thr*0.8){auto.silenceMs+=dt;if(auto.silenceMs>1300)autoFinish()}
+    if(lv<base*0.8){auto.silenceMs+=dt;if(auto.silenceMs>900)autoFinish()}
     else auto.silenceMs=0;
     if(auto.rec&&age>45000)autoFinish();
   }
