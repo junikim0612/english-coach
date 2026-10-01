@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v2.7</title>
+<title>영어회화 코치 v3.1</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -314,12 +314,88 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .log{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 18px);mask-image:linear-gradient(to bottom,transparent 0,#000 18px)}
 .log{padding-top:12px}
 @media (max-width:900px){.call{margin:8px 8px 2px;border-radius:18px}body.kb .call{margin:6px 6px 2px;border-radius:16px}}
+
+/* ===== v3.0 : full-bleed call (A) + red-pen corrections (B) ===== */
+.call{margin:0!important;padding:0!important;border-radius:0!important;background:#0b1220!important;box-shadow:none!important;gap:0!important}
+.stage{position:relative;width:100%;height:clamp(250px,41vh,400px)!important;aspect-ratio:auto!important;max-height:none!important;border-radius:0!important;background:#0b1220}
+.stage::after{border-radius:0!important}
+.stage img.face{object-fit:cover;object-position:center 22%}
+.stage .shade{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(5,10,20,.55) 0,rgba(5,10,20,0) 26%,rgba(5,10,20,0) 52%,rgba(5,10,20,.78) 100%)}
+.stage .callbar{position:absolute;left:0;right:0;top:0;z-index:4;padding:12px 14px!important;color:#fff;flex-wrap:nowrap!important;overflow:visible}
+.stage .callbar .t{font-weight:600}
+.stage .callbar .topic{opacity:.85}
+.stage .more{color:#fff!important}
+.stage .menu{top:40px;right:10px}
+.stage .name{z-index:3}
+.stage .name.jn{left:14px;top:44px;bottom:auto;background:rgba(5,10,20,.35)}
+.pip{position:absolute!important;z-index:3;right:14px;top:46px;width:78px!important;height:104px!important;aspect-ratio:auto!important;border-radius:14px!important;background:#1d2840!important;border:1.5px solid rgba(255,255,255,.75);overflow:hidden}
+.pip .initial{width:40px;height:40px;font-size:15px}
+.pip .name{left:6px;bottom:6px;top:auto;font-size:10.5px;padding:2px 6px}
+.pip.speaking{border-color:var(--speak)}
+.pip::after{border-radius:14px!important}
+.stage.speaking::after{box-shadow:inset 0 -3px 0 0 var(--speak)!important}
+.stage .cap{position:absolute!important;z-index:3;left:16px;right:16px;bottom:14px;top:auto;min-height:0!important;align-items:flex-start!important;text-align:left!important;padding:0!important}
+.stage .cap .en{font-size:clamp(16px,1.8vw,20px)!important;font-weight:600;line-height:1.35;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.stage .cap .ko{color:#dfe5f0;font-size:13px!important}
+.coachPill{background:var(--coral)!important}
+@media (min-width:901px){.call{display:flex;justify-content:center;background:#0b1220!important}.stage{width:min(100%,calc(41vh*1.35))!important;max-width:620px;margin:0 auto}}
+/* chat */
+.log{gap:16px!important;padding:16px 18px!important}
+.julia .bubble,.julia .bubble.jb{background:none!important;border:0!important;padding:0!important;font-weight:500!important;color:#111827!important;font-size:15.5px;line-height:1.55;border-radius:0!important}
+.julia .who-l{color:#8a93a6}
+.spk{width:28px;height:28px;border-color:#e3e6ec}
+.me .bubble{background:#f1f3f7!important;color:#111827!important;border-radius:18px!important;border-bottom-right-radius:6px!important}
+.me.marked .bubble{background:#fff!important;border:1px solid #eceef2;line-height:1.7}
+.me.marked .bubble s{color:#a5acba;text-decoration-color:var(--coral);text-decoration-thickness:1.5px}
+.me.marked .bubble ins{text-decoration:none;color:var(--coral-deep);font-weight:700}
+.coach,.coach.teach,.coach.review,.coach.good{background:none!important;border:0!important;border-top:1px solid #eceef2!important;border-radius:0!important;padding:12px 0 2px!important;max-width:none}
+.coach .lbl{font-size:11.5px;letter-spacing:.08em;color:var(--coral-deep)!important}
+.coach .lbl svg{display:none}
+.coach.review .lbl{color:var(--warn)!important}
+.coach .say{font-size:13px;color:#6b7280}
+.modelbox{background:none!important;padding:0!important}
+.modelbox .model{font-size:18px!important;font-weight:700;color:#111827;line-height:1.4}
+.modelbox .model ins{color:#111827!important;border-bottom:0!important;text-decoration:underline;text-decoration-color:var(--coral);text-decoration-thickness:2px;text-underline-offset:4px}
+.wave{width:34px;height:34px;border-color:#f1d1ca}
+.more-d{color:#6b7280!important;font-weight:500!important;font-size:12.5px!important}
+.detail{border:0!important;background:#f7f8fa!important;border-radius:10px}
+/* input bar */
+.compose{display:grid!important;grid-template-columns:minmax(0,1fr) auto 52px 44px!important;grid-template-areas:"t a m s"!important;align-items:center!important;gap:8px!important;padding:10px 14px 12px!important}
+.compose textarea{grid-area:t;height:44px!important;min-height:44px!important;border-radius:22px!important;padding:11px 16px!important;background:#f3f4f7!important;border:0!important}
+.compose .autob{grid-area:a;height:40px;padding:0 12px!important;border-radius:20px!important;font-size:12.5px!important;gap:6px!important;background:#fff;border:1px solid #e3e6ec!important;color:#4b5563!important}
+.compose .autob.on{background:var(--coral-soft)!important;border-color:var(--coral)!important;color:var(--coral-deep)!important}
+.autodot2{width:8px;height:8px;border-radius:50%;border:2px solid currentColor}
+.autob.on .autodot2{background:currentColor;animation:pulse 1.4s ease-in-out infinite}
+.compose .mic{grid-area:m;width:52px;height:52px;padding:0!important;border-radius:50%!important;justify-content:center}
+.compose .mic svg{width:22px;height:22px}
+.compose .send{grid-area:s;width:44px;height:44px;border-radius:50%!important}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:900px){
+  .stage{height:clamp(220px,38vh,340px)!important}
+  .compose{grid-template-columns:minmax(0,1fr) auto 52px 44px!important;grid-template-areas:"t a m s"!important;padding:8px 10px 10px!important}
+  body.kb .stage{height:132px!important}
+  body.kb .stage .cap,body.kb .stage .name.jn{display:none}
+  body.kb .pip{top:10px;width:58px!important;height:76px!important}
+  body.kb .compose{grid-template-columns:minmax(0,1fr) 44px!important;grid-template-areas:"t s"!important}
+}
+@media (max-width:900px){.compose .autob{padding:0 10px!important;font-size:12px!important}}
+
+/* v3.1: every message in a light grey bubble; speakers told apart by name colour */
+:root{--bub:#f2f3f6;--n-julia:#e8513f;--n-jun:#2f5fae;--n-sam:#ef8a00}
+.julia .bubble,.julia .bubble.jb{background:var(--bub)!important;border:0!important;padding:10px 14px!important;border-radius:16px!important;border-bottom-left-radius:6px!important}
+.me .bubble,.me.marked .bubble{background:var(--bub)!important;border:0!important;border-radius:16px!important;border-bottom-right-radius:6px!important}
+.coach,.coach.teach,.coach.review,.coach.good{background:var(--bub)!important;border:0!important;border-radius:16px!important;padding:12px 14px!important;max-width:min(760px,96%)!important;align-self:flex-start!important}
+.julia .who-l{color:var(--n-julia)!important;font-weight:700}
+.me .who-l{color:var(--n-jun)!important;font-weight:700}
+.coach .lbl,.coach.review .lbl{color:var(--n-sam)!important}
+.detail{background:#fff!important}
+.spk,.wave{background:#fff}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v2.7</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v3.1</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear" id="reloadBtn" aria-label="새로고침">새로고침</button>
     <button class="gear only-m" id="openSide">기록</button>
@@ -328,6 +404,10 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
   <section class="pane chat" aria-label="화상 대화">
     <div class="call">
+      <div class="tile stage" id="juliaTile">
+          <div class="ph" id="juliaPh"></div>
+          <img id="juliaBg" class="bgblur" alt="" aria-hidden="true" hidden><img id="juliaPhoto" class="fit face" alt="Julia" hidden><img id="juliaPhoto2" class="fit face" alt="" aria-hidden="true">
+          <div class="shade"></div>
       <div class="callbar">
         <span class="rec"></span><span class="t" id="timer">00:00</span><span class="topic" id="topicName">Daily small talk</span>
         <span class="coachPill" id="coachPill"><span class="bars"><i></i><i></i><i></i></span>Coach Sam</span>
@@ -338,27 +418,22 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
           <button role="menuitem" id="skipAudio" disabled>음성 넘기기</button>
         </div>
       </div>
-      <div class="tiles">
-        <div class="tile" id="juliaTile">
-          <div class="ph" id="juliaPh"></div>
-          <img id="juliaBg" class="bgblur" alt="" aria-hidden="true" hidden><img id="juliaPhoto" class="fit face" alt="Julia" hidden><img id="juliaPhoto2" class="fit face" alt="" aria-hidden="true">
-          <div class="name"><span class="bars"><i></i><i></i><i></i></span>Julia</div>
-        </div>
-        <div class="tile" id="junTile">
-          <div class="ph" id="junPh"><div class="initial">Jun</div></div>
+          <div class="name jn"><span class="bars"><i></i><i></i><i></i></span>Julia</div>
+          <div class="tile pip" id="junTile">
+            <div class="ph" id="junPh"><div class="initial">Jun</div></div>
           <img id="junPhoto" class="fit" alt="Jun" hidden><img id="junBg" class="bgblur" alt="" aria-hidden="true" hidden>
           <video id="cam" muted playsinline autoplay hidden></video>
           <div class="name"><span class="bars"><i></i><i></i><i></i></span>Jun</div>
-        </div>
+          </div>
+          <div class="cap" id="cap" aria-live="polite"></div>
       </div>
-      <div class="cap" id="cap" aria-live="polite"></div>
     </div>
     <div class="log" id="log"></div>
     <div class="target" id="target" hidden><span>따라 말해보세요</span><b id="targetText"></b><button id="targetListen">듣기</button><button id="skipBtn">건너뛰기</button></div>
     <div class="compose">
       <textarea id="msg" rows="1" placeholder="Reply to Julia..."></textarea>
-      <button class="mic" id="micBtn" aria-label="말하기"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="micLabel">말하기</span></button>
-      <button class="autob" id="autoBtn" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg><span id="autoLabel">자동 듣기</span></button>
+      <button class="autob" id="autoBtn" aria-pressed="false"><span class="autodot2"></span><span id="autoLabel">자동 듣기</span></button>
+      <button class="mic" id="micBtn" aria-label="말하기"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="sr" id="micLabel">말하기</span></button>
       <button class="send primary" id="send" aria-label="보내기"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></button>
     </div>
   </section>
@@ -458,7 +533,7 @@ const $=id=>document.getElementById(id);
 const I_SPK=`<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`, I_WAVE=`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`, I_SPARK=`<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z" fill="currentColor"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" fill="currentColor"/></svg>`;
 
 /* ---------- Config ---------- */
-const DEFAULTS={chat:"gpt-6-luna",tts:"gpt-4o-mini-tts",stt:"gpt-4o-mini-transcribe"};
+const DEFAULTS={chat:"gpt-6-luna",tts:"gpt-4o-mini-tts",stt:"gpt-4o-transcribe"};
 const FEM="Use a clearly feminine voice: soft, sweet and gentle, slightly higher pitched, with a warm smile you can hear. Light and graceful, never deep or flat.";
 const VOICES=[
   {id:"marin-sweet",label:"marin 상냥한 (여)",base:"marin",style:FEM+" Kind and friendly."},
@@ -494,6 +569,7 @@ function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
 const oldCfg=load("oc_cfg",{});
 let cfg=Object.assign({key:"",chat:DEFAULTS.chat,tts:DEFAULTS.tts,stt:DEFAULTS.stt,julia:"marin-calm",coach:"marin-calm",level:"beginner",topic:"daily",rate:0.9,voiceOn:true},oldCfg);
+if(!cfg.v8){if(!cfg.stt||cfg.stt==="gpt-4o-mini-transcribe")cfg.stt="gpt-4o-transcribe";cfg.v8=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v7){cfg.julia="marin-calm";cfg.rate=0.9;cfg.v7=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v6){try{localStorage.removeItem("oc_photo")}catch(e){};cfg.v6=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v5){cfg.julia="nova-soft";cfg.coach="marin-calm";cfg.v5=1;cfg.v4=1;cfg.v3=1;cfg.v2=cfg.v2||1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
@@ -551,7 +627,7 @@ async function transcribe(blob){
   const fd=new FormData();
   const ext=/mp4|m4a|aac/.test(blob.type)?"mp4":/ogg/.test(blob.type)?"ogg":/wav/.test(blob.type)?"wav":"webm";
   fd.append("file",blob,"speech."+ext); fd.append("model",cfg.stt);
-  fd.append("prompt","The speaker is a Korean learner practicing English conversation. They may speak English, Korean, or a mix. Transcribe exactly what was said, without fixing grammar or pronunciation.");
+  fd.append("prompt","A Korean adult practicing English conversation on a video call. Mostly English with a Korean accent, sometimes Korean words or full Korean sentences. Write English words in English and Korean words in Hangul. Keep his grammar mistakes exactly as spoken.");
   const wantProbs=!/whisper/.test(cfg.stt);
   if(wantProbs){fd.append("response_format","json");fd.append("include[]","logprobs")}
   let r;
@@ -823,6 +899,21 @@ function markClarity(row,words){
 }
 let pronHist=load("oc_pron",[]);
 function savePron(v){pronHist.push(v);pronHist=pronHist.slice(-50);store("oc_pron",pronHist);renderSide()}
+function markupDiff(said,model){
+  const A=said.split(/\s+/).filter(Boolean), B=model.split(/\s+/).filter(Boolean);
+  const a=A.map(w=>norm(w)[0]||w.toLowerCase()), b=B.map(w=>norm(w)[0]||w.toLowerCase());
+  const n=a.length,m=b.length,L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const out=[];let i=0,j=0,dels=[],adds=[];
+  const flush=()=>{if(dels.length)out.push(`<s>${dels.map(esc).join(" ")}</s>`);if(adds.length)out.push(`<ins>${adds.map(esc).join(" ")}</ins>`);dels=[];adds=[]};
+  while(i<n||j<m){
+    if(i<n&&j<m&&a[i]===b[j]){flush();out.push(esc(B[j]));i++;j++}
+    else if(j<m&&(i>=n||L[i][j+1]>=L[i+1][j])){adds.push(B[j]);j++}
+    else{dels.push(A[i]);i++}
+  }
+  flush();
+  return out.join(" ");
+}
 function showTeach(r){
   const ex=Array.isArray(r.teach_examples)?r.teach_examples.filter(Boolean).slice(0,3):[];
   const parts=[{text:r.teach,who:"coach"}];
@@ -894,38 +985,49 @@ async function send(textIn,audio){
     await continueTalk();
   }else{
     const seq=coachSeq(r);
+    if(r.mode!=="ko"){const bb=meRow.querySelector(".bubble");bb.innerHTML=markupDiff(text,r.model);meRow.classList.add("marked")}
     addCoach({say:seq[0].text,model:highlightModel(text,r.model),point:r.coach_point,listen:seq});
     await chained(seq); await continueTalk();
   }
 }
 
 /* ---------- Mic ---------- */
-let recorder=null, recording=false, chunks=[];
+let recorder=null, recording=false, chunks=[], micStream=null, recStart=0;
+const MIC_OPTS={audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1}};
+async function getMic(){
+  if(micStream&&micStream.getAudioTracks().some(t=>t.readyState==="live"))return micStream;
+  micStream=await navigator.mediaDevices.getUserMedia(MIC_OPTS); return micStream;
+}
+function recType(){return ["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/aac","audio/ogg"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||""}
 async function toggleMic(){
-  if(recording){recorder.stop();return}
+  if(recording){
+    // keep listening a moment so the last word is not cut off
+    $("micLabel").textContent="마무리 중..."; $("micBtn").disabled=true;
+    setTimeout(()=>{try{recorder.stop()}catch(e){}},350); return;
+  }
   if(busy||chain)return;
   if(!cfg.key){startTalk();return}
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    stopAudio();
-    const type=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
-    recorder=new MediaRecorder(stream,type?{mimeType:type}:undefined); chunks=[];
-    recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-    recorder.onstop=async()=>{
-      stream.getTracks().forEach(t=>t.stop()); recording=false;
-      $("micBtn").classList.remove("recording"); $("junTile").classList.remove("speaking");
-      const blob=new Blob(chunks,{type:recorder.mimeType||type||"audio/webm"});
-      if(blob.size<2000){$("micLabel").textContent="말하기";lockUI();return}
-      $("micLabel").textContent="듣는 중..."; $("micBtn").classList.add("busy");
-      try{const t=await transcribe(blob); if(t.text)await send(t.text,t); else toast("말소리가 잘 안 들렸어요. 다시 말해보세요.")}
-      catch(e){toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
-      finally{$("micLabel").textContent="말하기";$("micBtn").classList.remove("busy");lockUI()}
-    };
-    recorder.start(); recording=true;
-    $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; $("junTile").classList.add("speaking");
-  }catch(e){toast("마이크를 쓸 수 없어요. 브라우저 주소창의 마이크 권한을 허용해 주세요.")}
+  let stream;
+  try{stream=await getMic()}catch(e){toast("마이크를 쓸 수 없어요. 아이폰 설정 > Safari > 마이크(또는 주소창의 aA > 웹사이트 설정)에서 허용해 주세요.");return}
+  stopAudio();
+  const type=recType();
+  try{recorder=new MediaRecorder(stream,type?{mimeType:type,audioBitsPerSecond:64000}:undefined)}catch(e){recorder=new MediaRecorder(stream)}
+  chunks=[];
+  recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  recorder.onstop=async()=>{
+    recording=false; $("micBtn").disabled=false; if(msg.dataset.ph)msg.placeholder=msg.dataset.ph;
+    $("micBtn").classList.remove("recording"); $("junTile").classList.remove("speaking");
+    const secs=(performance.now()-recStart)/1000;
+    const blob=new Blob(chunks,{type:recorder.mimeType||type||"audio/webm"});
+    if(secs<0.8||blob.size<1000){$("micLabel").textContent="말하기";toast("녹음이 너무 짧았어요. 말하기를 누르고 말한 다음, 다 말하고 다시 눌러주세요.");lockUI();return}
+    $("micLabel").textContent="듣는 중..."; $("micBtn").classList.add("busy");
+    try{const t=await transcribe(blob); if(t.text&&!NOISE.test(t.text.trim()))await send(t.text,t); else toast("말소리가 잘 안 들렸어요. 휴대폰을 입 가까이 대고 다시 말해보세요.")}
+    catch(e){toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
+    finally{$("micLabel").textContent="말하기";$("micBtn").classList.remove("busy");lockUI()}
+  };
+  recorder.start(250); recording=true; recStart=performance.now();
+  $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; msg.dataset.ph=msg.placeholder; msg.placeholder="듣고 있어요. 다 말하면 마이크를 다시 누르세요"; $("junTile").classList.add("speaking");
 }
-
 
 /* ---------- Auto listen: mic stays on, only speech is sent ---------- */
 const auto={on:false,stream:null,ctx:null,an:null,buf:null,rec:null,chunks:[],speaking:false,speechMs:0,silenceMs:0,startedAt:0,raf:0,floor:0.01,type:"",last:0};
@@ -940,7 +1042,7 @@ function autoUI(){
 async function toggleAuto(){
   if(auto.on){stopAuto();return}
   if(!cfg.key){startTalk();return}
-  try{auto.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+  try{auto.stream=await navigator.mediaDevices.getUserMedia(MIC_OPTS)}
   catch(e){toast("마이크를 쓸 수 없어요. 브라우저 주소창의 마이크 권한을 허용해 주세요.");return}
   auto.ctx=new (window.AudioContext||window.webkitAudioContext)();
   try{await auto.ctx.resume()}catch(e){}
@@ -990,15 +1092,15 @@ function autoLoop(t){
   const canListen=!busy&&!chain&&!recording&&!autoSending&&phase!=="idle";
   if(!canListen){if(auto.rec)autoDiscard();return}
   if(!auto.rec)autoStartSeg();
-  const lv=autoLevel(), thr=Math.max(0.018,auto.floor*3);
+  const lv=autoLevel(), thr=Math.max(0.012,auto.floor*2.6);
   const age=performance.now()-auto.startedAt;
   if(!auto.speaking){
     if(lv<thr)auto.floor=auto.floor*0.97+lv*0.03;
-    if(lv>thr){auto.speechMs+=dt;if(auto.speechMs>200){auto.speaking=true;auto.silenceMs=0;$("junTile").classList.add("speaking");stopAudio()}}
+    if(lv>thr){auto.speechMs+=dt;if(auto.speechMs>150){auto.speaking=true;auto.silenceMs=0;$("junTile").classList.add("speaking");stopAudio()}}
     else auto.speechMs=Math.max(0,auto.speechMs-dt);
     if(age>12000)autoDiscard();
   }else{
-    if(lv<thr*0.8){auto.silenceMs+=dt;if(auto.silenceMs>1300)autoFinish()}
+    if(lv<thr*0.8){auto.silenceMs+=dt;if(auto.silenceMs>1200)autoFinish()}
     else auto.silenceMs=0;
     if(auto.rec&&age>45000)autoFinish();
   }
