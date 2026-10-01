@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치</title>
+<title>영어회화 코치 v1.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -29,7 +29,7 @@ html,body{height:100%}
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:12px}
 html{height:100%;overflow:hidden}
-body{position:fixed;left:0;right:0;top:var(--appTop,0px);height:var(--appH,100dvh);overflow:hidden;overscroll-behavior:none}
+body{position:fixed;left:0;right:0;top:0;height:var(--appH,100dvh);overflow:hidden;overscroll-behavior:none}
 .app{display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto minmax(0,1fr);gap:12px;height:100%}
 header{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 h1{font-family:var(--f-display);font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0;color:var(--navy)}
@@ -240,12 +240,22 @@ textarea{height:44px}
 textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:900px){.compose textarea{height:40px;min-height:40px}}
 .rep-tag{font-size:12.5px;font-weight:700;color:var(--coral-deep);align-self:center;margin-right:4px}
+.ver{font-family:var(--f-display);font-size:11px;font-weight:600;color:var(--muted);margin-left:6px}
+.ver-h{font-family:var(--f-display);font-weight:500;font-size:13px;color:#a7b0c2;letter-spacing:0}
+
+/* Captions sit in their own strip under the photos so they never cover faces */
+.cap{position:static!important;transform:none!important;width:auto!important;min-height:42px;max-height:3.3em;padding:0 8px!important;gap:1px!important;overflow:hidden;pointer-events:auto}
+.cap>span{background:none!important;padding:0!important;border-radius:0}
+.cap .en{font-size:clamp(14px,1.4vw,17px)!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cap .kr{font-size:14px!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cap .ko{font-size:12px!important}
+@media (max-width:900px){.cap{min-height:36px}.cap .en,.cap .kr{font-size:13px!important}}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치</h1>
+    <h1>영어회화 코치 <span class="ver-h">- v1.1</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear" id="openSettings" aria-haspopup="dialog">설정</button>
@@ -274,8 +284,8 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
           <video id="cam" muted playsinline autoplay hidden></video>
           <div class="name"><span class="bars"><i></i><i></i><i></i></span>Jun</div>
         </div>
-        <div class="cap" id="cap" aria-live="polite"></div>
       </div>
+      <div class="cap" id="cap" aria-live="polite"></div>
     </div>
     <div class="log" id="log"></div>
     <div class="target" id="target" hidden><span>따라 말해보세요</span><b id="targetText"></b><button id="targetListen">듣기</button><button id="skipBtn">건너뛰기</button></div>
@@ -596,7 +606,7 @@ function renderSide(){
     pat.append(d);
   });
   const pa=$("pronAvg");
-  if(pa){if(pronHist.length){const last=pronHist.slice(-10);pa.innerHTML=`<span class="score">${Math.round(last.reduce((a,b)=>a+b,0)/last.length)}</span><span class="unit">점</span><span class="grade">최근 ${last.length}번 따라 말하기 평균</span>`}else pa.innerHTML='<span class="empty">마이크로 따라 말하면 발음 점수가 쌓여요.</span>'}
+  if(pa){if(pronHist.length){const last=pronHist.slice(-10);pa.innerHTML=`<span class="score">${Math.round(last.reduce((a,b)=>a+b,0)/last.length)}</span><span class="unit">점</span><span class="grade">최근 ${last.length}번 말하기 평균</span>`}else pa.innerHTML='<span class="empty">마이크로 말하면 발음 점수가 쌓여요.</span>'}
   const box=$("notes"); box.innerHTML="";
   if(!notes.length)box.innerHTML='<div class="empty">Coach Sam이 고쳐준 문장이 여기에 모여요.</div>';
   notes.slice().reverse().forEach(n=>{
@@ -666,7 +676,7 @@ function startTalk(){
   return true;
 }
 function coachSeq(r){
-  return [{text:r.coach_intro||"이렇게 말하면 더 자연스러워요.",who:"coach"},{text:r.model,who:"coach"},{text:r.coach_point,who:"coach"},{text:"자, 따라 말해볼까요?",who:"coach"}];
+  return [{text:r.coach_intro||"이렇게 말하면 더 자연스러워요.",who:"coach"},{text:r.model,who:"coach"},{text:r.coach_point,who:"coach"}];
 }
 function recordMistakes(r,said){
   let review=null;
@@ -718,7 +728,7 @@ function markClarity(row,words){
   const avg=Math.round(words.reduce((a,w)=>a+Math.max(0,Math.min(1,(w.p-0.35)/0.55)),0)/words.length*100);
   const m=document.createElement("span"); m.className="clar";
   m.textContent=`발음 또렷함 ${avg}점`+(weak.length?` / 약했던 단어: ${weak.slice(0,4).map(w=>w.raw).join(", ")}`:"");
-  row.append(m);
+  row.append(m); savePron(avg);
 }
 let pronHist=load("oc_pron",[]);
 function savePron(v){pronHist.push(v);pronHist=pronHist.slice(-50);store("oc_pron",pronHist);renderSide()}
@@ -793,9 +803,8 @@ async function send(textIn,audio){
     await continueTalk();
   }else{
     const seq=coachSeq(r);
-    addCoach({say:seq[0].text,model:highlightModel(text,r.model),point:r.coach_point,listen:seq,repeat:true});
-    $("targetText").textContent=r.model; setPhase("repeat");
-    await chained(seq);
+    addCoach({say:seq[0].text,model:highlightModel(text,r.model),point:r.coach_point,listen:seq});
+    await chained(seq); await continueTalk();
   }
 }
 
@@ -990,25 +999,29 @@ $("closeSide").onclick=()=>$("side").classList.remove("open");
 
 /* Keep the layout inside the visible screen (iPhone keyboard) and keep the chat pinned to the newest message */
 (function(){
-  const vv=window.visualViewport, root=document.documentElement; let baseH=0;
+  const vv=window.visualViewport, root=document.documentElement; let baseH=0, kbOn=false;
+  const pin=()=>{if(window.scrollY||document.documentElement.scrollTop||document.body.scrollTop){window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0}};
   function fit(){
-    const h=vv?vv.height:window.innerHeight, top=vv?vv.offsetTop:0;
-    root.style.setProperty("--appH",h+"px"); root.style.setProperty("--appTop",top+"px");
+    const h=Math.round(vv?vv.height:window.innerHeight);
     const focused=document.activeElement===msg;
-    if(!focused||h>baseH)baseH=Math.max(h,focused?baseH:h);
-    const kb=focused&&(h<baseH*0.78||window.innerHeight-h>140);
-    document.body.classList.toggle("kb",!!kb);
-    if(pinned)requestAnimationFrame(scroll);
+    if(!focused)baseH=Math.max(baseH,h);
+    const kb=focused&&(h<baseH*0.8||window.innerHeight-h>140);
+    root.style.setProperty("--appH",h+"px");
+    if(kb!==kbOn){kbOn=kb;document.body.classList.toggle("kb",kb)}
+    pin(); if(pinned)requestAnimationFrame(scroll);
   }
-  if(vv){vv.addEventListener("resize",fit);vv.addEventListener("scroll",fit)}
-  window.addEventListener("resize",fit); fit();
-  msg.addEventListener("focus",()=>{fit();setTimeout(fit,250);setTimeout(fit,600)});
-  msg.addEventListener("blur",()=>{setTimeout(fit,250)});
+  if(vv){vv.addEventListener("resize",fit);vv.addEventListener("scroll",pin)}
+  window.addEventListener("scroll",pin,{passive:true});
+  window.addEventListener("resize",fit); window.addEventListener("orientationchange",()=>{baseH=0;setTimeout(fit,300)}); fit();
+  msg.addEventListener("touchend",e=>{if(document.activeElement!==msg){e.preventDefault();msg.focus({preventScroll:true})}});
+  msg.addEventListener("focus",()=>{pin();fit();setTimeout(fit,150);setTimeout(fit,400)});
+  msg.addEventListener("input",pin);
+  msg.addEventListener("blur",()=>{setTimeout(fit,200)});
 })();
 /* Opening screen */
 lastJulia={en:OPENERS.daily[0],ko:OPENERS.daily[1]};
 caption({text:"Press 통화 시작 and Julia will say hi!",who:"julia"});
-addCoach({say:"안녕하세요, 코치 Sam이에요. Julia랑 친구처럼 편하게 영어로 얘기하세요. 막히면 한국어로 말해도 되고, 궁금한 게 있으면 왜 이렇게 말해요? 처럼 언제든 저한테 물어보세요. 맞게 말하면 저는 조용히 있고, 고칠 부분이 있을 때만 알려드릴게요."});
+addCoach({say:"안녕하세요, 코치 Sam이에요. Julia랑 친구처럼 편하게 영어로 얘기하세요. 막히면 한국어로 말해도 되고, 궁금한 게 있으면 왜 이렇게 말해요? 처럼 언제든 저한테 물어보세요. 맞게 말하면 저는 조용히 있고, 더 자연스러운 표현이 있을 때만 알려드릴게요."});
 renderSide();
 if(!cfg.key)openSettings();
 
