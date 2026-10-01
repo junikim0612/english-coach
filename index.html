@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v1.9</title>
+<title>영어회화 코치 v2.0</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -269,7 +269,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">- v1.9</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">- v2.0</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear" id="reloadBtn" aria-label="새로고침">새로고침</button>
     <button class="gear only-m" id="openSide">기록</button>
@@ -684,7 +684,7 @@ async function juliaSay(en,ko,emo){
   restEmotion(1800);
 }
 function startTalk(silent){
-  if(!cfg.key){openSettings();$("keyState").className="tip bad";$("keyState").textContent="API 키를 먼저 넣고 저장해 주세요.";return false}
+  if(!cfg.key){openSettings();$("keyState").className="tip bad";$("keyState").textContent="이 화면에는 아직 API 키가 없어요. 홈 화면 앱은 Safari와 저장 공간이 따로라서 처음 한 번 다시 넣어야 해요. 붙여넣으면 바로 저장되고, 닫기를 누른 뒤 다시 보내면 돼요.";$("apiKey").focus();return false}
   stopAudio();
   turns=[]; log.innerHTML=""; pending=null; tries=0;
   $("topicName").textContent=TOPIC_NAME[$("topic").value];
@@ -998,6 +998,7 @@ $("apiKey").value=cfg.key;
 function keyState(){const k=$("keyState");if(cfg.key){k.className="tip ok";k.textContent="키가 저장돼 있어요. 이 기기의 브라우저에만 저장되고 GitHub에는 올라가지 않아요."}else{k.className="tip";k.textContent="키는 이 기기의 브라우저에만 저장돼요. GitHub에는 올라가지 않아요."}}
 keyState();
 $("saveKey").onclick=()=>{cfg.key=$("apiKey").value.trim();saveCfg();keyState()};
+$("apiKey").addEventListener("input",()=>{cfg.key=$("apiKey").value.trim();saveCfg();keyState()});
 $("testKey").onclick=async()=>{
   cfg.key=$("apiKey").value.trim();saveCfg();
   const k=$("keyState"); k.className="tip"; k.textContent="확인 중이에요...";
