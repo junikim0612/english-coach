@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v2.6</title>
+<title>영어회화 코치 v2.7</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -220,7 +220,7 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
 .target b{color:var(--coral-deep)}
 .rec{background:var(--coral)}
 .callbar button.primary{color:var(--coral-deep)}
-.julia .bubble{background:#eaf0fa;border-color:#d3def1;color:var(--navy)}
+.julia .bubble{background:#d8e6fd;border:1.5px solid #a9c4f0;color:#0f1d3a;font-weight:600}
 .coach{background:var(--coral-pale);border-color:var(--coral-line)}
 .coach.teach{background:var(--coral-pale);border-color:var(--coral-line)}
 .me.rep .bubble{background:var(--coral-soft);color:var(--fg)}
@@ -319,7 +319,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v2.6</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v2.7</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear" id="reloadBtn" aria-label="새로고침">새로고침</button>
     <button class="gear only-m" id="openSide">기록</button>
@@ -415,7 +415,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         <label>Julia 목소리<select id="juliaVoice"></select></label>
         <label>Coach 목소리<select id="coachVoice"></select></label>
       </div>
-      <label>말하기 속도 <span id="rateV">0.8배</span><span class="tip"> Julia에게만 적용돼요. Coach Sam은 항상 1배속이에요.</span><input type="range" id="rate" min="0.6" max="1.2" step="0.1" value="0.8"></label>
+      <label>말하기 속도 <span id="rateV">0.9배</span><span class="tip"> Julia에게만 적용돼요. Coach Sam은 항상 1배속이에요.</span><input type="range" id="rate" min="0.6" max="1.2" step="0.1" value="0.9"></label>
       <div class="acts"><button id="voiceToggle" aria-pressed="true">음성 켜짐</button></div>
     </div>
     <div class="sec">
@@ -493,7 +493,8 @@ const REVIEW_AT=[2,4,7,10,15];
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
 const oldCfg=load("oc_cfg",{});
-let cfg=Object.assign({key:"",chat:DEFAULTS.chat,tts:DEFAULTS.tts,stt:DEFAULTS.stt,julia:"nova-soft",coach:"marin-calm",level:"beginner",topic:"daily",rate:0.8,voiceOn:true},oldCfg);
+let cfg=Object.assign({key:"",chat:DEFAULTS.chat,tts:DEFAULTS.tts,stt:DEFAULTS.stt,julia:"marin-calm",coach:"marin-calm",level:"beginner",topic:"daily",rate:0.9,voiceOn:true},oldCfg);
+if(!cfg.v7){cfg.julia="marin-calm";cfg.rate=0.9;cfg.v7=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v6){try{localStorage.removeItem("oc_photo")}catch(e){};cfg.v6=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v5){cfg.julia="nova-soft";cfg.coach="marin-calm";cfg.v5=1;cfg.v4=1;cfg.v3=1;cfg.v2=cfg.v2||1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v4){const map={"marin":"marin-sweet","marin-calm":"marin-soft","coral":"coral-sweet","coral-bright":"coral-bubbly","nova":"nova-sweet","nova-soft":"nova-sweet","shimmer":"shimmer-soft","sage":"sage-calm"};if(map[cfg.julia])cfg.julia=map[cfg.julia];if(map[cfg.coach])cfg.coach=map[cfg.coach];cfg.v4=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
@@ -637,10 +638,11 @@ async function chained(items){chain=true;lockUI();await playSeq(items);chain=fal
 /* ---------- UI helpers ---------- */
 function lockUI(){$("send").disabled=busy||chain;$("micBtn").disabled=auto.on||(busy||chain)&&!recording}
 function toast(t){const d=document.createElement("div");d.className="err";d.textContent=t;log.append(d);scroll()}
-function addJulia(en,ko){
+function addJulia(en,ko,emo){
   const row=document.createElement("div"); row.className="row julia";
   row.innerHTML=`<span class="who-l">JULIA</span><div class="bubble jb"><span class="jt">${esc(en)}</span><button class="spk" aria-label="다시 듣기">${I_SPK}</button></div><div class="small ko-line" ${showKo?"":"hidden"}>${esc(clean(ko))}</div>`;
-  row.querySelector(".spk").onclick=()=>{if(!chain)playSeq([{text:en,ko,who:"julia"}])};
+  row.dataset.emo=emo||"happy";
+  row.querySelector(".spk").onclick=async()=>{if(chain)return;setEmotion(row.dataset.emo);await playSeq([{text:en,ko,who:"julia"}]);restEmotion(1800)};
   log.append(row); scroll();
 }
 function addMe(text,rep){
@@ -718,7 +720,7 @@ Reply with ONLY this JSON object (always include "emotion"):
 "mode":"ko" if the message contains any Korean else "en",
 "perfect":true only if intent is answer, mode is en, and the message is correct and natural enough for a real conversation (small style differences are fine),
 "model":"answer only: what Jun should say, natural casual spoken English keeping his meaning, at his level. If perfect, repeat his message. Empty string for question.",
-"coach_intro":"always exactly: 이렇게 말하면 자연스러워요.",
+"coach_intro":"always exactly: 이렇게 말해보세요.",
 "coach_point":"answer and not perfect: 1 short Korean sentence explaining why natives say it this way. No praise or sympathy. Empty if perfect.",
 "mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
 "reply":"answer: Julia's next line. question: Julia's short natural line to get back into the conversation, usually re-asking her last question in an easy way.",
@@ -747,8 +749,9 @@ function pickEmotion(emo,text){
 }
 async function juliaSay(en,ko,emo){
   turns.push({role:"assistant",content:en});
-  lastJulia={en,ko}; addJulia(en,ko); setPhase("answer");
-  setEmotion(pickEmotion(emo,en));
+  const fe=pickEmotion(emo,en);
+  lastJulia={en,ko}; addJulia(en,ko,fe); setPhase("answer");
+  setEmotion(fe);
   await chained([{text:en,ko,who:"julia"}]);
   restEmotion(1800);
 }
@@ -759,12 +762,12 @@ function startTalk(silent){
   $("topicName").textContent=TOPIC_NAME[$("topic").value];
   t0=Date.now(); clearInterval(timerId); timerId=setInterval(tick,1000); tick();
   const [en,ko]=OPENERS[$("topic").value];
-  if(silent){turns.push({role:"assistant",content:en});lastJulia={en,ko};addJulia(en,ko);setPhase("answer");caption({text:en,ko,who:"julia"})}
+  if(silent){turns.push({role:"assistant",content:en});lastJulia={en,ko};addJulia(en,ko,"happy");setPhase("answer");caption({text:en,ko,who:"julia"})}
   else juliaSay(en,ko,"happy");
   return true;
 }
 function coachSeq(r){
-  return [{text:"이렇게 말하면 자연스러워요.",who:"coach"},{text:r.model,who:"coach"},{text:r.coach_point,who:"coach"}];
+  return [{text:"이렇게 말해보세요.",who:"coach"},{text:r.model,who:"coach"},{text:r.coach_point,who:"coach"}];
 }
 function recordMistakes(r,said){
   let review=null;
@@ -1054,7 +1057,7 @@ $("closeSettings").onclick=closeSettings;
 $("settings").addEventListener("click",e=>{if(e.target.id==="settings")closeSettings()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("settings").hidden)closeSettings()});
 ["juliaVoice","coachVoice"].forEach(id=>{$(id).innerHTML=VOICES.map(v=>`<option value="${v.id}">${v.label}</option>`).join("")});
-if(!VOICES.some(v=>v.id===cfg.julia))cfg.julia="nova-soft"; if(!VOICES.some(v=>v.id===cfg.coach))cfg.coach="marin-calm";
+if(!VOICES.some(v=>v.id===cfg.julia))cfg.julia="marin-calm"; if(!VOICES.some(v=>v.id===cfg.coach))cfg.coach="marin-calm";
 $("juliaVoice").value=cfg.julia; $("coachVoice").value=cfg.coach;
 $("level").value=cfg.level; $("topic").value=cfg.topic; $("rate").value=cfg.rate; $("rateV").textContent=Number(cfg.rate).toFixed(1)+"배";
 voiceOn=cfg.voiceOn!==false; $("voiceToggle").textContent=voiceOn?"음성 켜짐":"음성 꺼짐"; $("voiceToggle").setAttribute("aria-pressed",voiceOn);
