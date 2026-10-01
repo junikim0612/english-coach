@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v3.1</title>
+<title>영어회화 코치 v3.3</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -390,16 +390,46 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coach .lbl,.coach.review .lbl{color:var(--n-sam)!important}
 .detail{background:#fff!important}
 .spk,.wave{background:#fff}
+
+/* v3.2: every Coach Sam bubble (correction, repeat mistake, Q&A, all good) is yellow */
+:root{--sam-bg:#fff3c4;--sam-line:#f0d98a;--sam-name:#d97706}
+.coach,.coach.teach,.coach.review,.coach.good{background:var(--sam-bg)!important}
+.coach .lbl,.coach.review .lbl,.coach.teach .lbl,.coach.good .lbl{color:var(--sam-name)!important;font-weight:700}
+.coach .say{color:#5c4a1c!important}
+.coach.review .say,.coach.teach .say{color:#111827!important}
+.coach .wave{background:#fff!important;border-color:var(--sam-line)!important}
+.coach .more-d{color:#8a7440!important}
+.coach .detail{background:#fffbeb!important}
+
+/* v3.3: compact rounded video card, coral outline while Julia talks, icon header buttons */
+.gear.ico{width:38px;height:36px;padding:0!important;justify-content:center;color:#374151}
+@media (max-width:900px){header .gear.ico{width:36px;height:34px;padding:0!important}}
+.call{margin:6px 12px 2px!important;background:transparent!important;border-radius:20px!important;overflow:visible}
+.stage{height:clamp(220px,32vh,300px)!important;border-radius:20px!important;overflow:hidden}
+.stage::after{border-radius:20px!important;z-index:6!important;transition:box-shadow .2s}
+.stage.speaking::after{box-shadow:inset 0 0 0 3px var(--n-julia),inset 0 0 18px rgba(232,81,63,.35)!important}
+.stage .cap{max-height:calc(100% - 58px);overflow-y:auto}
+.pip{width:64px!important;height:86px!important;top:42px;right:12px}
+.pip .initial{width:34px;height:34px;font-size:13px}
+@media (min-width:901px){.call{display:flex;justify-content:center;background:transparent!important}.stage{width:min(100%,calc(32vh*1.55))!important;max-width:560px}}
+@media (max-width:900px){
+  .call{margin:6px 10px 2px!important}
+  .stage{height:clamp(200px,29vh,260px)!important;border-radius:18px!important}
+  .stage::after{border-radius:18px!important}
+  body.kb .call{margin:4px 8px 2px!important}
+  body.kb .stage{height:132px!important;border-radius:16px!important}
+  body.kb .stage::after{border-radius:16px!important}
+}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v3.1</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v3.3</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
-    <button class="gear" id="reloadBtn" aria-label="새로고침">새로고침</button>
+    <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="gear only-m" id="openSide">기록</button>
-    <button class="gear" id="openSettings" aria-haspopup="dialog">설정</button>
+    <button class="gear ico" id="openSettings" aria-haspopup="dialog" aria-label="설정" title="설정"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
   </header>
 
   <section class="pane chat" aria-label="화상 대화">
