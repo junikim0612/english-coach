@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="영어회화">
+<meta name="theme-color" content="#202124">
+<title>영어회화 코치</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+body{margin:0}
+
+/* Layout: wide two-pane. Left = video call (Emily big tile, Coach + You small tiles, live captions) over a transcript and input. Right = settings, repeated mistakes, notes. */
+:root{
+  --bg:#f5f5f7; --surface:#ffffff; --line:#e3e3e8; --fg:#1d1d1f; --muted:#6e6e73;
+  --accent:#0071e3; --accent-soft:#e8f1fc; --good:#1a7f37; --good-soft:#e9f6ec; --warn:#b25000; --warn-soft:#fdf1e6;
+  --coach:#6b4fd8; --coach-soft:#f1edfd; --me:#0071e3; --me-fg:#ffffff;
+  --tile:#202124; --tile-2:#2b2c30; --tile-fg:#f1f3f4; --speak:#34c759;
+  --f-display:"Montserrat","Pretendard Variable","Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --f-body:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,sans-serif;
+  --f-en:"Montserrat","Pretendard Variable","Pretendard",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f0f11; --surface:#1c1c1e; --line:#2e2e32; --fg:#f5f5f7; --muted:#98989d;
+  --accent:#2997ff; --accent-soft:#16273b; --good:#30d158; --good-soft:#17291c; --warn:#ff9f0a; --warn-soft:#2e2312;
+  --coach:#a993ff; --coach-soft:#221d36; --me:#2997ff; --me-fg:#06121f; --tile:#141416; --tile-2:#232327; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f0f11; --surface:#1c1c1e; --line:#2e2e32; --fg:#f5f5f7; --muted:#98989d;
+  --accent:#2997ff; --accent-soft:#16273b; --good:#30d158; --good-soft:#17291c; --warn:#ff9f0a; --warn-soft:#2e2312;
+  --coach:#a993ff; --coach-soft:#221d36; --me:#2997ff; --me-fg:#06121f; --tile:#141416; --tile-2:#232327; color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:14px}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 330px;grid-template-rows:auto minmax(0,1fr);gap:14px;height:100%;min-height:720px}
+header{grid-column:1/-1;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0}
+.sub{color:var(--muted);font-size:13px}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+
+/* Call */
+.call{background:var(--tile);padding:10px;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:10px;flex:none}
+.callbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;color:var(--tile-fg);font-size:12.5px;padding:0 4px}
+.rec{width:8px;height:8px;border-radius:50%;background:#ff453a}
+.callbar .t{font-family:var(--f-display);font-variant-numeric:tabular-nums;font-weight:600}
+.callbar .sp{flex:1}
+.callbar button{background:var(--tile-2);color:var(--tile-fg);border-color:transparent}
+.callbar button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.tile{position:relative;border-radius:12px;overflow:hidden;background:var(--tile-2);color:var(--tile-fg);min-height:0}
+.tile::after{content:"";position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 0 0 0 var(--speak);transition:box-shadow .15s;pointer-events:none}
+.tile.speaking::after{box-shadow:inset 0 0 0 3px var(--speak)}
+.main{aspect-ratio:16/10;max-height:46vh;width:100%}
+.main .bgroom{position:absolute;inset:0;background:
+  radial-gradient(60% 50% at 20% 25%,#f3e3cf 0,transparent 70%),
+  radial-gradient(40% 40% at 85% 20%,#d8e6e2 0,transparent 70%),
+  radial-gradient(70% 60% at 50% 100%,#c9b49c 0,transparent 70%),
+  linear-gradient(180deg,#e9e1d6,#bfae98);filter:blur(2px)}
+.main img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:50% 60%}
+.main.speaking img{animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.012) translateY(-2px)}}
+.main .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.main .ph svg{width:min(42%,220px);height:auto}
+.main .ph .msg{position:absolute;top:12px;left:50%;transform:translateX(-50%);white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.45);color:#fff;font-size:12.5px;padding:5px 10px;border-radius:999px}
+.name{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;display:flex;align-items:center;gap:6px;z-index:2}
+.bars{display:inline-flex;gap:2px;align-items:flex-end;height:11px}
+.bars i{width:3px;height:3px;background:var(--speak);border-radius:1px}
+.speaking .bars i{animation:bar .5s ease-in-out infinite alternate}
+.speaking .bars i:nth-child(2){animation-delay:.15s}.speaking .bars i:nth-child(3){animation-delay:.3s}
+@keyframes bar{from{height:3px}to{height:11px}}
+.cap{position:absolute;left:50%;transform:translateX(-50%);bottom:42px;width:min(92%,760px);text-align:center;z-index:2;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cap .en{background:rgba(0,0,0,.66);color:#fff;font-family:var(--f-en);font-weight:600;font-size:clamp(14px,1.6vw,18px);line-height:1.4;padding:5px 12px;border-radius:8px}
+.cap .ko{background:rgba(0,0,0,.5);color:#e8e8ea;font-size:13px;padding:3px 10px;border-radius:6px}
+.cap .who{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#b9a8ff}
+.side-tiles{display:flex;flex-direction:column;gap:10px;min-height:0}
+.side-tiles .tile{flex:1;display:flex;align-items:center;justify-content:center;min-height:110px}
+.initial{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:700;font-size:24px;color:#fff}
+.coachTile .initial{background:#6b4fd8}
+.meTile .initial{background:#0a84ff;font-size:18px}
+
+/* Transcript */
+.log{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.row{display:flex;flex-direction:column;gap:2px;max-width:min(760px,92%)}
+.row.me{align-self:flex-end;align-items:flex-end}
+.who-l{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.bubble{padding:8px 13px;border-radius:15px;font-family:var(--f-en);font-weight:500;font-size:14.5px;line-height:1.5;word-break:break-word}
+.me .bubble{background:var(--me);color:var(--me-fg);border-bottom-right-radius:5px}
+.me.rep .bubble{background:var(--accent-soft);color:var(--fg)}
+.emily .bubble{background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:5px}
+.small{font-size:12px;color:var(--muted);padding-inline:4px}
+.coach{align-self:stretch;max-width:860px;background:var(--coach-soft);border-radius:12px;padding:10px 13px;display:flex;flex-direction:column;gap:5px}
+.coach .lbl{font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--coach)}
+.coach .say{font-family:var(--f-en);font-weight:500;font-size:14px}
+.coach .model{font-family:var(--f-en);font-weight:700;font-size:17px;line-height:1.4}
+.coach .model ins{text-decoration:none;color:var(--coach);border-bottom:2px solid var(--coach)}
+.coach .kr{font-size:12.5px;color:var(--muted)}
+.coach.good{background:var(--good-soft)} .coach.good .lbl{color:var(--good)}
+.coach.review{background:var(--warn-soft);border:1px solid var(--warn)} .coach.review .lbl{color:var(--warn)}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:5px 12px;font-size:12.5px}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.45;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+button.primary:hover{color:#fff;opacity:.9}
+.thinking{color:var(--muted);font-size:13px}
+.err{color:var(--warn);font-size:13px}
+.target{margin:0 14px;padding:8px 12px;border-radius:10px;background:var(--coach-soft);font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.target b{font-family:var(--f-en);font-size:14.5px}
+.compose{border-top:1px solid var(--line);padding:10px 14px;display:flex;gap:10px;align-items:flex-end}
+textarea{flex:1;min-width:0;resize:none;font:inherit;font-family:var(--f-en);font-weight:500;font-size:15px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:10px 12px;min-height:46px;max-height:120px}
+.send{padding:11px 20px;font-size:14px}
+.hint{padding:0 14px 10px;color:var(--muted);font-size:12px}
+
+/* Side */
+.sec{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.sec:last-child{border-bottom:0;flex:1;min-height:0}
+.sec h2{font-family:var(--f-display);font-size:13px;font-weight:700;margin:0;letter-spacing:.02em}
+.side{overflow-y:auto}
+label{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+select{font:inherit;font-size:13.5px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 10px;width:100%;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.tip{font-size:12px;color:var(--muted)}
+.pat{display:flex;flex-direction:column;gap:8px}
+.p{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:13px}
+.p .n{font-family:var(--f-display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--warn)}
+.p .bar{grid-column:1/-1;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.p .bar i{display:block;height:100%;background:var(--warn)}
+.p .ex{grid-column:1/-1;color:var(--muted);font-size:12px;font-family:var(--f-en)}
+.notes{overflow-y:auto;display:flex;flex-direction:column;gap:8px;min-height:120px;flex:1}
+.note{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;display:flex;flex-direction:column;gap:2px}
+.note .w{color:var(--muted);font-family:var(--f-en)}
+.note .r{color:var(--good);font-weight:700;font-family:var(--f-en)}
+.empty{color:var(--muted);font-size:13px}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr);height:auto}
+  .chat{height:auto}.log{height:40vh;flex:none}
+  .call{grid-template-columns:minmax(0,1fr)}
+  .side-tiles{flex-direction:row}.side-tiles .tile{min-height:84px}.initial{width:44px;height:44px;font-size:17px}
+  .main{max-height:none}
+}
+@media (prefers-reduced-motion:reduce){.main.speaking img,.speaking .bars i{animation:none}}
+
+.mic{display:flex;align-items:center;gap:8px;padding:11px 16px;font-size:14px;font-weight:700;border-color:var(--line)}
+.micdot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.mic.rec{background:#ff3b30;border-color:#ff3b30;color:#fff}
+.mic.rec .micdot{background:#fff;animation:pulse 1s ease-in-out infinite}
+.mic.busy{opacity:.6}
+@keyframes pulse{50%{opacity:.3}}
+.meTile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+input[type=password],input[type=text]{font:inherit;font-size:13.5px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 10px;width:100%;min-width:0}
+details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
+.adv{display:flex;flex-direction:column;gap:8px;padding-top:8px}
+.tip.ok{color:var(--good)} .tip.bad{color:var(--warn)}
+@media (max-width:900px){.compose{flex-wrap:wrap}.compose textarea{flex-basis:100%;order:-1}.mic{flex:1;justify-content:center}.send{flex:1}}
+
+.coach.teach{background:var(--accent-soft)} .coach.teach .lbl{color:var(--accent)}
+.coach.teach .model{font-size:15px;font-weight:600}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>영어회화 코치</h1>
+    <span class="sub">Emily와 화상통화하듯 말로 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
+  </header>
+
+  <section class="pane chat" aria-label="화상 대화">
+    <div class="call">
+      <div class="callbar">
+        <span class="rec"></span><span class="t" id="timer">00:00</span><span id="topicName">Daily small talk</span>
+        <span class="sp"></span>
+        <button id="skipAudio" hidden>음성 넘기기</button>
+        <button id="replayEmily">다시 듣기</button>
+        <button id="toggleKo">자막 해석 켜기</button>
+        <button class="primary" id="startBtn">통화 시작</button>
+      </div>
+      <div class="tile main" id="emilyTile">
+        <div class="bgroom"></div>
+        <div class="ph" id="ph"></div>
+        <img id="photo" alt="Emily" hidden>
+        <div class="cap" id="cap"></div>
+        <div class="name"><span class="bars"><i></i><i></i><i></i></span>Emily</div>
+      </div>
+      <div class="side-tiles">
+        <div class="tile coachTile" id="coachTile"><div class="initial">S</div><div class="name"><span class="bars"><i></i><i></i><i></i></span>Coach Sam</div></div>
+        <div class="tile meTile" id="meTile"><video id="cam" muted playsinline autoplay hidden></video><div class="initial" id="meInitial">You</div><div class="name"><span class="bars"><i></i><i></i><i></i></span>You</div></div>
+      </div>
+    </div>
+    <div class="log" id="log"></div>
+    <div class="target" id="target" hidden><span>Your turn</span><b id="targetText"></b><button id="targetListen">듣기</button><button id="skipBtn">건너뛰기</button></div>
+    <div class="compose">
+      <button class="mic" id="micBtn" aria-label="말하기"><span class="micdot"></span><span id="micLabel">말하기</span></button>
+      <textarea id="msg" rows="1" placeholder="Reply to Emily. 한국어로 말해도 돼요."></textarea>
+      <button class="send primary" id="send">보내기</button>
+    </div>
+    <div class="hint" id="hint">말하기 버튼을 누르고 말한 뒤 다시 누르면 보내져요. 궁금한 건 한국어로 Sam에게 물어봐도 돼요.</div>
+  </section>
+
+  <aside class="pane side" aria-label="설정과 기록">
+    <div class="sec" id="keySec">
+      <h2>OpenAI 연결</h2>
+      <label>API 키
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+      </label>
+      <div class="acts"><button class="primary" id="saveKey">저장</button><button id="testKey">연결 확인</button></div>
+      <div class="tip" id="keyState">키는 이 기기의 브라우저에만 저장돼요. GitHub에는 올라가지 않아요.</div>
+    </div>
+    <div class="sec">
+      <h2>대화 설정</h2>
+      <div class="grid2">
+        <label>주제
+          <select id="topic">
+            <option value="daily">일상 수다</option>
+            <option value="work">회사 이야기</option>
+            <option value="travel">여행</option>
+            <option value="weekend">주말/취미</option>
+            <option value="food">음식/맛집</option>
+            <option value="interview">영어 면접</option>
+          </select>
+        </label>
+        <label>수준
+          <select id="level">
+            <option value="beginner">초급</option>
+            <option value="intermediate" selected>중급</option>
+            <option value="advanced">고급</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid2">
+        <label>Emily 목소리<select id="emilyVoice"></select></label>
+        <label>Coach 목소리<select id="coachVoice"></select></label>
+      </div>
+      <label>말하기 속도 <span id="rateV">1.0배</span>
+        <input type="range" id="rate" min="0.7" max="1.2" step="0.1" value="1">
+      </label>
+      <div class="acts">
+        <button id="photoBtn">Emily 사진 넣기</button>
+        <input type="file" id="photoInput" accept="image/*" hidden>
+        <button id="photoReset" hidden>사진 빼기</button>
+        <button id="camBtn">내 카메라 켜기</button>
+      </div>
+      <div class="acts"><button id="newTalk">새 대화</button><button id="voiceToggle" aria-pressed="true">음성 켜짐</button></div>
+      <details>
+        <summary>고급 설정</summary>
+        <div class="adv">
+          <label>대화 모델<input type="text" id="chatModel"></label>
+          <label>음성 모델<input type="text" id="ttsModel"></label>
+          <label>받아쓰기 모델<input type="text" id="sttModel"></label>
+          <button id="saveAdv">저장</button>
+        </div>
+      </details>
+    </div>
+    <div class="sec">
+      <h2>자주 하는 실수</h2>
+      <div class="pat" id="pat"><div class="empty">대화하면서 반복되는 실수가 여기에 쌓여요.</div></div>
+    </div>
+    <div class="sec">
+      <h2>표현 노트</h2>
+      <div class="notes" id="notes"><div class="empty">Coach가 고쳐준 표현이 여기에 모여요.</div></div>
+      <div class="acts"><button id="clearAll">기록 비우기</button></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const AVATAR=`<svg viewBox="0 0 120 120" aria-hidden="true">
+<path d="M30 62 C27 30 44 19 60 19 C78 19 94 31 90 62 L93 96 C80 102 40 102 27 96 Z" fill="#6b4330"/>
+<path d="M22 120 C24 99 41 90 60 90 C79 90 96 99 98 120 Z" fill="#3f8f88"/>
+<rect x="52" y="74" width="16" height="18" rx="6" fill="#efc2a2"/>
+<ellipse cx="60" cy="55" rx="24" ry="27" fill="#f6d2b6"/>
+<path d="M35 52 C36 31 50 26 61 26 C74 26 85 34 85 52 C78 42 68 37 58 39 C49 40 41 45 35 52 Z" fill="#7a4c36"/>
+<ellipse cx="50" cy="54" rx="2.6" ry="3.2" fill="#2b2220"/><ellipse cx="70" cy="54" rx="2.6" ry="3.2" fill="#2b2220"/>
+<circle cx="44" cy="64" r="4.5" fill="#f19c9c" opacity=".35"/><circle cx="76" cy="64" r="4.5" fill="#f19c9c" opacity=".35"/>
+<path d="M54 69 Q60 73 66 69" stroke="#c4545f" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+const $=id=>document.getElementById(id);
+
+/* ---------- Config ---------- */
+const DEFAULTS={chat:"gpt-6-luna",tts:"gpt-4o-mini-tts",stt:"gpt-4o-mini-transcribe"};
+const VOICES=["marin","coral","shimmer","nova","sage","ballad","alloy","verse","cedar","ash","echo","fable","onyx"];
+const EMILY_STYLE="You are Emily, a cheerful, warm American woman in her late 20s on a relaxed video call with a good friend. Sound completely natural and human: casual, expressive, a little playful, with natural pauses and real emotion. Not like an announcer or an assistant.";
+const COACH_STYLE="You are Sam, a friendly, encouraging American English tutor on a video call. Warm, relaxed and natural. When you read the example sentence the learner should say, slow down slightly and say it very clearly.";
+const OPENERS={
+  daily:["Hey! Oh good, I can hear you. So how's your day going so far?","안녕! 오, 잘 들린다. 오늘 하루 어떻게 보내고 있어?"],
+  work:["Hi! Sorry, I just got out of a meeting, haha. How's work been for you lately?","안녕! 미안, 방금 회의 끝났어 ㅎㅎ 요즘 일은 어때?"],
+  travel:["Hey! Okay, I've been dying to ask. Have you been anywhere fun lately?","안녕! 진짜 물어보고 싶었는데, 요즘 재밌는 데 다녀왔어?"],
+  weekend:["Hey hey! So, what did you get up to last weekend?","안녕! 지난 주말에 뭐 했어?"],
+  food:["Hi! Okay, random question, but what's your go-to comfort food?","안녕! 뜬금없는 질문인데, 기분 꿀꿀할 때 꼭 찾는 음식 뭐야?"],
+  interview:["Hi, thanks so much for joining today! To start off, could you tell me a little about yourself?","안녕하세요, 오늘 와줘서 고마워요! 먼저 자기소개 좀 해줄래요?"]
+};
+const TOPIC_NAME={daily:"Daily small talk",work:"Talking about work",travel:"Travel stories",weekend:"Weekends and hobbies",food:"Food talk",interview:"Job interview"};
+const TOPIC_EN={daily:"casual daily-life small talk",work:"chatting about work and the office",travel:"travel stories and plans",weekend:"weekends and hobbies",food:"food and restaurants",interview:"a friendly job interview (Emily is the interviewer, still warm and natural)"};
+const LEVEL_EN={beginner:"beginner: Emily and Coach use short, simple sentences and easy words",intermediate:"intermediate: natural everyday English",advanced:"advanced: natural idiomatic English with common phrasal verbs"};
+const GOOD=[["Good! That's it.","좋아요! 바로 그거예요."],["Nice! You nailed it.","좋아요! 완벽해요."],["Great job! That sounded really natural.","잘했어요! 아주 자연스러웠어요."],["Perfect! Let's keep going.","완벽해요! 계속 가볼게요."]];
+const REVIEW_AT=[2,4,7,10,15];
+
+/* ---------- Storage ---------- */
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+let cfg=Object.assign({key:"",chat:DEFAULTS.chat,tts:DEFAULTS.tts,stt:DEFAULTS.stt,emily:"marin",coach:"cedar"},load("oc_cfg",{}));
+let patterns=load("oc_patterns",{}), notes=load("oc_notes",[]);
+const saveCfg=()=>store("oc_cfg",cfg);
+
+/* ---------- State ---------- */
+let turns=[], phase="idle", pending=null, tries=0, busy=false, chain=false, showKo=false, voiceOn=true;
+let lastEmily={en:"",ko:""}, t0=0, timerId=0;
+const log=$("log"), msg=$("msg");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const clean=s=>String(s??"").replace(/·/g,"/").replace(/[「」]/g,"");
+const scroll=()=>{log.scrollTop=log.scrollHeight};
+const hasKo=t=>/[가-힣ㄱ-ㆎ]/.test(t);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------- OpenAI ---------- */
+class ApiError extends Error{}
+async function api(path,opts){
+  if(!cfg.key)throw new ApiError("오른쪽 OpenAI 연결에 API 키를 먼저 넣어주세요.");
+  const res=await fetch("https://api.openai.com/v1/"+path,{...opts,headers:{Authorization:"Bearer "+cfg.key,...(opts.headers||{})}});
+  if(!res.ok){
+    let m=""; try{const j=await res.json();m=j.error&&j.error.message||""}catch(e){}
+    if(res.status===401)throw new ApiError("API 키가 맞지 않아요. 키를 다시 확인해 주세요.");
+    if(res.status===429)throw new ApiError("크레딧이 부족하거나 요청이 많아요. OpenAI 결제 화면에서 잔액을 확인해 주세요. ("+m+")");
+    throw new ApiError("OpenAI 오류 "+res.status+": "+m);
+  }
+  return res;
+}
+async function chatJSON(messages){
+  const body={model:cfg.chat,messages,response_format:{type:"json_object"}};
+  if(/^(gpt-5|gpt-6|o\d)/.test(cfg.chat))body.reasoning_effort=/luna|nano|mini/.test(cfg.chat)?"none":"low";
+  let res;
+  try{res=await api("chat/completions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})}
+  catch(e){
+    if(body.reasoning_effort&&/reasoning/i.test(e.message)){delete body.reasoning_effort;res=await api("chat/completions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})}
+    else throw e;
+  }
+  const j=await res.json();
+  const txt=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"";
+  try{return JSON.parse(txt)}catch(e){const m=txt.match(/\{[\s\S]*\}/);if(m)return JSON.parse(m[0]);throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.")}
+}
+const ttsCache=new Map();
+function tts(text,who){
+  const voice=who==="coach"?cfg.coach:cfg.emily;
+  const k=who+"|"+voice+"|"+text;
+  if(ttsCache.has(k))return ttsCache.get(k);
+  const p=api("audio/speech",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:cfg.tts,voice,input:text,instructions:who==="coach"?COACH_STYLE:EMILY_STYLE,response_format:"mp3"})})
+    .then(r=>r.blob()).then(b=>URL.createObjectURL(b));
+  p.catch(()=>ttsCache.delete(k));
+  ttsCache.set(k,p); return p;
+}
+async function transcribe(blob){
+  const fd=new FormData();
+  const ext=/mp4|m4a|aac/.test(blob.type)?"mp4":/ogg/.test(blob.type)?"ogg":/wav/.test(blob.type)?"wav":"webm";
+  fd.append("file",blob,"speech."+ext); fd.append("model",cfg.stt);
+  fd.append("prompt","The speaker is a Korean learner practicing English conversation. They may speak English, Korean, or a mix.");
+  const r=await api("audio/transcriptions",{method:"POST",body:fd});
+  const j=await r.json(); return (j.text||"").trim();
+}
+
+/* ---------- Audio playback ---------- */
+const player=new Audio(); player.preload="auto";
+let playToken=0, endCurrent=null;
+function speaking(who){$("emilyTile").classList.toggle("speaking",who==="emily");$("coachTile").classList.toggle("speaking",who==="coach")}
+function caption(p){
+  if(!p){$("cap").innerHTML="";return}
+  const who=p.who==="coach"?'<span class="who">Coach Sam</span>':"";
+  $("cap").innerHTML=`${who}<span class="en">${esc(p.text)}</span>${p.ko&&showKo?`<span class="ko">${esc(clean(p.ko))}</span>`:""}`;
+}
+function stopAudio(){playToken++;try{player.pause()}catch(e){};speaking(null);if(endCurrent){const f=endCurrent;endCurrent=null;f()}}
+function playUrl(url,who){
+  return new Promise(res=>{
+    const done=()=>{if(endCurrent===done)endCurrent=null;player.onended=player.onerror=null;speaking(null);res()};
+    endCurrent=done;
+    player.src=url; player.playbackRate=parseFloat($("rate").value);
+    player.onended=done; player.onerror=done;
+    speaking(who);
+    player.play().catch(done);
+  });
+}
+// items: [{text, ko?, who}]
+async function playSeq(items){
+  const list=items.filter(i=>i&&i.text); if(!list.length)return;
+  const my=++playToken;
+  $("skipAudio").hidden=false;
+  const urls=voiceOn?list.map(i=>tts(i.text,i.who).catch(e=>{toast(e.message);return null})):[];
+  for(let i=0;i<list.length;i++){
+    if(my!==playToken)break;
+    caption(list[i]);
+    const url=voiceOn?await urls[i]:null;
+    if(my!==playToken)break;
+    if(url)await playUrl(url,list[i].who);
+    else await sleep(Math.min(6000,800+list[i].text.length*45));
+  }
+  if(my===playToken)$("skipAudio").hidden=true;
+}
+async function chained(items){chain=true;lockUI();await playSeq(items);chain=false;lockUI()}
+
+/* ---------- UI helpers ---------- */
+function lockUI(){$("send").disabled=busy||chain;$("micBtn").disabled=busy||chain&&!recording}
+function toast(t){const d=document.createElement("div");d.className="err";d.textContent=t;log.append(d);scroll()}
+function addEmily(en,ko){
+  const row=document.createElement("div"); row.className="row emily";
+  row.innerHTML=`<span class="who-l">EMILY</span><div class="bubble">${esc(en)}</div><div class="small ko-line" ${showKo?"":"hidden"}>${esc(clean(ko))}</div>`;
+  log.append(row); scroll();
+}
+function addMe(text,rep){
+  const row=document.createElement("div"); row.className="row me"+(rep?" rep":"");
+  row.innerHTML=`<span class="who-l">${rep?"YOU (따라 말하기)":"YOU"}</span><div class="bubble">${esc(text)}</div>`;
+  log.append(row); scroll();
+}
+function addCoach({kind="",say="",ko="",model="",point="",pointKo="",listen=null}){
+  const c=document.createElement("div"); c.className="coach "+kind;
+  c.innerHTML=`<span class="lbl">${kind==="review"?"Coach Sam / 반복 실수":kind==="teach"?"Coach Sam / 질문 답변":"Coach Sam"}</span>${say?`<div class="say">${esc(say)}</div>`:""}${ko?`<div class="kr">${esc(clean(ko))}</div>`:""}${model?`<div class="model">${model}</div>`:""}${point?`<div class="say">${esc(point)}</div>`:""}${pointKo?`<div class="kr">${esc(clean(pointKo))}</div>`:""}`;
+  if(listen){const a=document.createElement("div");a.className="acts";const b=document.createElement("button");b.textContent="다시 듣기";b.onclick=()=>{if(!chain)playSeq(listen)};a.append(b);c.append(a)}
+  log.append(c); scroll(); return c;
+}
+function setPhase(p){
+  phase=p; $("target").hidden=p!=="repeat";
+  msg.placeholder=p==="repeat"?"Say it like Coach Sam. 위 문장을 따라 말해보세요.":"Reply to Emily. 한국어로 말해도 돼요.";
+}
+function renderSide(){
+  const pat=$("pat"); pat.innerHTML="";
+  const arr=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n).slice(0,6);
+  if(!arr.length)pat.innerHTML='<div class="empty">대화하면서 반복되는 실수가 여기에 쌓여요.</div>';
+  const max=arr.length?arr[0][1].n:1;
+  arr.forEach(([label,v])=>{
+    const d=document.createElement("div"); d.className="p";
+    d.innerHTML=`<span>${esc(label)}</span><span class="n">${v.n}회</span><span class="bar"><i style="width:${Math.round(v.n/max*100)}%"></i></span>${v.ex?`<span class="ex">${esc(v.ex.from)} → ${esc(v.ex.to)}</span>`:""}`;
+    pat.append(d);
+  });
+  const box=$("notes"); box.innerHTML="";
+  if(!notes.length)box.innerHTML='<div class="empty">Coach가 고쳐준 표현이 여기에 모여요.</div>';
+  notes.slice().reverse().forEach(n=>{
+    const d=document.createElement("div"); d.className="note";
+    d.innerHTML=`<span class="w">${esc(n.said)}</span><span class="r">${esc(n.model)}</span>`;
+    box.append(d);
+  });
+}
+
+/* ---------- Compare ---------- */
+const norm=s=>String(s).toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]+/g," ").split(/\s+/).filter(Boolean);
+function highlightModel(said,model){
+  if(hasKo(said))return esc(model);
+  const saidSet=new Set(norm(said));
+  return model.split(/(\s+)/).map(tok=>{const w=norm(tok)[0];return w&&!saidSet.has(w)?`<ins>${esc(tok)}</ins>`:esc(tok)}).join("");
+}
+function similarity(a,b){
+  const x=norm(a),y=norm(b); if(!y.length)return 0;
+  const d=Array.from({length:x.length+1},(_,i)=>[i]);
+  for(let j=1;j<=y.length;j++)d[0][j]=j;
+  for(let i=1;i<=x.length;i++)for(let j=1;j<=y.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(x[i-1]===y[j-1]?0:1));
+  return 1-d[x.length][y.length]/Math.max(x.length,y.length);
+}
+
+/* ---------- Prompt ---------- */
+function rules(ctx){
+  const labels=Object.keys(patterns);
+  return `You run a video-call English speaking class for a Korean adult learner. The learner's messages come from speech-to-text, so ignore capitalization, punctuation and obvious transcription glitches. Two people are on the call:
+EMILY: a real-feeling American woman in her late 20s, the learner's conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what the learner actually meant, often adds a small personal detail or opinion of her own, then asks ONE easy follow-up question. 1 to 3 short sentences. Never stiff. Never corrects the learner herself. Topic: ${TOPIC_EN[$("topic").value]}. Level: ${LEVEL_EN[$("level").value]}.
+COACH SAM: a real native-speaker English teacher on the same call. He talks in ENGLISH like a warm, experienced human teacher, not a script: casual, patient, a bit humorous ("Ooh, close!", "Great question!", "Okay so here's the thing"). He quotes what the learner said, shows a better way to say it, and happily answers any question about English the way a real teacher would, with easy words and 1 or 2 everyday examples.
+${ctx||""}
+First decide what the learner's LATEST message is:
+- "question": the learner is asking the teacher something about English instead of answering Emily. In Korean or English, e.g. "왜 how is it going을 써?", "이거 무슨 뜻이야?", "what's the difference between X and Y?", "그럼 how are you랑 뭐가 달라?", "다시 말해줘", "can I say it like this?". Answer it properly.
+- "answer": the learner is replying to Emily (English, Korean, or mixed).
+Reply with ONLY this JSON object:
+{"intent":"answer" or "question",
+"teach":"intent question only: Sam's spoken English answer, like a real teacher explaining. 2 to 5 short sentences, simple words, include 1 or 2 natural example sentences. Empty string for answer.",
+"teach_ko":"Korean subtitle of teach (empty for answer)",
+"teach_examples":["intent question only: 1 to 3 short example sentences to show on screen"],
+"mode":"ko" if the message contains any Korean else "en",
+"perfect":true only if intent is answer, mode is en, and the message is correct and natural enough for a real conversation,
+"model":"intent answer: what the learner should say, natural casual spoken English keeping their meaning, at their level (if perfect, repeat their message). intent question: empty string.",
+"coach_intro":"intent answer: Sam's spoken English line right before the model sentence. Quote the learner when mode is en. Examples: Ooh, close! You said, 'I go to office yesterday.' Try it like this: / Okay, in English you'd say it like this: / Nice! That was perfect.",
+"coach_intro_ko":"Korean subtitle of coach_intro",
+"coach_point":"intent answer: 1 or 2 short spoken English sentences from Sam: the key point and why, in simple words. Empty string if perfect.",
+"coach_point_ko":"Korean subtitle of coach_point",
+"mistakes":[{"label":"short Korean category","label_en":"short English name","from":"wrong part","to":"fixed part","tip":"one short spoken English sentence with the general rule","tip_ko":"Korean subtitle of tip"}],
+"reply":"intent answer: Emily's next line. intent question: Emily's short natural line to get back into the conversation, usually re-asking her last question in an easy way (e.g. Haha, good question! So yeah, how's your day going?).",
+"reply_ko":"natural casual Korean subtitle of Emily's line"}
+mistakes: real English errors only (empty if perfect, if intent is question, and when mode is ko). Reuse these existing Korean labels when they fit: ${labels.length?labels.join(", "):"(none yet)"}. Typical labels: 과거형 시제, 현재완료, 관사 a/the, 전치사, 복수형, 주어 동사 일치, 동사 형태, 단어 선택, 어순, 콩글리시/직역.
+Korean strings: natural 해요체 (Emily's subtitle may be casual 반말 like a friend), never 하십시오체, never the middle dot character, never 「」, never circled numbers.`;
+}
+
+/* ---------- Flow ---------- */
+function tick(){const s=Math.floor((Date.now()-t0)/1000);$("timer").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+async function emilySay(en,ko){
+  turns.push({role:"assistant",content:en});
+  lastEmily={en,ko}; addEmily(en,ko); setPhase("answer");
+  await chained([{text:en,ko,who:"emily"}]);
+}
+function startTalk(){
+  if(!cfg.key){$("apiKey").focus();$("keyState").className="tip bad";$("keyState").textContent="API 키를 먼저 넣고 저장해 주세요.";return false}
+  stopAudio();
+  turns=[]; log.innerHTML=""; pending=null; tries=0;
+  $("topicName").textContent=TOPIC_NAME[$("topic").value];
+  t0=Date.now(); clearInterval(timerId); timerId=setInterval(tick,1000); tick();
+  const [en,ko]=OPENERS[$("topic").value];
+  $("startBtn").textContent="새로 시작";
+  emilySay(en,ko);
+  return true;
+}
+function coachSeq(r){
+  return [{text:r.coach_intro,ko:r.coach_intro_ko,who:"coach"},{text:r.model,who:"coach"},{text:r.coach_point,ko:r.coach_point_ko,who:"coach"},{text:"Now you try!",ko:"이제 따라 말해보세요!",who:"coach"}];
+}
+function recordMistakes(r,said){
+  let review=null;
+  (r.mistakes||[]).forEach(m=>{
+    if(!m||!m.label)return;
+    const k=clean(m.label).trim(); if(!k)return;
+    const p=patterns[k]||{n:0};
+    p.n++; if(m.label_en)p.en=m.label_en; if(m.tip)p.tip=m.tip; if(m.tip_ko)p.tipKo=clean(m.tip_ko); if(m.from&&m.to)p.ex={from:m.from,to:m.to};
+    patterns[k]=p;
+    if(REVIEW_AT.includes(p.n)&&(!review||p.n>review.n))review={label:k,...p};
+  });
+  if(!r.perfect&&r.model)notes.push({said,model:r.model});
+  notes=notes.slice(-80);
+  store("oc_patterns",patterns); store("oc_notes",notes); renderSide();
+  return review;
+}
+async function continueTalk(){
+  const r=pending; pending=null; tries=0;
+  if(!r){setPhase("answer");return}
+  if(r._review){
+    const v=r._review;
+    const say=`Quick note before we move on. You've mixed up ${v.en||"this"} ${v.n} times now.`;
+    const ko=`넘어가기 전에 잠깐만요. ${v.label} 부분을 벌써 ${v.n}번 헷갈렸어요.`;
+    const parts=[{text:say,ko,who:"coach"},{text:v.tip,ko:v.tipKo,who:"coach"},{text:"Keep an eye on that, and you'll sound way more natural.",ko:"이것만 신경 쓰면 훨씬 자연스러워질 거예요.",who:"coach"}];
+    addCoach({kind:"review",say,ko,model:v.ex?`${esc(v.ex.from)} → <ins>${esc(v.ex.to)}</ins>`:"",point:v.tip,pointKo:v.tipKo,listen:parts});
+    await chained(parts);
+  }
+  await emilySay(r.reply,r.reply_ko);
+}
+const looksLikeQuestion=t=>hasKo(t)||/\?\s*$/.test(t)||/^(why|what|how|can i|is it|does|do you|which|when should)\b/i.test(t.trim());
+async function askAI(text,ctx){
+  const wait=document.createElement("div"); wait.className="thinking"; wait.textContent="듣고 있어요...";
+  log.append(wait); scroll();
+  busy=true; lockUI();
+  turns.push({role:"user",content:text});
+  try{
+    const r=await chatJSON([{role:"system",content:rules(ctx)},...turns.slice(-16)]);
+    wait.remove();
+    if(!r||typeof r!=="object"||!r.reply)throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.");
+    r.intent=r.intent==="question"?"question":"answer";
+    if(r.intent==="answer"&&!r.model)throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.");
+    return r;
+  }catch(e){
+    turns.pop(); wait.className="err"; wait.textContent=e instanceof ApiError?e.message:"인터넷 연결을 확인하고 다시 보내주세요.";
+    msg.value=text; autosize(); return null;
+  }finally{busy=false;lockUI()}
+}
+function teachParts(r){return [{text:r.teach,ko:r.teach_ko,who:"coach"}]}
+function showTeach(r){
+  const ex=Array.isArray(r.teach_examples)?r.teach_examples.filter(Boolean).slice(0,3):[];
+  const parts=teachParts(r);
+  addCoach({kind:"teach",say:r.teach,ko:r.teach_ko,model:ex.map(esc).join("<br>"),listen:parts});
+  return parts;
+}
+
+async function send(textIn){
+  const text=(textIn??msg.value).trim(); if(!text||busy||chain)return;
+  if(phase==="idle"&&!startTalk())return;
+  msg.value=""; autosize(); stopAudio();
+
+  if(phase==="repeat"&&pending){
+    const sim=hasKo(text)?0:similarity(text,pending.model);
+    if(sim<0.75&&looksLikeQuestion(text)){
+      addMe(text,false);
+      const r=await askAI(text,`Right now the learner is practicing saying this sentence after Sam: "${pending.model}". If they ask about it, explain it.`);
+      if(!r)return;
+      if(r.intent==="question"){
+        turns.push({role:"assistant",content:"(Sam answered the question) "+r.teach});
+        const parts=showTeach(r);
+        await chained([...parts,{text:"Okay, want to try saying it now?",ko:"자, 이제 한번 말해볼까요?",who:"coach"},{text:pending.model,who:"coach"}]);
+        return;
+      }
+      turns.pop();
+    }else addMe(text,true);
+    if(sim>=0.75){
+      const [en,ko]=GOOD[Math.floor(Math.random()*GOOD.length)];
+      addCoach({kind:"good",say:en,ko}); setPhase("answer");
+      await chained([{text:en,ko,who:"coach"}]); await continueTalk();
+    }else if(++tries<2){
+      const say="Hmm, almost! Listen one more time and try again.", ko="음, 거의 다 왔어요! 한 번 더 듣고 따라 해봐요.";
+      addCoach({say,ko,model:highlightModel(text,pending.model)});
+      await chained([{text:say,ko,who:"coach"},{text:pending.model,who:"coach"}]);
+    }else{
+      const say="That's okay! I saved it to your notes. Let's keep chatting.", ko="괜찮아요! 노트에 저장해뒀어요. 대화 계속 이어가요.";
+      addCoach({say,ko}); setPhase("answer");
+      await chained([{text:say,ko,who:"coach"}]); await continueTalk();
+    }
+    return;
+  }
+
+  addMe(text,false);
+  const r=await askAI(text,"");
+  if(!r)return;
+  if(r.intent==="question"){
+    const parts=showTeach(r);
+    turns.pop(); turns.push({role:"user",content:"(asked the teacher) "+text});
+    if(voiceOn)tts(r.reply,"emily").catch(()=>{});
+    await chained(parts);
+    await emilySay(r.reply,r.reply_ko);
+    return;
+  }
+  r.mistakes=Array.isArray(r.mistakes)?r.mistakes:[];
+  if(hasKo(text)){r.mode="ko";r.perfect=false;r.mistakes=[]}
+  r._review=recordMistakes(r,text);
+  pending=r; tries=0;
+  if(voiceOn){tts(r.reply,"emily").catch(()=>{})}
+  if(r.perfect){
+    const say=r.coach_intro||"Nice! That was perfect.", ko=r.coach_intro_ko||"좋아요! 완벽했어요.";
+    addCoach({kind:"good",say,ko});
+    await chained([{text:say,ko,who:"coach"}]); await continueTalk();
+  }else{
+    const seq=coachSeq(r);
+    addCoach({say:r.coach_intro,ko:r.coach_intro_ko,model:highlightModel(text,r.model),point:r.coach_point,pointKo:r.coach_point_ko,listen:seq});
+    $("targetText").textContent=r.model; setPhase("repeat");
+    await chained(seq);
+  }
+}
+
+/* ---------- Mic ---------- */
+let recorder=null, recording=false, chunks=[];
+async function toggleMic(){
+  if(recording){recorder.stop();return}
+  if(busy||chain)return;
+  if(!cfg.key){startTalk();return}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    stopAudio();
+    const type=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
+    recorder=new MediaRecorder(stream,type?{mimeType:type}:undefined); chunks=[];
+    recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+    recorder.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop()); recording=false;
+      $("micBtn").classList.remove("rec"); $("meTile").classList.remove("speaking");
+      const blob=new Blob(chunks,{type:recorder.mimeType||type||"audio/webm"});
+      if(blob.size<2000){$("micLabel").textContent="말하기";return}
+      $("micLabel").textContent="듣는 중..."; $("micBtn").classList.add("busy");
+      try{const t=await transcribe(blob); if(t)await send(t); else toast("말소리가 잘 안 들렸어요. 다시 말해보세요.")}
+      catch(e){toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
+      finally{$("micLabel").textContent="말하기";$("micBtn").classList.remove("busy");lockUI()}
+    };
+    recorder.start(); recording=true;
+    $("micBtn").classList.add("rec"); $("micLabel").textContent="다 말했어요"; $("meTile").classList.add("speaking");
+  }catch(e){toast("마이크를 쓸 수 없어요. 브라우저 주소창의 마이크 권한을 허용해 주세요.")}
+}
+
+/* ---------- Camera ---------- */
+let camStream=null;
+$("camBtn").onclick=async()=>{
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;$("cam").hidden=true;$("meInitial").hidden=false;$("camBtn").textContent="내 카메라 켜기";return}
+  try{camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});$("cam").srcObject=camStream;$("cam").hidden=false;$("meInitial").hidden=true;$("camBtn").textContent="내 카메라 끄기"}
+  catch(e){toast("카메라를 쓸 수 없어요. 브라우저의 카메라 권한을 허용해 주세요.")}
+};
+
+/* ---------- Photo ---------- */
+function showPhoto(src){
+  const img=$("photo");
+  if(src){img.src=src;img.hidden=false;$("ph").hidden=true;$("photoReset").hidden=false;$("photoBtn").textContent="Emily 사진 바꾸기"}
+  else{img.hidden=true;img.removeAttribute("src");$("ph").hidden=false;$("photoReset").hidden=true;$("photoBtn").textContent="Emily 사진 넣기"}
+}
+$("ph").innerHTML=AVATAR+'<span class="msg">Emily 사진 넣기로 실제 인물 사진을 넣을 수 있어요</span>';
+$("photoBtn").onclick=()=>$("photoInput").click();
+$("photoInput").onchange=e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{const im=new Image();im.onload=()=>{
+    const s=Math.min(1,1000/Math.max(im.width,im.height));const c=document.createElement("canvas");
+    c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+    const url=c.toDataURL("image/jpeg",.85); showPhoto(url);
+    if(!store("oc_photo",url))toast("사진은 이번에만 적용됐어요. 저장 공간이 부족해요.");
+  };im.src=rd.result};
+  rd.readAsDataURL(f); e.target.value="";
+};
+$("photoReset").onclick=()=>{try{localStorage.removeItem("oc_photo")}catch(e){};showPhoto(null)};
+showPhoto(load("oc_photo",null));
+
+/* ---------- Settings ---------- */
+function fillVoices(){
+  ["emilyVoice","coachVoice"].forEach(id=>{const s=$(id);s.innerHTML=VOICES.map(v=>`<option value="${v}">${v}</option>`).join("")});
+  $("emilyVoice").value=cfg.emily; $("coachVoice").value=cfg.coach;
+}
+fillVoices();
+$("emilyVoice").onchange=e=>{cfg.emily=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"emily"}])};
+$("coachVoice").onchange=e=>{cfg.coach=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"Hi, I'm Sam. Ready to practice?",who:"coach"}])};
+$("apiKey").value=cfg.key;
+function keyState(){const k=$("keyState");if(cfg.key){k.className="tip ok";k.textContent="키가 저장돼 있어요. 이 기기의 브라우저에만 저장되고 GitHub에는 올라가지 않아요."}else{k.className="tip";k.textContent="키는 이 기기의 브라우저에만 저장돼요. GitHub에는 올라가지 않아요."}}
+keyState();
+$("saveKey").onclick=()=>{cfg.key=$("apiKey").value.trim();saveCfg();keyState()};
+$("testKey").onclick=async()=>{
+  cfg.key=$("apiKey").value.trim();saveCfg();
+  const k=$("keyState"); k.className="tip"; k.textContent="확인 중이에요...";
+  try{await api("models/"+encodeURIComponent(cfg.chat),{method:"GET"});k.className="tip ok";k.textContent="연결됐어요. 통화 시작을 눌러보세요."}
+  catch(e){k.className="tip bad";k.textContent=e.message}
+};
+$("chatModel").value=cfg.chat;$("ttsModel").value=cfg.tts;$("sttModel").value=cfg.stt;
+$("saveAdv").onclick=()=>{cfg.chat=$("chatModel").value.trim()||DEFAULTS.chat;cfg.tts=$("ttsModel").value.trim()||DEFAULTS.tts;cfg.stt=$("sttModel").value.trim()||DEFAULTS.stt;saveCfg();toast("고급 설정을 저장했어요.")};
+
+/* ---------- Wiring ---------- */
+function autosize(){msg.style.height="auto";msg.style.height=Math.min(msg.scrollHeight,120)+"px"}
+msg.addEventListener("input",autosize);
+msg.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
+$("send").onclick=()=>send();
+$("micBtn").onclick=toggleMic;
+$("startBtn").onclick=startTalk;
+$("newTalk").onclick=startTalk;
+$("topic").onchange=()=>{if(phase!=="idle")startTalk();else $("topicName").textContent=TOPIC_NAME[$("topic").value]};
+$("replayEmily").onclick=()=>{if(lastEmily.en&&!chain)playSeq([{text:lastEmily.en,ko:lastEmily.ko,who:"emily"}])};
+$("skipAudio").onclick=()=>{const t=playToken;stopAudio();$("skipAudio").hidden=true};
+$("toggleKo").onclick=e=>{showKo=!showKo;e.target.textContent=showKo?"자막 해석 끄기":"자막 해석 켜기";log.querySelectorAll(".ko-line").forEach(n=>n.hidden=!showKo);caption(lastEmily.en?{text:lastEmily.en,ko:lastEmily.ko,who:"emily"}:null)};
+$("targetListen").onclick=()=>{if(pending&&!chain)playSeq([{text:pending.model,who:"coach"}])};
+$("skipBtn").onclick=async()=>{if(chain)return;stopAudio();addCoach({say:"No worries, let's skip this one.",ko:"괜찮아요, 이번 건 넘어가요."});setPhase("answer");await continueTalk()};
+$("rate").oninput=e=>{$("rateV").textContent=parseFloat(e.target.value).toFixed(1)+"배";player.playbackRate=parseFloat(e.target.value)};
+$("voiceToggle").onclick=e=>{voiceOn=!voiceOn;if(!voiceOn)stopAudio();e.target.textContent=voiceOn?"음성 켜짐":"음성 꺼짐";e.target.setAttribute("aria-pressed",voiceOn)};
+$("clearAll").onclick=()=>{patterns={};notes=[];store("oc_patterns",patterns);store("oc_notes",notes);renderSide()};
+
+/* Opening screen */
+lastEmily={en:OPENERS.daily[0],ko:OPENERS.daily[1]};
+caption({text:"Press 통화 시작 and Emily will say hi!",who:"emily"});
+addCoach({say:"Hey, I'm Sam, your coach. Just chat with Emily like a friend. If you get stuck, say it in Korean. And if anything's confusing, just ask me, like 'why do we say it like that?' I'm right here.",ko:"안녕하세요, 코치 Sam이에요. Emily랑 친구처럼 편하게 얘기하세요. 막히면 한국어로 말해도 돼요. 궁금한 게 있으면 왜 이렇게 말해요? 처럼 언제든 저한테 물어보세요."});
+renderSide();
+
+</script>
+</body>
+</html>
