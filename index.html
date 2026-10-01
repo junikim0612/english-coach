@@ -233,6 +233,9 @@ textarea{font-size:16px}
   .target b{font-size:14px}
   .target button{padding:4px 10px}
 }
+textarea{height:44px}
+textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:900px){.compose textarea{height:40px;min-height:40px}}
 </style>
 </head>
 <body>
@@ -275,7 +278,7 @@ textarea{font-size:16px}
     <div class="compose">
       <button class="mic" id="micBtn" aria-label="말하기"><span class="micdot"></span><span id="micLabel">말하기</span></button>
       <button class="autob" id="autoBtn" aria-pressed="false"><span class="autodot"></span><span id="autoLabel">자동 듣기</span></button>
-      <textarea id="msg" rows="1" placeholder="Reply to Julia. 한국어로 말해도 돼요."></textarea>
+      <textarea id="msg" rows="1" placeholder="Reply to Julia"></textarea>
       <button class="send primary" id="send">보내기</button>
     </div>
     <div class="hint">말하기 버튼을 누르고 말한 뒤 다시 누르면 보내져요. 자동 듣기를 켜면 말을 멈출 때 저절로 보내져요.</div>
@@ -566,7 +569,7 @@ function addCoach({kind="",say="",model="",point="",listen=null}){
 }
 function setPhase(p){
   phase=p; $("target").hidden=p!=="repeat"; requestAnimationFrame(()=>{if(pinned)scroll()});
-  msg.placeholder=p==="repeat"?"위 문장을 따라 말해보세요.":"Reply to Julia. 한국어로 말해도 돼요.";
+  msg.placeholder=p==="repeat"?"따라 말해보세요":"Reply to Julia";
 }
 function renderSide(){
   const pat=$("pat"); pat.innerHTML="";
@@ -952,7 +955,7 @@ $("rate").oninput=e=>{cfg.rate=parseFloat(e.target.value);saveCfg();$("rateV").t
 $("voiceToggle").onclick=e=>{voiceOn=!voiceOn;cfg.voiceOn=voiceOn;saveCfg();if(!voiceOn)stopAudio();e.target.textContent=voiceOn?"음성 켜짐":"음성 꺼짐";e.target.setAttribute("aria-pressed",voiceOn)};
 
 /* ---------- Wiring ---------- */
-function autosize(){msg.style.height="auto";msg.style.height=Math.min(msg.scrollHeight,120)+"px"}
+function autosize(){if(!msg.value){msg.style.height="";return}msg.style.height="auto";msg.style.height=Math.min(msg.scrollHeight,120)+"px"}
 msg.addEventListener("input",autosize);
 msg.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
 $("send").onclick=()=>send();
