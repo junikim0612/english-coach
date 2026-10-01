@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v4.1</title>
+<title>영어회화 코치 v4.2</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -444,7 +444,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v4.1</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v4.2</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -540,7 +540,8 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         <label>Julia 목소리<select id="juliaVoice"></select></label>
         <label>Coach 목소리<select id="coachVoice"></select></label>
       </div>
-      <label>말하기 속도 <span id="rateV">0.9배</span><span class="tip"> Julia에게만 적용돼요. Coach Sam은 항상 1배속이에요.</span><input type="range" id="rate" min="0.6" max="1.2" step="0.1" value="0.9"></label>
+      <label>Julia 말하기 속도 <span id="rateV">0.9배</span><input type="range" id="rate" min="0.6" max="1.2" step="0.1" value="0.9"></label>
+      <label>코치 영어 속도 <span id="coachRateV">0.8배</span><span class="tip"> 코치가 영어 문장을 읽을 때만 적용돼요. 한국어 설명은 항상 1배속이에요.</span><input type="range" id="coachRate" min="0.6" max="1.0" step="0.1" value="0.8"></label>
       <div class="acts"><button id="voiceToggle" aria-pressed="true">음성 켜짐</button></div>
     </div>
     <div class="sec">
@@ -845,13 +846,20 @@ function caption(p){
   $("cap").innerHTML=`<span class="en">${esc(p.text)}</span>${p.ko&&showKo?`<span class="ko">${esc(clean(p.ko))}</span>`:""}`;
 }
 function stopAudio(){playToken++;try{player.pause()}catch(e){};speaking(null);if(endCurrent){const f=endCurrent;endCurrent=null;f()}}
-function playUrl(url,who){
+/* Julia: her speed setting. Coach: English lines slower (default 0.8x) so they are easy to catch, Korean lines always 1x */
+function rateFor(who,text){
+  if(who==="julia")return parseFloat($("rate").value)||1;
+  if(who==="coach"&&text&&!hasKo(text))return parseFloat($("coachRate").value)||0.8;
+  return 1;
+}
+function playUrl(url,who,text){
   return new Promise(res=>{
     let fired=false, wd=0;
     const done=()=>{if(fired)return;fired=true;clearTimeout(wd);if(endCurrent===done)endCurrent=null;player.onended=player.onerror=player.ondurationchange=player.onloadedmetadata=player.onplaying=null;speaking(null);res()};
     const stall=why=>()=>{if(!fired){logErr("재생",why);try{player.pause()}catch(e){};done()}};
     endCurrent=done;
-    const rate=who==="julia"?parseFloat($("rate").value)||1:1; curWho=who;
+    const rate=rateFor(who,text); curWho=who;
+    try{player.preservesPitch=true;player.webkitPreservesPitch=true}catch(e){}
     player.defaultPlaybackRate=rate; player.src=url; player.playbackRate=rate;
     player.onloadedmetadata=player.onplaying=()=>{if(curWho===who&&player.playbackRate!==rate)player.playbackRate=rate};
     player.ondurationchange=()=>{const d=player.duration;if(isFinite(d)&&d>0){clearTimeout(wd);wd=setTimeout(stall("끝 신호가 없어서 넘어감"),d/rate*1000+4000*TSCALE())}};
@@ -871,7 +879,7 @@ async function playSeq(items){
     if(list[i].who==="julia")caption(list[i]); else setEmotion("calm");
     const url=voiceOn?await urls[i]:null;
     if(my!==playToken)break;
-    if(url)await playUrl(url,list[i].who);
+    if(url)await playUrl(url,list[i].who,list[i].text);
     else await sleep(Math.min(6000,800+list[i].text.length*45));
   }
   if(my===playToken)$("skipAudio").disabled=true;
@@ -1452,6 +1460,8 @@ $("testKey").onclick=async()=>{
 $("chatModel").value=cfg.chat;$("ttsModel").value=cfg.tts;$("sttModel").value=cfg.stt;
 $("saveAdv").onclick=()=>{cfg.chat=$("chatModel").value.trim()||DEFAULTS.chat;cfg.tts=$("ttsModel").value.trim()||DEFAULTS.tts;cfg.stt=$("sttModel").value.trim()||DEFAULTS.stt;saveCfg();$("saveAdv").textContent="저장됨";setTimeout(()=>$("saveAdv").textContent="저장",1500)};
 $("topic").onchange=()=>{cfg.topic=$("topic").value;saveCfg();if(phase!=="idle")startTalk();else $("topicName").textContent=callTitle()};
+$("coachRate").value=cfg.coachEnRate??0.8; $("coachRateV").textContent=Number($("coachRate").value).toFixed(1)+"배";
+$("coachRate").oninput=e=>{cfg.coachEnRate=parseFloat(e.target.value);saveCfg();$("coachRateV").textContent=parseFloat(e.target.value).toFixed(1)+"배"};
 $("rate").oninput=e=>{cfg.rate=parseFloat(e.target.value);saveCfg();$("rateV").textContent=parseFloat(e.target.value).toFixed(1)+"배";if(curWho==="julia")player.playbackRate=parseFloat(e.target.value)};
 $("voiceToggle").onclick=e=>{voiceOn=!voiceOn;cfg.voiceOn=voiceOn;saveCfg();if(!voiceOn)stopAudio();e.target.textContent=voiceOn?"음성 켜짐":"음성 꺼짐";e.target.setAttribute("aria-pressed",voiceOn)};
 
