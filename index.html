@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v3.4</title>
+<title>영어회화 코치 v3.5</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -437,12 +437,14 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .compose textarea{padding:11px 12px 11px 14px!important}
   .compose .autob{padding:0 9px!important}
 }
+/* v3.5 */
+.errlist{white-space:pre-wrap;word-break:break-all;font-size:11.5px;line-height:1.5;background:#f7f8fa;border-radius:10px;padding:10px;max-height:220px;overflow:auto;margin:8px 0;color:#374151}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v3.4</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v3.5</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -533,6 +535,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
           </select>
         </label>
       </div>
+      <label>음성 방식<select id="engine"><option value="stable">안정 (항상 같은 목소리)</option><option value="expressive">감정 표현 (가끔 목소리가 달라질 수 있어요)</option></select></label>
       <div class="grid2">
         <label>Julia 목소리<select id="juliaVoice"></select></label>
         <label>Coach 목소리<select id="coachVoice"></select></label>
@@ -550,6 +553,14 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       </div>
       <input type="file" id="photoInput" accept="image/*" hidden>
       <div class="tip">사진은 이 기기에만 저장돼요.</div>
+    </div>
+    <div class="sec">
+      <details id="errBox">
+        <summary>문제 기록 <span id="errCount"></span></summary>
+        <div class="tip">대화가 끊기거나 소리가 이상하면 여기에 기록돼요. 복사해서 보내주시면 원인을 바로 찾을 수 있어요.</div>
+        <pre id="errList" class="errlist"></pre>
+        <div class="acts"><button id="errCopy">복사</button><button id="errClear">지우기</button></div>
+      </details>
     </div>
     <div class="sec">
       <details>
@@ -595,8 +606,20 @@ const VOICES=[
   {id:"ash",label:"ash (남)",base:"ash"}
 ];
 const voiceOf=id=>VOICES.find(v=>v.id===id)||VOICES[0];
-const JULIA_STYLE="You are Julia, a cheerful, warm American woman in her late 20s on a relaxed video call with a good friend. Sound completely natural and human: casual, expressive, a little playful, with natural pauses and real emotion. Not like an announcer or an assistant.";
-const COACH_STYLE="You are Sam, a friendly, patient English teacher speaking mostly Korean to a Korean learner, like a kind 선생님 sitting next to them. Speak Korean naturally and warmly. When an English sentence appears, switch to natural native American pronunciation and say it clearly, a little slower.";
+/* Stable engine: classic TTS voices keep exactly the same speaker every line */
+const SVOICES=[
+  {id:"s-shimmer",label:"shimmer 차분한 (여)",base:"shimmer"},
+  {id:"s-nova",label:"nova 밝고 또렷한 (여)",base:"nova"},
+  {id:"s-coral",label:"coral 따뜻한 (여)",base:"coral"},
+  {id:"s-sage",label:"sage 부드러운 (여)",base:"sage"},
+  {id:"s-alloy",label:"alloy 담백한 (여)",base:"alloy"},
+  {id:"s-ash",label:"ash (남)",base:"ash"},
+  {id:"s-onyx",label:"onyx (남)",base:"onyx"}
+];
+const sVoiceOf=id=>SVOICES.find(v=>v.id===id)||SVOICES[0];
+const STABLE_MODELS=["tts-1-hd","tts-1"];
+const JULIA_STYLE="Voice: the same young adult American woman in every line, never a male voice. Tone: casual, warm and natural like a friend on a video call, with natural pauses. Not like an announcer.";
+const COACH_STYLE="Voice: the same calm adult woman in every line, never a male voice. Speak Korean naturally and kindly like a patient teacher. Say English sentences with natural American pronunciation, clearly and a little slower.";
 const OPENERS={
   daily:["Hey! Oh good, I can hear you. So how's your day going so far?","안녕! 오, 잘 들린다. 오늘 하루 어떻게 보내고 있어?"],
   work:["Hi! Sorry, I just got out of a meeting, haha. How's work been for you lately?","안녕! 미안, 방금 회의 끝났어 ㅎㅎ 요즘 일은 어때?"],
@@ -623,6 +646,8 @@ if(!cfg.v5){cfg.julia="nova-soft";cfg.coach="marin-calm";cfg.v5=1;cfg.v4=1;cfg.v
 if(!cfg.v4){const map={"marin":"marin-sweet","marin-calm":"marin-soft","coral":"coral-sweet","coral-bright":"coral-bubbly","nova":"nova-sweet","nova-soft":"nova-sweet","shimmer":"shimmer-soft","sage":"sage-calm"};if(map[cfg.julia])cfg.julia=map[cfg.julia];if(map[cfg.coach])cfg.coach=map[cfg.coach];cfg.v4=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v3){cfg.coach="nova-clear";cfg.v3=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v2){cfg.julia="marin-sweet";cfg.coach="nova-clear";cfg.level="beginner";cfg.rate=0.8;cfg.v2=1;cfg.v3=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
+if(!cfg.v9){cfg.engine="stable";cfg.sj="s-shimmer";cfg.sc="s-nova";cfg.v9=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
+if(!cfg.engine)cfg.engine="stable"; if(!SVOICES.some(v=>v.id===cfg.sj))cfg.sj="s-shimmer"; if(!SVOICES.some(v=>v.id===cfg.sc))cfg.sc="s-nova";
 let patterns=load("oc_patterns",{}), notes=load("oc_notes",[]);
 const saveCfg=()=>store("oc_cfg",cfg);
 
@@ -640,50 +665,94 @@ let pinned=true;
 const scroll=()=>{log.scrollTop=log.scrollHeight};
 const hasKo=t=>/[가-힣ㄱ-ㆎ]/.test(t);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const TSCALE=()=>window.__tscale||1; // test hook only
+let errLog=load("oc_errlog",[]);
+function logErr(where,e){try{const m=(e&&e.message)||String(e);errLog.push({t:new Date().toLocaleString("ko-KR"),w:where,m:m.slice(0,300)});errLog=errLog.slice(-40);store("oc_errlog",errLog);if(typeof renderErrLog==="function")renderErrLog()}catch(x){}}
+window.addEventListener("error",e=>logErr("화면",e.error||e.message));
+window.addEventListener("unhandledrejection",e=>logErr("처리",e.reason));
 
 /* ---------- OpenAI ---------- */
 class ApiError extends Error{}
-async function api(path,opts){
-  if(!cfg.key)throw new ApiError("설정에서 OpenAI API 키를 먼저 넣어주세요.");
-  const res=await fetch("https://api.openai.com/v1/"+path,{...opts,headers:{Authorization:"Bearer "+cfg.key,...(opts.headers||{})}});
-  if(!res.ok){
-    let m=""; try{const j=await res.json();m=j.error&&j.error.message||""}catch(e){}
-    if(res.status===401)throw new ApiError("API 키가 맞지 않아요. 설정에서 키를 다시 확인해 주세요.");
-    if(res.status===429)throw new ApiError("크레딧이 부족하거나 요청이 많아요. OpenAI 결제 화면에서 잔액을 확인해 주세요. ("+m+")");
-    throw new ApiError("OpenAI 오류 "+res.status+": "+m);
+class FatalApiError extends ApiError{}
+/* One request with a time limit. Network drops, time-outs, busy servers and rate limits are retried automatically. */
+async function api(path,opts,o={}){
+  if(!cfg.key)throw new FatalApiError("설정에서 OpenAI API 키를 먼저 넣어주세요.");
+  const timeout=(o.timeout||45000)*TSCALE(), retries=o.retries??2;
+  for(let attempt=0;;attempt++){
+    const ctl=new AbortController(); const timer=setTimeout(()=>ctl.abort(),timeout);
+    let res=null, err=null;
+    try{res=await fetch("https://api.openai.com/v1/"+path,{...opts,signal:ctl.signal,headers:{Authorization:"Bearer "+cfg.key,...(opts.headers||{})}})}
+    catch(e){err=e}
+    finally{clearTimeout(timer)}
+    if(res&&res.ok)return res;
+    let m="",code="";
+    if(res){try{const j=await res.json();m=j.error&&j.error.message||"";code=j.error&&(j.error.code||j.error.type)||""}catch(e){}}
+    if(res&&res.status===401)throw new FatalApiError("API 키가 맞지 않아요. 설정에서 키를 다시 확인해 주세요.");
+    if(res&&res.status===429&&/quota|billing/i.test(code+" "+m))throw new FatalApiError("OpenAI 크레딧이 부족해요. 결제 화면에서 잔액을 확인해 주세요.");
+    const transient=!res||[408,409,429,500,502,503,504].includes(res.status);
+    const label=!res?(err&&err.name==="AbortError"?"응답 시간 초과":"연결 끊김"):"OpenAI 오류 "+res.status+(m?": "+m:"");
+    if(transient&&attempt<retries){logErr(path+" 재시도",label);await sleep((attempt?1800:700)*TSCALE());continue}
+    if(!res)throw new ApiError(err&&err.name==="AbortError"?"응답이 너무 늦어요. 인터넷 연결을 확인하고 다시 보내주세요.":"인터넷 연결이 끊겼어요. 연결을 확인하고 다시 보내주세요.");
+    if(res.status===429)throw new ApiError("요청이 많아서 잠깐 막혔어요. 몇 초 뒤에 다시 보내주세요.");
+    const e=new ApiError(label); e.status=res.status; e.code=code; throw e;
   }
-  return res;
 }
 async function chatJSON(messages){
   const body={model:cfg.chat,messages,response_format:{type:"json_object"}};
   if(/^(gpt-5|gpt-6|o\d)/.test(cfg.chat))body.reasoning_effort=/luna|nano|mini/.test(cfg.chat)?"none":"low";
-  const post=()=>api("chat/completions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-  let res;
-  try{res=await post()}catch(e){if(body.reasoning_effort&&/reasoning/i.test(e.message)){delete body.reasoning_effort;res=await post()}else throw e}
-  const j=await res.json();
-  const txt=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"";
-  try{return JSON.parse(txt)}catch(e){const m=txt.match(/\{[\s\S]*\}/);if(m)return JSON.parse(m[0]);throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.")}
+  const post=()=>api("chat/completions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)},{timeout:45000,retries:2});
+  for(let k=0;k<2;k++){
+    let res;
+    try{res=await post()}catch(e){if(body.reasoning_effort&&/reasoning/i.test(e.message)){delete body.reasoning_effort;res=await post()}else throw e}
+    let txt="";
+    try{const j=await res.json();txt=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||""}catch(e){}
+    try{return JSON.parse(txt)}catch(e){const m=txt.match(/\{[\s\S]*\}/);if(m){try{return JSON.parse(m[0])}catch(x){}}}
+    logErr("chat","답을 읽지 못함, 다시 요청");
+  }
+  throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.");
 }
 const ttsCache=new Map(); let ttsWarned=false;
+let stableIdx=0, safeVoice=false;
+function ttsBody(text,who){
+  if(cfg.engine==="stable"&&stableIdx<STABLE_MODELS.length){
+    const vo=safeVoice?sVoiceOf(who==="coach"?"s-nova":"s-shimmer"):sVoiceOf(who==="coach"?cfg.sc:cfg.sj);
+    return {key:"S|"+vo.id+"|"+stableIdx,body:{model:STABLE_MODELS[stableIdx],voice:vo.base,input:text,response_format:"mp3"}};
+  }
+  const vo=voiceOf(who==="coach"?cfg.coach:cfg.julia);
+  return {key:"E|"+vo.id,body:{model:cfg.tts,voice:vo.base,input:text,instructions:(who==="coach"?COACH_STYLE:JULIA_STYLE)+(vo.style?" "+vo.style:""),response_format:"mp3"}};
+}
+async function ttsFetch(text,who){
+  for(;;){
+    const {body}=ttsBody(text,who);
+    try{const r=await api("audio/speech",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)},{timeout:30000,retries:2});const b=await r.blob();if(!b.size)throw new ApiError("빈 음성");return URL.createObjectURL(b)}
+    catch(e){
+      // stable model not available on this account: fall back to the next one
+      if(cfg.engine==="stable"&&STABLE_MODELS.includes(body.model)&&[400,403,404].includes(e.status)){
+        if(/voice/i.test(e.message)&&!safeVoice){safeVoice=true;logErr("tts",body.voice+" 목소리 사용 불가, 기본 목소리로 전환");continue}
+        if(/model/i.test(e.message)&&/not.?found|does not exist|access|invalid|unsupported|available/i.test(e.message)){logErr("tts",body.model+" 사용 불가, 다음 모델로 전환");stableIdx++;continue}
+      }
+      throw e;
+    }
+  }
+}
 function tts(text,who){
-  const vo=voiceOf(who==="coach"?cfg.coach:cfg.julia), voice=vo.base;
-  const k=who+"|"+vo.id+"|"+text;
+  const k=who+"|"+ttsBody(text,who).key+"|"+text;
   if(ttsCache.has(k))return ttsCache.get(k);
-  const p=api("audio/speech",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:cfg.tts,voice,input:text,instructions:(who==="coach"?COACH_STYLE:JULIA_STYLE)+(vo.style?" "+vo.style:""),response_format:"mp3"})})
-    .then(r=>r.blob()).then(b=>URL.createObjectURL(b));
-  p.catch(()=>ttsCache.delete(k));
-  ttsCache.set(k,p); return p;
+  const p=ttsFetch(text,who);
+  p.catch(e=>{ttsCache.delete(k);logErr("tts",e)});
+  ttsCache.set(k,p); if(ttsCache.size>120)ttsCache.delete(ttsCache.keys().next().value);
+  return p;
 }
 async function transcribe(blob){
   const fd=new FormData();
   const ext=/mp4|m4a|aac/.test(blob.type)?"mp4":/ogg/.test(blob.type)?"ogg":/wav/.test(blob.type)?"wav":"webm";
   fd.append("file",blob,"speech."+ext); fd.append("model",cfg.stt);
-  fd.append("prompt","A Korean adult practicing English conversation on a video call. Mostly English with a Korean accent, sometimes Korean words or full Korean sentences. Write English words in English and Korean words in Hangul. Keep his grammar mistakes exactly as spoken.");
+  fd.append("prompt","A Korean adult practicing spoken English. He mostly speaks English with a Korean accent: always write English speech in English letters, even when the pronunciation is accented or unclear. Use Hangul only when he clearly speaks Korean sentences. Keep his grammar mistakes exactly as spoken.");
   const wantProbs=!/whisper/.test(cfg.stt);
   if(wantProbs){fd.append("response_format","json");fd.append("include[]","logprobs")}
   let r;
-  try{r=await api("audio/transcriptions",{method:"POST",body:fd})}
-  catch(e){if(wantProbs&&/logprob|include/i.test(e.message)){fd.delete("include[]");r=await api("audio/transcriptions",{method:"POST",body:fd})}else throw e}
+  try{r=await api("audio/transcriptions",{method:"POST",body:fd},{timeout:45000,retries:2})}
+  catch(e){if(wantProbs&&/logprob|include/i.test(e.message)){fd.delete("include[]");r=await api("audio/transcriptions",{method:"POST",body:fd},{timeout:45000,retries:2})}else throw e}
   const j=await r.json();
   return {text:(j.text||"").trim(),words:wordsFromLogprobs(j.logprobs)};
 }
@@ -735,14 +804,18 @@ function caption(p){
 function stopAudio(){playToken++;try{player.pause()}catch(e){};speaking(null);if(endCurrent){const f=endCurrent;endCurrent=null;f()}}
 function playUrl(url,who){
   return new Promise(res=>{
-    const done=()=>{if(endCurrent===done)endCurrent=null;player.onended=player.onerror=null;speaking(null);res()};
+    let fired=false, wd=0;
+    const done=()=>{if(fired)return;fired=true;clearTimeout(wd);if(endCurrent===done)endCurrent=null;player.onended=player.onerror=player.ondurationchange=player.onloadedmetadata=player.onplaying=null;speaking(null);res()};
+    const stall=why=>()=>{if(!fired){logErr("재생",why);try{player.pause()}catch(e){};done()}};
     endCurrent=done;
-    const rate=who==="julia"?parseFloat($("rate").value):1; curWho=who;
+    const rate=who==="julia"?parseFloat($("rate").value)||1:1; curWho=who;
     player.defaultPlaybackRate=rate; player.src=url; player.playbackRate=rate;
     player.onloadedmetadata=player.onplaying=()=>{if(curWho===who&&player.playbackRate!==rate)player.playbackRate=rate};
+    player.ondurationchange=()=>{const d=player.duration;if(isFinite(d)&&d>0){clearTimeout(wd);wd=setTimeout(stall("끝 신호가 없어서 넘어감"),d/rate*1000+4000*TSCALE())}};
     player.onended=done; player.onerror=done;
+    wd=setTimeout(stall("재생이 시작되지 않아서 넘어감"),45000*TSCALE());
     speaking(who);
-    player.play().catch(done);
+    const pr=player.play(); if(pr&&pr.catch)pr.catch(e=>{if(!fired&&e&&e.name!=="AbortError")logErr("재생",e);done()});
   });
 }
 async function playSeq(items){
@@ -760,7 +833,7 @@ async function playSeq(items){
   }
   if(my===playToken)$("skipAudio").disabled=true;
 }
-async function chained(items){chain=true;lockUI();await playSeq(items);chain=false;lockUI()}
+async function chained(items){chain=true;lockUI();try{await playSeq(items)}catch(e){logErr("재생",e)}finally{chain=false;lockUI()}}
 
 /* ---------- UI helpers ---------- */
 function lockUI(){$("send").disabled=busy||chain;$("micBtn").disabled=auto.on||(busy||chain)&&!recording}
@@ -923,6 +996,12 @@ async function continueTalk(){
   }
   await juliaSay(r.reply,r.reply_ko,r.emotion);
 }
+function historyFor(){
+  if(turns.length>200)turns=turns.slice(-120);
+  const out=[];
+  for(const t of turns.slice(-20)){const c=String(t.content||"").trim();if(!c)continue;const last=out[out.length-1];if(last&&last.role===t.role)last.content+="\n"+c;else out.push({role:t.role,content:c})}
+  return out;
+}
 const looksLikeQuestion=t=>hasKo(t)||/\?\s*$/.test(t)||/^(why|what|how|can i|is it|does|do you|which|when should)\b/i.test(t.trim());
 async function askAI(text,ctx){
   const wait=document.createElement("div"); wait.className="thinking"; wait.textContent="듣고 있어요...";
@@ -930,13 +1009,18 @@ async function askAI(text,ctx){
   busy=true; lockUI();
   turns.push({role:"user",content:text});
   try{
-    const r=await chatJSON([{role:"system",content:rules(ctx)},...turns.slice(-16)]);
+    const msgs=[{role:"system",content:rules(ctx)},...historyFor()];
+    let r=await chatJSON(msgs);
+    if(!r||typeof r!=="object"||!String(r.reply||"").trim()){logErr("chat","Julia 대사가 비어서 다시 요청");r=await chatJSON(msgs)}
+    if(!r||typeof r!=="object"||!String(r.reply||"").trim())throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.");
     wait.remove();
-    if(!r||typeof r!=="object"||!r.reply)throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.");
+    r.reply=String(r.reply).trim(); r.reply_ko=String(r.reply_ko||"");
     r.intent=r.intent==="question"?"question":"answer";
-    if(r.intent==="answer"&&!r.model)throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.");
+    if(r.intent==="question"&&!String(r.teach||"").trim())r.intent="answer";
+    if(r.intent==="answer"){r.model=String(r.model||"").trim();if(!r.model){r.model=text;r.perfect=true}}
     return r;
   }catch(e){
+    logErr("대화",e);
     turns.pop(); setEmotion("calm"); wait.className="err"; wait.textContent=e instanceof ApiError?e.message:"인터넷 연결을 확인하고 다시 보내주세요.";
     msg.value=text; autosize(); return null;
   }finally{busy=false;lockUI()}
@@ -973,6 +1057,10 @@ function showTeach(r){
 }
 
 async function send(textIn,audio){
+  try{await sendInner(textIn,audio)}
+  catch(e){logErr("보내기",e);busy=false;chain=false;lockUI();toast("문제가 생겨서 이번 문장은 건너뛰었어요. 다시 말해주세요.")}
+}
+async function sendInner(textIn,audio){
   const text=(textIn??msg.value).trim(); if(!text||busy||chain)return;
   if(phase==="idle"&&!startTalk(true))return;
   msg.value=""; autosize(); stopAudio();
@@ -1046,7 +1134,8 @@ async function send(textIn,audio){
 let recorder=null, recording=false, chunks=[], micStream=null, recStart=0;
 const MIC_OPTS={audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1}};
 async function getMic(){
-  if(micStream&&micStream.getAudioTracks().some(t=>t.readyState==="live"))return micStream;
+  if(micStream&&micStream.getAudioTracks().some(t=>t.readyState==="live"&&!t.muted&&t.enabled))return micStream;
+  if(micStream)try{micStream.getTracks().forEach(t=>t.stop())}catch(e){}
   micStream=await navigator.mediaDevices.getUserMedia(MIC_OPTS); return micStream;
 }
 function recType(){return ["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/aac","audio/ogg"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||""}
@@ -1072,18 +1161,20 @@ async function toggleMic(){
     const blob=new Blob(chunks,{type:recorder.mimeType||type||"audio/webm"});
     if(secs<0.8||blob.size<1000){$("micLabel").textContent="말하기";toast("녹음이 너무 짧았어요. 말하기를 누르고 말한 다음, 다 말하고 다시 눌러주세요.");lockUI();return}
     $("micLabel").textContent="듣는 중..."; $("micBtn").classList.add("busy");
-    try{const t=await transcribe(blob); if(t.text&&!NOISE.test(t.text.trim()))await send(t.text,t); else toast("말소리가 잘 안 들렸어요. 휴대폰을 입 가까이 대고 다시 말해보세요.")}
-    catch(e){toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
+    try{const t=await transcribe(blob); if(t.text&&!HALLU.test(t.text.trim()))await send(t.text,t); else toast("말소리가 잘 안 들렸어요. 휴대폰을 입 가까이 대고 다시 말해보세요.")}
+    catch(e){logErr("받아쓰기",e);toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
     finally{$("micLabel").textContent="말하기";$("micBtn").classList.remove("busy");lockUI()}
   };
-  recorder.start(250); recording=true; recStart=performance.now();
+  recorder.start(); recording=true; recStart=performance.now();
   $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; msg.dataset.ph=msg.dataset.phk||"reply"; setPh("rec"); $("junTile").classList.add("speaking");
 }
 
 /* ---------- Auto listen: mic stays on, only speech is sent ---------- */
 const auto={on:false,stream:null,ctx:null,an:null,buf:null,rec:null,chunks:[],speaking:false,speechMs:0,silenceMs:0,startedAt:0,raf:0,floor:0.01,type:"",last:0};
 let autoSending=false;
-const NOISE=/^(thank you|thanks|thanks for watching|you|bye|okay|uh|um|hmm)[.!]?$/i;
+/* only phrases speech recognizers invent from silence; short real answers like okay or thank you are kept */
+const HALLU=/^(thanks for watching!?|thank you for watching!?|please subscribe.*|you|\.+|uh+|um+|hmm+)[.!]?$/i;
+const NOISE=HALLU;
 function autoUI(){
   $("autoBtn").classList.toggle("on",auto.on);
   $("autoLabel").textContent=auto.on?"자동 듣기 켜짐":"자동 듣기";
@@ -1131,7 +1222,7 @@ function autoFinish(){
         $("autoLabel").textContent=auto.on?"자동 듣기 켜짐":"자동 듣기";
         if(t.text&&!NOISE.test(t.text.trim()))await send(t.text,t);
       }
-    }catch(e){toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
+    }catch(e){logErr("자동 듣기",e);toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
     finally{autoSending=false;autoUI()}
   };
   try{r.stop()}catch(e){autoSending=false}
@@ -1140,6 +1231,7 @@ function autoLoop(t){
   if(!auto.on)return;
   auto.raf=requestAnimationFrame(autoLoop);
   const dt=auto.last?Math.min(100,t-auto.last):16; auto.last=t;
+  if(auto.stream&&!auto.stream.getAudioTracks().some(t=>t.readyState==="live")){stopAuto();toast("마이크 연결이 끊겨서 자동 듣기를 껐어요. 다시 눌러주세요.");return}
   const canListen=!busy&&!chain&&!recording&&!autoSending&&phase!=="idle";
   if(!canListen){if(auto.rec)autoDiscard();return}
   if(!auto.rec)autoStartSeg();
@@ -1147,11 +1239,11 @@ function autoLoop(t){
   const age=performance.now()-auto.startedAt;
   if(!auto.speaking){
     if(lv<thr)auto.floor=auto.floor*0.97+lv*0.03;
-    if(lv>thr){auto.speechMs+=dt;if(auto.speechMs>150){auto.speaking=true;auto.silenceMs=0;$("junTile").classList.add("speaking");stopAudio()}}
+    if(lv>thr){auto.speechMs+=dt;if(auto.speechMs>250){auto.speaking=true;auto.silenceMs=0;$("junTile").classList.add("speaking");stopAudio()}}
     else auto.speechMs=Math.max(0,auto.speechMs-dt);
     if(age>12000)autoDiscard();
   }else{
-    if(lv<thr*0.8){auto.silenceMs+=dt;if(auto.silenceMs>1200)autoFinish()}
+    if(lv<thr*0.8){auto.silenceMs+=dt;if(auto.silenceMs>1800)autoFinish()}
     else auto.silenceMs=0;
     if(auto.rec&&age>45000)autoFinish();
   }
@@ -1209,15 +1301,24 @@ $("openSettings").onclick=openSettings;
 $("closeSettings").onclick=closeSettings;
 $("settings").addEventListener("click",e=>{if(e.target.id==="settings")closeSettings()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("settings").hidden)closeSettings()});
-["juliaVoice","coachVoice"].forEach(id=>{$(id).innerHTML=VOICES.map(v=>`<option value="${v.id}">${v.label}</option>`).join("")});
 if(!VOICES.some(v=>v.id===cfg.julia))cfg.julia="marin-calm"; if(!VOICES.some(v=>v.id===cfg.coach))cfg.coach="marin-calm";
-$("juliaVoice").value=cfg.julia; $("coachVoice").value=cfg.coach;
+function fillVoices(){
+  const list=cfg.engine==="stable"?SVOICES:VOICES;
+  ["juliaVoice","coachVoice"].forEach(id=>{$(id).innerHTML=list.map(v=>`<option value="${v.id}">${v.label}</option>`).join("")});
+  $("juliaVoice").value=cfg.engine==="stable"?cfg.sj:cfg.julia; $("coachVoice").value=cfg.engine==="stable"?cfg.sc:cfg.coach;
+}
+$("engine").value=cfg.engine; fillVoices();
+$("engine").onchange=e=>{cfg.engine=e.target.value;stableIdx=0;safeVoice=false;saveCfg();fillVoices();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"julia"}])};
+function renderErrLog(){$("errCount").textContent=errLog.length?"("+errLog.length+")":"";$("errList").textContent=errLog.length?errLog.slice().reverse().map(x=>`${x.t}  [${x.w}]  ${x.m}`).join("\n"):"기록된 문제가 없어요."}
+renderErrLog();
+$("errCopy").onclick=async()=>{const t=`영어회화 코치 ${document.querySelector(".ver-h").textContent} / ${navigator.userAgent}\n`+$("errList").textContent;try{await navigator.clipboard.writeText(t);$("errCopy").textContent="복사됨"}catch(e){const r=document.createRange();r.selectNodeContents($("errList"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);$("errCopy").textContent="선택됨, 복사하세요"}setTimeout(()=>$("errCopy").textContent="복사",1800)};
+$("errClear").onclick=()=>{errLog=[];store("oc_errlog",errLog);renderErrLog()};
 $("level").value=cfg.level; $("topic").value=cfg.topic; $("rate").value=cfg.rate; $("rateV").textContent=Number(cfg.rate).toFixed(1)+"배";
 voiceOn=cfg.voiceOn!==false; $("voiceToggle").textContent=voiceOn?"음성 켜짐":"음성 꺼짐"; $("voiceToggle").setAttribute("aria-pressed",voiceOn);
 $("topicName").textContent=TOPIC_NAME[cfg.topic]||TOPIC_NAME.daily;
 $("level").onchange=e=>{cfg.level=e.target.value;saveCfg()};
-$("juliaVoice").onchange=e=>{cfg.julia=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"julia"}])};
-$("coachVoice").onchange=e=>{cfg.coach=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"안녕하세요, 코치 Sam이에요. 같이 연습해봐요.",who:"coach"}])};
+$("juliaVoice").onchange=e=>{if(cfg.engine==="stable")cfg.sj=e.target.value;else cfg.julia=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"julia"}])};
+$("coachVoice").onchange=e=>{if(cfg.engine==="stable")cfg.sc=e.target.value;else cfg.coach=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"안녕하세요, 코치 Sam이에요. 같이 연습해봐요.",who:"coach"}])};
 $("apiKey").value=cfg.key;
 function keyState(){const k=$("keyState");if(cfg.key){k.className="tip ok";k.textContent="키가 저장돼 있어요. 이 기기의 브라우저에만 저장되고 GitHub에는 올라가지 않아요."}else{k.className="tip";k.textContent="키는 이 기기의 브라우저에만 저장돼요. GitHub에는 올라가지 않아요."}}
 keyState();
