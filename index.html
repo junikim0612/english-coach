@@ -28,7 +28,8 @@ html,body{height:100%}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:12px}
-html,body{height:var(--appH,100dvh);overflow:hidden;overscroll-behavior:none}
+html{height:100%;overflow:hidden}
+body{position:fixed;left:0;right:0;top:var(--appTop,0px);height:var(--appH,100dvh);overflow:hidden;overscroll-behavior:none}
 .app{display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto minmax(0,1fr);gap:12px;height:100%}
 header{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 h1{font-family:var(--f-display);font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0;color:var(--navy)}
@@ -175,8 +176,10 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
   .tile{height:clamp(96px,22vh,220px)}
   .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
   .tile{height:clamp(104px,18vh,170px)}
-  body.kb .tile{height:76px}
+  body.kb header{display:none}
   body.kb .callbar{display:none}
+  body.kb .tile{height:clamp(110px,32vh,160px)}
+  body.kb .call{padding:6px}
   .cap{bottom:8px}
   .cap .en,.cap .kr{font-size:13px}
   .hint{display:none}
@@ -209,7 +212,7 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
 .target b{color:var(--coral-deep)}
 .rec{background:var(--coral)}
 .callbar button.primary{color:var(--coral-deep)}
-.julia .bubble{background:var(--coral-soft);border-color:var(--coral-line)}
+.julia .bubble{background:#eaf0fa;border-color:#d3def1;color:var(--navy)}
 .coach{background:var(--coral-pale);border-color:var(--coral-line)}
 .coach.teach{background:var(--coral-pale);border-color:var(--coral-line)}
 .me.rep .bubble{background:var(--coral-soft);color:var(--fg)}
@@ -236,6 +239,7 @@ textarea{font-size:16px}
 textarea{height:44px}
 textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:900px){.compose textarea{height:40px;min-height:40px}}
+.rep-tag{font-size:12.5px;font-weight:700;color:var(--coral-deep);align-self:center;margin-right:4px}
 </style>
 </head>
 <body>
@@ -336,7 +340,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         <label>Julia 목소리<select id="juliaVoice"></select></label>
         <label>Coach 목소리<select id="coachVoice"></select></label>
       </div>
-      <label>말하기 속도 <span id="rateV">0.8배</span><input type="range" id="rate" min="0.6" max="1.2" step="0.1" value="0.8"></label>
+      <label>말하기 속도 <span id="rateV">0.8배</span><span class="tip"> Julia에게만 적용돼요. Coach Sam은 항상 1배속이에요.</span><input type="range" id="rate" min="0.6" max="1.2" step="0.1" value="0.8"></label>
       <div class="acts"><button id="voiceToggle" aria-pressed="true">음성 켜짐</button></div>
     </div>
     <div class="sec">
@@ -379,15 +383,16 @@ const $=id=>document.getElementById(id);
 
 /* ---------- Config ---------- */
 const DEFAULTS={chat:"gpt-6-luna",tts:"gpt-4o-mini-tts",stt:"gpt-4o-mini-transcribe"};
+const FEM="Use a clearly feminine voice: soft, sweet and gentle, slightly higher pitched, with a warm smile you can hear. Light and graceful, never deep or flat.";
 const VOICES=[
-  {id:"marin",label:"marin (여)",base:"marin"},
-  {id:"marin-calm",label:"marin 차분한 톤 (여)",base:"marin",style:"Speak in a calm, gentle, soft tone."},
-  {id:"coral",label:"coral (여)",base:"coral"},
-  {id:"coral-bright",label:"coral 밝은 톤 (여)",base:"coral",style:"Speak in an extra bright, upbeat, energetic tone."},
-  {id:"nova",label:"nova (여)",base:"nova"},
-  {id:"nova-soft",label:"nova 부드러운 톤 (여)",base:"nova",style:"Speak in a warm, soft, friendly tone."},
-  {id:"shimmer",label:"shimmer (여)",base:"shimmer"},
-  {id:"sage",label:"sage (여)",base:"sage"},
+  {id:"marin-sweet",label:"marin 상냥한 (여)",base:"marin",style:FEM+" Kind and friendly."},
+  {id:"marin-calm",label:"marin 차분한 (여)",base:"marin",style:FEM+" Calm, composed and gentle, unhurried and clear."},
+  {id:"coral-sweet",label:"coral 상냥한 (여)",base:"coral",style:FEM+" Sweet and caring, like a kind friend."},
+  {id:"coral-bubbly",label:"coral 발랄한 (여)",base:"coral",style:FEM+" Bubbly, cheerful and playful."},
+  {id:"nova-clear",label:"nova 청량한 (여)",base:"nova",style:FEM+" Clear, crisp, bright and refreshing, very easy to understand."},
+  {id:"nova-soft",label:"nova 부드러운 (여)",base:"nova",style:FEM+" Soft, warm and tender, gentle and friendly."},
+  {id:"shimmer-soft",label:"shimmer 부드러운 (여)",base:"shimmer",style:FEM+" Soft, airy and elegant."},
+  {id:"sage-calm",label:"sage 차분한 (여)",base:"sage",style:FEM+" Calm, gentle and reassuring."},
   {id:"cedar",label:"cedar (남)",base:"cedar"},
   {id:"ash",label:"ash (남)",base:"ash"}
 ];
@@ -412,8 +417,11 @@ const REVIEW_AT=[2,4,7,10,15];
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
 const oldCfg=load("oc_cfg",{});
-let cfg=Object.assign({key:"",chat:DEFAULTS.chat,tts:DEFAULTS.tts,stt:DEFAULTS.stt,julia:"marin",coach:"marin",level:"beginner",topic:"daily",rate:0.8,voiceOn:true},oldCfg);
-if(!cfg.v2){cfg.julia="marin";cfg.coach="marin";cfg.level="beginner";cfg.rate=0.8;cfg.v2=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
+let cfg=Object.assign({key:"",chat:DEFAULTS.chat,tts:DEFAULTS.tts,stt:DEFAULTS.stt,julia:"nova-soft",coach:"marin-calm",level:"beginner",topic:"daily",rate:0.8,voiceOn:true},oldCfg);
+if(!cfg.v5){cfg.julia="nova-soft";cfg.coach="marin-calm";cfg.v5=1;cfg.v4=1;cfg.v3=1;cfg.v2=cfg.v2||1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
+if(!cfg.v4){const map={"marin":"marin-sweet","marin-calm":"marin-soft","coral":"coral-sweet","coral-bright":"coral-bubbly","nova":"nova-sweet","nova-soft":"nova-sweet","shimmer":"shimmer-soft","sage":"sage-calm"};if(map[cfg.julia])cfg.julia=map[cfg.julia];if(map[cfg.coach])cfg.coach=map[cfg.coach];cfg.v4=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
+if(!cfg.v3){cfg.coach="nova-clear";cfg.v3=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
+if(!cfg.v2){cfg.julia="marin-sweet";cfg.coach="nova-clear";cfg.level="beginner";cfg.rate=0.8;cfg.v2=1;cfg.v3=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 let patterns=load("oc_patterns",{}), notes=load("oc_notes",[]);
 const saveCfg=()=>store("oc_cfg",cfg);
 
@@ -512,7 +520,7 @@ function pronCard(p,targetRaw){
 
 /* ---------- Audio playback ---------- */
 const player=new Audio(); player.preload="auto";
-let playToken=0, endCurrent=null;
+let playToken=0, endCurrent=null, curWho=null;
 function speaking(who){$("juliaTile").classList.toggle("speaking",who==="julia");$("coachPill").classList.toggle("on",who==="coach")}
 function caption(p){
   if(!p){$("cap").innerHTML="";return}
@@ -524,7 +532,9 @@ function playUrl(url,who){
   return new Promise(res=>{
     const done=()=>{if(endCurrent===done)endCurrent=null;player.onended=player.onerror=null;speaking(null);res()};
     endCurrent=done;
-    player.src=url; player.playbackRate=parseFloat($("rate").value);
+    const rate=who==="julia"?parseFloat($("rate").value):1; curWho=who;
+    player.defaultPlaybackRate=rate; player.src=url; player.playbackRate=rate;
+    player.onloadedmetadata=player.onplaying=()=>{if(curWho===who&&player.playbackRate!==rate)player.playbackRate=rate};
     player.onended=done; player.onerror=done;
     speaking(who);
     player.play().catch(done);
@@ -560,15 +570,19 @@ function addMe(text,rep){
   row.innerHTML=`<span class="who-l">${rep?"JUN (따라 말하기)":"JUN"}</span><div class="bubble">${esc(text)}</div>`;
   log.append(row); scroll(); return row;
 }
-function addCoach({kind="",say="",model="",point="",listen=null}){
+function addCoach({kind="",say="",model="",point="",listen=null,repeat=false}){
   const c=document.createElement("div"); c.className="coach "+kind;
   const lbl=kind==="review"?"Coach Sam / 반복 실수":kind==="teach"?"Coach Sam / 질문 답변":"Coach Sam";
   c.innerHTML=`<span class="lbl">${lbl}</span>${say?`<div class="say">${esc(clean(say))}</div>`:""}${model?`<div class="model">${model}</div>`:""}${point?`<div class="say">${esc(clean(point))}</div>`:""}`;
-  if(listen){const a=document.createElement("div");a.className="acts";const b=document.createElement("button");b.textContent="다시 듣기";b.onclick=()=>{if(!chain)playSeq(listen)};a.append(b);c.append(a)}
+  if(listen||repeat){const a=document.createElement("div");a.className="acts";
+    if(listen){const b=document.createElement("button");b.textContent="다시 듣기";b.onclick=()=>{if(!chain)playSeq(listen)};a.append(b)}
+    if(repeat){const t=document.createElement("span");t.className="rep-tag";t.textContent="이 문장을 따라 말해보세요";a.prepend(t);
+      const k=document.createElement("button");k.textContent="건너뛰기";k.onclick=()=>{if(phase==="repeat")$("skipBtn").click()};a.append(k)}
+    c.append(a)}
   log.append(c); scroll(); return c;
 }
 function setPhase(p){
-  phase=p; $("target").hidden=p!=="repeat"; requestAnimationFrame(()=>{if(pinned)scroll()});
+  phase=p; $("target").hidden=true; requestAnimationFrame(()=>{if(pinned)scroll()});
   msg.placeholder=p==="repeat"?"따라 말해보세요":"Reply to Julia";
 }
 function renderSide(){
@@ -779,7 +793,7 @@ async function send(textIn,audio){
     await continueTalk();
   }else{
     const seq=coachSeq(r);
-    addCoach({say:seq[0].text,model:highlightModel(text,r.model),point:r.coach_point,listen:seq});
+    addCoach({say:seq[0].text,model:highlightModel(text,r.model),point:r.coach_point,listen:seq,repeat:true});
     $("targetText").textContent=r.model; setPhase("repeat");
     await chained(seq);
   }
@@ -930,7 +944,7 @@ $("closeSettings").onclick=closeSettings;
 $("settings").addEventListener("click",e=>{if(e.target.id==="settings")closeSettings()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("settings").hidden)closeSettings()});
 ["juliaVoice","coachVoice"].forEach(id=>{$(id).innerHTML=VOICES.map(v=>`<option value="${v.id}">${v.label}</option>`).join("")});
-if(!VOICES.some(v=>v.id===cfg.julia))cfg.julia="marin"; if(!VOICES.some(v=>v.id===cfg.coach))cfg.coach="marin";
+if(!VOICES.some(v=>v.id===cfg.julia))cfg.julia="nova-soft"; if(!VOICES.some(v=>v.id===cfg.coach))cfg.coach="marin-calm";
 $("juliaVoice").value=cfg.julia; $("coachVoice").value=cfg.coach;
 $("level").value=cfg.level; $("topic").value=cfg.topic; $("rate").value=cfg.rate; $("rateV").textContent=Number(cfg.rate).toFixed(1)+"배";
 voiceOn=cfg.voiceOn!==false; $("voiceToggle").textContent=voiceOn?"음성 켜짐":"음성 꺼짐"; $("voiceToggle").setAttribute("aria-pressed",voiceOn);
@@ -951,7 +965,7 @@ $("testKey").onclick=async()=>{
 $("chatModel").value=cfg.chat;$("ttsModel").value=cfg.tts;$("sttModel").value=cfg.stt;
 $("saveAdv").onclick=()=>{cfg.chat=$("chatModel").value.trim()||DEFAULTS.chat;cfg.tts=$("ttsModel").value.trim()||DEFAULTS.tts;cfg.stt=$("sttModel").value.trim()||DEFAULTS.stt;saveCfg();$("saveAdv").textContent="저장됨";setTimeout(()=>$("saveAdv").textContent="저장",1500)};
 $("topic").onchange=()=>{cfg.topic=$("topic").value;saveCfg();if(phase!=="idle")startTalk();else $("topicName").textContent=TOPIC_NAME[$("topic").value]};
-$("rate").oninput=e=>{cfg.rate=parseFloat(e.target.value);saveCfg();$("rateV").textContent=parseFloat(e.target.value).toFixed(1)+"배";player.playbackRate=parseFloat(e.target.value)};
+$("rate").oninput=e=>{cfg.rate=parseFloat(e.target.value);saveCfg();$("rateV").textContent=parseFloat(e.target.value).toFixed(1)+"배";if(curWho==="julia")player.playbackRate=parseFloat(e.target.value)};
 $("voiceToggle").onclick=e=>{voiceOn=!voiceOn;cfg.voiceOn=voiceOn;saveCfg();if(!voiceOn)stopAudio();e.target.textContent=voiceOn?"음성 켜짐":"음성 꺼짐";e.target.setAttribute("aria-pressed",voiceOn)};
 
 /* ---------- Wiring ---------- */
@@ -976,16 +990,20 @@ $("closeSide").onclick=()=>$("side").classList.remove("open");
 
 /* Keep the layout inside the visible screen (iPhone keyboard) and keep the chat pinned to the newest message */
 (function(){
-  const vv=window.visualViewport;
+  const vv=window.visualViewport, root=document.documentElement; let baseH=0;
   function fit(){
-    const h=vv?vv.height:window.innerHeight;
-    document.documentElement.style.setProperty("--appH",h+"px");
-    document.body.classList.toggle("kb",!!vv&&h<window.innerHeight*0.78||!!vv&&h<screen.height*0.6&&document.activeElement===msg);
-    window.scrollTo(0,0); if(pinned)scroll();
+    const h=vv?vv.height:window.innerHeight, top=vv?vv.offsetTop:0;
+    root.style.setProperty("--appH",h+"px"); root.style.setProperty("--appTop",top+"px");
+    const focused=document.activeElement===msg;
+    if(!focused||h>baseH)baseH=Math.max(h,focused?baseH:h);
+    const kb=focused&&(h<baseH*0.78||window.innerHeight-h>140);
+    document.body.classList.toggle("kb",!!kb);
+    if(pinned)requestAnimationFrame(scroll);
   }
-  if(vv){vv.addEventListener("resize",fit);vv.addEventListener("scroll",()=>window.scrollTo(0,0))}
+  if(vv){vv.addEventListener("resize",fit);vv.addEventListener("scroll",fit)}
   window.addEventListener("resize",fit); fit();
-  msg.addEventListener("focus",()=>setTimeout(fit,300)); msg.addEventListener("blur",()=>setTimeout(fit,300));
+  msg.addEventListener("focus",()=>{fit();setTimeout(fit,250);setTimeout(fit,600)});
+  msg.addEventListener("blur",()=>{setTimeout(fit,250)});
 })();
 /* Opening screen */
 lastJulia={en:OPENERS.daily[0],ko:OPENERS.daily[1]};
