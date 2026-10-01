@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v4.4</title>
+<title>영어회화 코치 v4.5</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -441,12 +441,13 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .errlist{white-space:pre-wrap;word-break:break-all;font-size:11.5px;line-height:1.5;background:#f7f8fa;border-radius:10px;padding:10px;max-height:220px;overflow:auto;margin:8px 0;color:#374151}
 .typing .dots{display:inline-flex;gap:4px;padding:4px 2px}.typing .dots i{width:7px;height:7px;border-radius:50%;background:#b5bccb;animation:tdot 1s infinite ease-in-out}.typing .dots i:nth-child(2){animation-delay:.15s}.typing .dots i:nth-child(3){animation-delay:.3s}
 @keyframes tdot{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.sysnote{align-self:center;font-size:12px;color:#6b7280;background:#f5f6f8;border-radius:999px;padding:4px 12px}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v4.4</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v4.5</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -1022,9 +1023,9 @@ function similarity(a,b){
 }
 
 /* ---------- Prompt ---------- */
-function liveContext(ctx){
+function liveContext(ctx,latest){
   const labels=Object.keys(patterns);
-  return `CURRENT CONTEXT\nJulia's previous expression: ${lastEmo}\nExisting mistake labels: ${labels.length?labels.join(", "):"(none yet)"}${ctx?"\n"+ctx:""}`;
+  return `CURRENT CONTEXT\nJun's LATEST message (the only one to classify, correct or translate): "${latest||""}"\nJulia's last line: "${lastJulia&&lastJulia.en||""}"\nJulia's previous expression: ${lastEmo}\nExisting mistake labels: ${labels.length?labels.join(", "):"(none yet)"}${ctx?"\n"+ctx:""}`;
 }
 function rules(){
   return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text of accented English, so words are often mis-heard (e.g. "work" heard as "walk", "I'm fine" as "I'm find"). Always work out what he most likely MEANT from the conversation (especially Julia's last question) and answer that meaning; never react to a mis-heard word literally. If you really cannot tell what he meant, Julia asks a short natural check like "Sorry, did you mean ...?" instead of guessing wildly. Ignore capitalization and punctuation. Two people talk with Jun:
@@ -1036,9 +1037,11 @@ SAM'S EXPLANATION must point at the ACTUAL WORDS of this sentence: say which wor
 Good: "주어는 I, 동사는 went예요. 어제 일이라서 go의 과거형 went를 써요." / "주어는 She라서 동사 don't가 doesn't로 바뀌어요." / "주어 I 다음에 동사 am이 오고, 상태를 말하는 tired가 붙어요." / "office 앞에 the를 붙여요. 서로 아는 그 회사라서 the예요."
 Bad (too vague): "영어는 주어 다음에 바로 동사가 와요." / "주어에 동사가 붙어야 해요." Bad (textbook): "이것은 과거의 행동을 나타내기 때문에 과거형이 사용됩니다."
 When Jun speaks Korean (mode ko): just give the natural English sentence for what he meant, and coach_point says ONLY how that English sentence is built, naming its subject and verb (e.g. "주어 I, 동사 am, 그다음 tired가 와요."). Never explain or repeat the Korean meaning.
-First decide what Jun's LATEST message is:
-- "question": Jun is clearly asking the TEACHER something about English (meaning, grammar, how to say something) instead of answering Julia, in Korean or English. A reply to Julia that asks her something back (e.g. "And you?", "Do you like it?") is NOT a question, it is an answer. e.g. "왜 how is it going을 써?", "이거 무슨 뜻이야?", "how are you랑 뭐가 달라?", "can I say it like this?".
-- "answer": Jun is replying to Julia (English, Korean, or mixed).
+First decide who Jun's LATEST message is for. Use ONLY the latest message; earlier messages are just background.
+- "question" = to the TEACHER about English itself: what a word or sentence means, grammar, why something is said a certain way, how to say something, whether his sentence is OK. e.g. "왜 how is it going을 써?", "take a photo랑 take photos 차이가 뭐야?", "이렇게 말해도 돼?", "what does 'hang out' mean?".
+- "answer" = to JULIA. Everything else, including talk ABOUT the conversation itself: asking her to slow down, repeat, say it again more easily, or saying he did not understand ("말이 너무 빨라 천천히 말해봐", "다시 말해줘", "못 알아들었어", "Can you say that again?"). A reply that asks Julia something back ("And you?") is also an answer.
+For an "answer" that is a request to Julia: model = the natural English way to say exactly that request (e.g. "You're talking too fast. Could you speak more slowly?"), and reply = Julia doing what he asked (apologize briefly, then say her last point again more slowly and simply), NOT a new topic.
+"model" ALWAYS expresses ONLY the meaning of the LATEST message (given again in CURRENT CONTEXT). Never reuse or mix in what Jun said earlier.
 Reply with ONLY this JSON object, keys in exactly this order (always include "emotion"):
 {"intent":"answer" or "question",
 "mode":"ko" if the message contains any Korean else "en",
@@ -1046,6 +1049,7 @@ Reply with ONLY this JSON object, keys in exactly this order (always include "em
 "model":"answer only: what Jun should say, keeping his meaning, following the LEVEL model rules. If perfect, repeat his message. Empty string for question.",
 "reply":"answer: Julia's next line. question: Julia's short natural line to get back into the conversation, usually re-asking her last question in an easy way.",
 "reply_ko":"natural casual Korean subtitle of Julia's line",
+"slow_down":true only if Jun asks Julia to speak more slowly, else false,
 "coach_point":"answer and not perfect: 1 or 2 short natural spoken Korean sentences (about 60 Korean characters or fewer) like the Good examples: name the subject and the verb of THIS sentence and the exact word that changed and why. mode ko: only how the English sentence is built (subject, verb, word order), never the Korean meaning. No praise or sympathy. Empty if perfect.",
 "mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
 "teach":"question only: Sam's direct answer in natural spoken Korean 해요체 like the Good examples, 2 to 4 short sentences, starting with the answer itself (no 좋은 질문이에요 or similar). English words or example sentences may appear inside. Empty string for answer.",
@@ -1082,6 +1086,13 @@ async function holdUntilReady(text,who){
   let dot=null; const tm=setTimeout(()=>{if(who==="julia"){dot=document.createElement("div");dot.className="row julia typing";dot.innerHTML='<span class="who-l">JULIA</span><div class="bubble jb"><span class="dots"><i></i><i></i><i></i></span></div>';log.append(dot);scroll()}},250);
   try{await Promise.race([tts(text,who).catch(()=>null),sleep(6000)])}
   finally{clearTimeout(tm);if(dot)dot.remove();if(who==="julia")perfMark("voice",performance.now()-t0)}
+}
+function sysNote(t){const d=document.createElement("div");d.className="sysnote";d.textContent=t;log.append(d);scroll()}
+function slowJulia(){
+  const cur=parseFloat($("rate").value)||0.9, nx=Math.max(0.6,Math.round((cur-0.1)*10)/10);
+  if(nx>=cur){sysNote("Julia 말 속도가 이미 가장 느려요. 설정에서 바꿀 수 있어요.");return}
+  $("rate").value=nx; cfg.rate=nx; saveCfg(); $("rateV").textContent=nx.toFixed(1)+"배";
+  sysNote(`Julia 말 속도를 ${nx.toFixed(1)}배로 낮췄어요. 설정에서 다시 바꿀 수 있어요.`);
 }
 async function juliaSay(en,ko,emo){
   turns.push({role:"assistant",content:en});
@@ -1150,7 +1161,7 @@ async function askAI(text,ctx){
   busy=true; lockUI();
   turns.push({role:"user",content:text});
   try{
-    const msgs=[{role:"system",content:rules()},...historyFor(),{role:"system",content:liveContext(ctx)}];
+    const msgs=[{role:"system",content:rules()},...historyFor(),{role:"system",content:liveContext(ctx,text)}];
     const tc=performance.now();
     let r=await chatFast(msgs);
     perfMark("chat",performance.now()-tc);
@@ -1243,6 +1254,7 @@ async function sendInner(textIn,audio){
   if(audio&&audio.words&&audio.words.length&&!hasKo(text))markClarity(meRow,audio.words);
   const r=await askAI(text,"");
   if(!r){meRow.remove();return}
+  if(r.slow_down===true)slowJulia();
   if(r.intent==="question"){
     turns.pop(); turns.push({role:"user",content:"(asked the teacher) "+text});
     await holdUntilReady(r.teach,"coach");
