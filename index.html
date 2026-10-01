@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v3.8</title>
+<title>영어회화 코치 v3.9</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -444,7 +444,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v3.8</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v3.9</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -957,7 +957,7 @@ ${LEVEL_RULES[$("level").value]||LEVEL_RULES.beginner}
 COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and explains WHY natives say it that way in plain Korean. English sentences stay in English.
 ${ctx||""}
 First decide what Jun's LATEST message is:
-- "question": Jun is asking the teacher something about English instead of answering Julia, in Korean or English. e.g. "왜 how is it going을 써?", "이거 무슨 뜻이야?", "how are you랑 뭐가 달라?", "can I say it like this?".
+- "question": Jun is clearly asking the TEACHER something about English (meaning, grammar, how to say something) instead of answering Julia, in Korean or English. A reply to Julia that asks her something back (e.g. "And you?", "Do you like it?") is NOT a question, it is an answer. e.g. "왜 how is it going을 써?", "이거 무슨 뜻이야?", "how are you랑 뭐가 달라?", "can I say it like this?".
 - "answer": Jun is replying to Julia (English, Korean, or mixed).
 Reply with ONLY this JSON object (always include "emotion"):
 {"emotion":"see the emotion rules below","intent":"answer" or "question",
@@ -1182,7 +1182,79 @@ async function getMic(){
   micStream=await navigator.mediaDevices.getUserMedia(MIC_OPTS); return micStream;
 }
 function recType(){return ["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/aac","audio/ogg"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||""}
+/* Push-to-talk now records raw sound through Web Audio (the same path auto listen uses, which works well on iPhone)
+   and keeps the last 0.6 s before the tap, so the first word is never cut. Saved as a 16 kHz WAV for transcription. */
+const cap={ctx:null,src:null,stream:null,node:null,ring:[],ringLen:0,rec:null,rate:48000,ok:true,t0:0};
+function capEnsureCtx(){
+  if(!cap.ok)return null;
+  try{
+    if(!cap.ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C||!(C.prototype.createScriptProcessor)){cap.ok=false;return null}cap.ctx=new C()}
+    if(cap.ctx.state!=="running")cap.ctx.resume().catch(()=>{});
+    return cap.ctx;
+  }catch(e){cap.ok=false;logErr("마이크",e);return null}
+}
+function capConnect(stream){
+  const ctx=cap.ctx; cap.rate=ctx.sampleRate;
+  if(!cap.node){
+    cap.node=ctx.createScriptProcessor(4096,1,1);
+    const sink=ctx.createGain(); sink.gain.value=0; cap.node.connect(sink); sink.connect(ctx.destination);
+    cap.node.onaudioprocess=e=>{
+      const d=new Float32Array(e.inputBuffer.getChannelData(0));
+      if(cap.rec){cap.rec.push(d);return}
+      cap.ring.push(d); cap.ringLen+=d.length;
+      while(cap.ring.length>1&&cap.ringLen-cap.ring[0].length>=cap.rate*0.6)cap.ringLen-=cap.ring.shift().length;
+    };
+  }
+  if(cap.stream!==stream){try{cap.src&&cap.src.disconnect()}catch(e){};cap.src=ctx.createMediaStreamSource(stream);cap.src.connect(cap.node);cap.stream=stream;cap.ring=[];cap.ringLen=0}
+}
+function toWav16k(chunks,rate){
+  let n=0; chunks.forEach(c=>n+=c.length);
+  const all=new Float32Array(n); let o=0; chunks.forEach(c=>{all.set(c,o);o+=c.length});
+  let peak=0,sq=0; for(let i=0;i<n;i++){const v=Math.abs(all[i]);if(v>peak)peak=v;sq+=all[i]*all[i]}
+  const rms=n?Math.sqrt(sq/n):0;
+  const gain=peak>0.004&&peak<0.5?Math.min(8,0.9/peak):1;   // lift quiet speech
+  const ratio=rate/16000, m=Math.max(1,Math.floor(n/ratio));
+  const buf=new ArrayBuffer(44+m*2), v=new DataView(buf);
+  const w=(p,str)=>{for(let k=0;k<str.length;k++)v.setUint8(p+k,str.charCodeAt(k))};
+  w(0,"RIFF");v.setUint32(4,36+m*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,16000,true);v.setUint32(28,32000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,m*2,true);
+  for(let k=0;k<m;k++){const a=Math.floor(k*ratio),b=Math.min(n,Math.floor((k+1)*ratio));let sum=0;for(let x=a;x<b;x++)sum+=all[x];const val=Math.max(-1,Math.min(1,(sum/Math.max(1,b-a))*gain));v.setInt16(44+k*2,val<0?val*0x8000:val*0x7fff,true)}
+  return {blob:new Blob([buf],{type:"audio/wav"}),secs:n/rate,peak,rms};
+}
 async function toggleMic(){
+  if(recording){
+    if(!cap.rec&&recorder)return toggleMicLegacy();
+    $("micLabel").textContent="마무리 중..."; $("micBtn").disabled=true;
+    setTimeout(finishCapture,350); return;
+  }
+  if(busy||chain)return;
+  if(!cfg.key){startTalk();return}
+  const ctx=capEnsureCtx();           // created inside the tap so iPhone lets it run
+  let stream;
+  try{stream=await getMic()}catch(e){toast("마이크를 쓸 수 없어요. 아이폰 설정 > Safari > 마이크(또는 주소창의 aA > 웹사이트 설정)에서 허용해 주세요.");return}
+  if(!ctx)return toggleMicLegacy();
+  try{capConnect(stream);if(ctx.state!=="running")await ctx.resume()}catch(e){logErr("마이크",e)}
+  if(ctx.state!=="running"){logErr("마이크","오디오 처리 시작 안 됨, 기존 녹음 방식 사용");cap.ok=false;return toggleMicLegacy()}
+  stopAudio();
+  cap.rec=cap.ring.slice(); cap.ring=[]; cap.ringLen=0; cap.t0=performance.now();
+  recording=true; recStart=performance.now(); recorder=null;
+  $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; msg.dataset.ph=msg.dataset.phk||"reply"; setPh("rec"); $("junTile").classList.add("speaking");
+  lockUI();
+}
+async function finishCapture(){
+  const chunksPcm=cap.rec||[]; cap.rec=null;
+  recording=false; $("micBtn").disabled=false; if(msg.dataset.ph){setPh(msg.dataset.ph);delete msg.dataset.ph}
+  $("micBtn").classList.remove("recording"); $("junTile").classList.remove("speaking");
+  const held=(performance.now()-recStart)/1000;
+  const w=toWav16k(chunksPcm,cap.rate);
+  if(held<0.8||w.secs<0.6){$("micLabel").textContent="말하기";toast("녹음이 너무 짧았어요. 말하기를 누르고 말한 다음, 다 말하고 다시 눌러주세요.");lockUI();return}
+  if(w.peak<0.003){$("micLabel").textContent="말하기";logErr("마이크","소리가 거의 없음 peak "+w.peak.toFixed(4));toast("마이크에 소리가 거의 안 들어왔어요. 휴대폰을 입 가까이 대고 다시 말해보세요.");lockUI();return}
+  $("micLabel").textContent="듣는 중..."; $("micBtn").classList.add("busy"); lockUI();
+  try{const t=await transcribe(w.blob); if(t.text&&!HALLU.test(t.text.trim()))await send(t.text,t); else toast("말소리가 잘 안 들렸어요. 휴대폰을 입 가까이 대고 다시 말해보세요.")}
+  catch(e){logErr("받아쓰기",e);toast(e instanceof ApiError?e.message:"받아쓰기에 실패했어요. 다시 말해보세요.")}
+  finally{$("micLabel").textContent="말하기";$("micBtn").classList.remove("busy");lockUI()}
+}
+async function toggleMicLegacy(){
   if(recording){
     // keep listening a moment so the last word is not cut off
     $("micLabel").textContent="마무리 중..."; $("micBtn").disabled=true;
@@ -1276,7 +1348,8 @@ function autoLoop(t){
   const dt=auto.last?Math.min(100,t-auto.last):16; auto.last=t;
   if(auto.stream&&!auto.stream.getAudioTracks().some(t=>t.readyState==="live")){stopAuto();toast("마이크 연결이 끊겨서 자동 듣기를 껐어요. 다시 눌러주세요.");return}
   const canListen=!busy&&!chain&&!recording&&!autoSending&&phase!=="idle";
-  if(!canListen){if(auto.rec)autoDiscard();return}
+  if(!canListen){auto.blockedAt=performance.now();if(auto.rec)autoDiscard();return}
+  if(performance.now()-(auto.blockedAt||0)<900)return;
   if(!auto.rec)autoStartSeg();
   const lv=autoLevel(), thr=Math.max(0.012,auto.floor*2.6);
   const age=performance.now()-auto.startedAt;
