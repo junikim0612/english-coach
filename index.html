@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v3.3</title>
+<title>영어회화 코치 v3.4</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -401,6 +401,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coach .more-d{color:#8a7440!important}
 .coach .detail{background:#fffbeb!important}
 
+/* (v3.4 below) */
 /* v3.3: compact rounded video card, coral outline while Julia talks, icon header buttons */
 .gear.ico{width:38px;height:36px;padding:0!important;justify-content:center;color:#374151}
 @media (max-width:900px){header .gear.ico{width:36px;height:34px;padding:0!important}}
@@ -420,15 +421,31 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   body.kb .stage{height:132px!important;border-radius:16px!important}
   body.kb .stage::after{border-radius:16px!important}
 }
+
+/* v3.4: header order 기록/새로고침/설정, send same size as mic, menu has only 해석 */
+#skipAudio{display:none!important}
+.compose{grid-template-columns:minmax(0,1fr) auto 52px 52px!important}
+.compose .send{width:52px!important;height:52px!important;border-radius:50%!important}
+.compose .send svg{width:24px;height:24px;margin-left:-2px}
+@media (max-width:900px){
+  .compose{grid-template-columns:minmax(0,1fr) auto 52px 52px!important}
+  body.kb .compose{grid-template-columns:minmax(0,1fr) 52px!important}
+  body.kb .compose .send{height:52px!important}
+}
+@media (max-width:900px){
+  .compose{gap:6px!important;padding:8px 8px 10px!important}
+  .compose textarea{padding:11px 12px 11px 14px!important}
+  .compose .autob{padding:0 9px!important}
+}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v3.3</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v3.4</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
-    <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="gear only-m" id="openSide">기록</button>
+    <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="gear ico" id="openSettings" aria-haspopup="dialog" aria-label="설정" title="설정"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
   </header>
 
@@ -445,7 +462,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         <button class="more" id="moreBtn" aria-label="더보기" aria-haspopup="menu" aria-expanded="false">&#8943;</button>
         <div class="menu" id="moreMenu" role="menu" hidden>
           <button role="menuitem" id="toggleKo">해석 켜기</button>
-          <button role="menuitem" id="skipAudio" disabled>음성 넘기기</button>
+          <button role="menuitem" id="skipAudio" disabled hidden aria-hidden="true">음성 넘기기</button>
         </div>
       </div>
           <div class="name jn"><span class="bars"><i></i><i></i><i></i></span>Julia</div>
@@ -464,7 +481,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       <textarea id="msg" rows="1" placeholder="Reply to Julia..."></textarea>
       <button class="autob" id="autoBtn" aria-pressed="false"><span class="autodot2"></span><span id="autoLabel">자동 듣기</span></button>
       <button class="mic" id="micBtn" aria-label="말하기"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="sr" id="micLabel">말하기</span></button>
-      <button class="send primary" id="send" aria-label="보내기"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></button>
+      <button class="send primary" id="send" aria-label="보내기"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></button>
     </div>
   </section>
 
@@ -613,6 +630,10 @@ const saveCfg=()=>store("oc_cfg",cfg);
 let turns=[], phase="idle", pending=null, tries=0, busy=false, chain=false, showKo=false, voiceOn=true;
 let lastJulia={en:"",ko:""}, t0=0, timerId=0;
 const log=$("log"), msg=$("msg");
+const PHS={reply:["Reply to Julia...","Reply..."],repeat:["따라 말해보세요"],rec:["듣고 있어요. 다 말하면 마이크를 다시 누르세요","듣고 있어요. 끝나면 마이크 누르기","듣고 있어요"]};
+function fitPh(){const list=PHS[msg.dataset.phk]||PHS.reply;const cs=getComputedStyle(msg);const avail=msg.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2;if(avail<=0)return;const c=fitPh.c||(fitPh.c=document.createElement("canvas").getContext("2d"));c.font=cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;msg.placeholder=list.find(t=>c.measureText(t).width<=avail)||list[list.length-1]}
+function setPh(k){msg.dataset.phk=k;fitPh()}
+try{new ResizeObserver(()=>fitPh()).observe(msg)}catch(e){addEventListener("resize",fitPh)}
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const clean=s=>String(s??"").replace(/·/g,"/").replace(/[「」]/g,"");
 let pinned=true;
@@ -771,7 +792,7 @@ function addCoach({kind="",say="",model="",point="",listen=null,repeat=false}){
 }
 function setPhase(p){
   phase=p; $("target").hidden=true; requestAnimationFrame(()=>{if(pinned)scroll()});
-  msg.placeholder=p==="repeat"?"따라 말해보세요":"Reply to Julia";
+  setPh(p==="repeat"?"repeat":"reply");
 }
 function renderSide(){
   const pat=$("pat"); pat.innerHTML="";
@@ -1045,7 +1066,7 @@ async function toggleMic(){
   chunks=[];
   recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
   recorder.onstop=async()=>{
-    recording=false; $("micBtn").disabled=false; if(msg.dataset.ph)msg.placeholder=msg.dataset.ph;
+    recording=false; $("micBtn").disabled=false; if(msg.dataset.ph){setPh(msg.dataset.ph);delete msg.dataset.ph}
     $("micBtn").classList.remove("recording"); $("junTile").classList.remove("speaking");
     const secs=(performance.now()-recStart)/1000;
     const blob=new Blob(chunks,{type:recorder.mimeType||type||"audio/webm"});
@@ -1056,7 +1077,7 @@ async function toggleMic(){
     finally{$("micLabel").textContent="말하기";$("micBtn").classList.remove("busy");lockUI()}
   };
   recorder.start(250); recording=true; recStart=performance.now();
-  $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; msg.dataset.ph=msg.placeholder; msg.placeholder="듣고 있어요. 다 말하면 마이크를 다시 누르세요"; $("junTile").classList.add("speaking");
+  $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; msg.dataset.ph=msg.dataset.phk||"reply"; setPh("rec"); $("junTile").classList.add("speaking");
 }
 
 /* ---------- Auto listen: mic stays on, only speech is sent ---------- */
