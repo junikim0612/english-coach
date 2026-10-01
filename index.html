@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v3.5</title>
+<title>영어회화 코치 v3.8</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -444,7 +444,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v3.5</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v3.8</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -535,7 +535,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
           </select>
         </label>
       </div>
-      <label>음성 방식<select id="engine"><option value="stable">안정 (항상 같은 목소리)</option><option value="expressive">감정 표현 (가끔 목소리가 달라질 수 있어요)</option></select></label>
+      <label>음성 방식<select id="engine"><option value="stable">안정 (Julia 목소리가 항상 같아요)</option><option value="expressive">감정 표현 (Julia 목소리가 가끔 달라질 수 있어요)</option></select></label>
       <div class="grid2">
         <label>Julia 목소리<select id="juliaVoice"></select></label>
         <label>Coach 목소리<select id="coachVoice"></select></label>
@@ -631,6 +631,32 @@ const OPENERS={
 const TOPIC_NAME={daily:"Daily small talk",work:"Talking about work",travel:"Travel stories",weekend:"Weekends and hobbies",food:"Food talk",interview:"Job interview"};
 const TOPIC_EN={daily:"casual daily-life small talk",work:"chatting about work and the office",travel:"travel stories and plans",weekend:"weekends and hobbies",food:"food and restaurants",interview:"a friendly job interview (Julia is the interviewer, still warm and natural)"};
 const LEVEL_EN={beginner:"beginner: Julia uses short, simple sentences and easy words; model sentences stay simple",intermediate:"intermediate: natural everyday English",advanced:"advanced: natural idiomatic English with common phrasal verbs"};
+/* Level rules: change Julia's sentence length/vocabulary/question type and how strictly Sam corrects */
+const LEVEL_NAME={beginner:"초급",intermediate:"중급",advanced:"고급"};
+const LEVEL_RULES={
+beginner:`LEVEL = BEGINNER (CEFR A1-A2). This changes everything below.
+- Julia: 1 or 2 very short sentences, each under 10 words. Only very common everyday words. Present and past simple only. No idioms, no slang, no phrasal verbs (except very basic ones like get up, go out). End with ONE very easy question that can be answered in a few words: a yes/no question or an either/or question (e.g. "Coffee or tea?", "Did you sleep well?").
+- Correction (perfect / mistakes / model): set perfect=true when the meaning is clear and there is no major error. Correct ONLY major errors: wrong tense, subject-verb agreement, missing verb, a wrong word that changes the meaning, confusing word order, or Korean words. Ignore small article, preposition or plural slips and style differences.
+- model: short and simple, keep Jun's own words as much as possible, about 10 words or fewer, no idioms.
+- coach_point: one very easy Korean sentence.`,
+intermediate:`LEVEL = INTERMEDIATE (CEFR B1-B2). This changes everything below.
+- Julia: 1 to 3 natural everyday sentences; common expressions are fine. End with ONE open question (what / why / how) that needs a full-sentence answer.
+- Correction (perfect / mistakes / model): correct grammar errors including articles (a/the), prepositions, plurals, verb forms, and clearly unnatural word choice. Small style differences are fine (perfect=true).
+- model: natural everyday spoken English at B1-B2 level.`,
+advanced:`LEVEL = ADVANCED (CEFR C1). This changes everything below.
+- Julia: 2 or 3 natural sentences like a native friend, using idioms and phrasal verbs naturally (e.g. figure out, wrap up, a long shot, I'm torn). End with ONE question that needs an opinion, a reason or a short story.
+- Correction (perfect / mistakes / model): correct every grammar error AND sentences that are grammatical but not what a native speaker would naturally say (collocations, word choice, register). perfect=true only if a native speaker would say it the same way.
+- model: natural native-level spoken English; use an idiom or phrasal verb when it fits naturally.`};
+const OPENERS_BEGINNER={
+  daily:["Hi! How are you today?","안녕! 오늘 어때?"],
+  work:["Hi! Are you busy at work these days?","안녕! 요즘 회사 바빠?"],
+  travel:["Hi! Do you like to travel?","안녕! 여행 좋아해?"],
+  weekend:["Hi! Did you have a good weekend?","안녕! 주말 잘 보냈어?"],
+  food:["Hi! What did you eat today?","안녕! 오늘 뭐 먹었어?"],
+  interview:["Hi, nice to meet you! Can you tell me your name?","안녕하세요, 반가워요! 이름이 뭐예요?"]
+};
+const opener=()=>($("level").value==="beginner"?OPENERS_BEGINNER:OPENERS)[$("topic").value]||OPENERS.daily;
+const callTitle=()=>(TOPIC_NAME[$("topic").value]||TOPIC_NAME.daily)+" / "+(LEVEL_NAME[$("level").value]||"초급");
 const GOOD=["좋아요! 완벽해요.","잘했어요! 아주 자연스러워요.","바로 그거예요!","좋아요, 발음 그대로 기억해 두세요."];
 const REVIEW_AT=[2,4,7,10,15];
 
@@ -647,6 +673,7 @@ if(!cfg.v4){const map={"marin":"marin-sweet","marin-calm":"marin-soft","coral":"
 if(!cfg.v3){cfg.coach="nova-clear";cfg.v3=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v2){cfg.julia="marin-sweet";cfg.coach="nova-clear";cfg.level="beginner";cfg.rate=0.8;cfg.v2=1;cfg.v3=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.v9){cfg.engine="stable";cfg.sj="s-shimmer";cfg.sc="s-nova";cfg.v9=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
+if(!cfg.v10){if(!VOICES.some(v=>v.id===cfg.coach))cfg.coach="marin-calm";cfg.v10=1;try{localStorage.setItem("oc_cfg",JSON.stringify(cfg))}catch(e){}}
 if(!cfg.engine)cfg.engine="stable"; if(!SVOICES.some(v=>v.id===cfg.sj))cfg.sj="s-shimmer"; if(!SVOICES.some(v=>v.id===cfg.sc))cfg.sc="s-nova";
 let patterns=load("oc_patterns",{}), notes=load("oc_notes",[]);
 const saveCfg=()=>store("oc_cfg",cfg);
@@ -713,9 +740,17 @@ async function chatJSON(messages){
 }
 const ttsCache=new Map(); let ttsWarned=false;
 let stableIdx=0, safeVoice=false;
+/* Coach speaks Korean: classic TTS reads Korean badly, so the coach always uses the newer speech model
+   (pinned snapshot first for a steadier voice), in a female voice */
+const COACH_MODELS=["gpt-4o-mini-tts-2025-12-15"]; let coachIdx=cfg.coachIdx||0;
+const FIXED_LINES=new Set(["이렇게 말해보세요.","자, 이제 한번 말해볼까요?","한 번 더 말해보세요.","표현 노트에 저장했어요. 대화를 이어갈게요."]);
 function ttsBody(text,who){
+  if(who==="coach"){
+    const vo=voiceOf(cfg.coach), model=COACH_MODELS[coachIdx]||cfg.tts;
+    return {key:"C|"+vo.id+"|"+model,body:{model,voice:vo.base,input:text,instructions:COACH_STYLE+(vo.style?" "+vo.style:""),response_format:"mp3"}};
+  }
   if(cfg.engine==="stable"&&stableIdx<STABLE_MODELS.length){
-    const vo=safeVoice?sVoiceOf(who==="coach"?"s-nova":"s-shimmer"):sVoiceOf(who==="coach"?cfg.sc:cfg.sj);
+    const vo=safeVoice?sVoiceOf("s-shimmer"):sVoiceOf(cfg.sj);
     return {key:"S|"+vo.id+"|"+stableIdx,body:{model:STABLE_MODELS[stableIdx],voice:vo.base,input:text,response_format:"mp3"}};
   }
   const vo=voiceOf(who==="coach"?cfg.coach:cfg.julia);
@@ -724,8 +759,12 @@ function ttsBody(text,who){
 async function ttsFetch(text,who){
   for(;;){
     const {body}=ttsBody(text,who);
-    try{const r=await api("audio/speech",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)},{timeout:30000,retries:2});const b=await r.blob();if(!b.size)throw new ApiError("빈 음성");return URL.createObjectURL(b)}
+    try{
+      const r=await api("audio/speech",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)},{timeout:30000,retries:2});const b=await r.blob();if(!b.size)throw new ApiError("빈 음성");
+      if(FIXED_LINES.has(text))saveFixed(text,who,b);
+      return URL.createObjectURL(b)}
     catch(e){
+      if(who==="coach"&&COACH_MODELS.includes(body.model)&&[400,403,404].includes(e.status)&&/model|not.?found|does not exist|access|invalid|unsupported|available/i.test(e.message)){logErr("tts",body.model+" 사용 불가, 기본 음성 모델로 전환");coachIdx++;cfg.coachIdx=coachIdx;saveCfg();continue}
       // stable model not available on this account: fall back to the next one
       if(cfg.engine==="stable"&&STABLE_MODELS.includes(body.model)&&[400,403,404].includes(e.status)){
         if(/voice/i.test(e.message)&&!safeVoice){safeVoice=true;logErr("tts",body.voice+" 목소리 사용 불가, 기본 목소리로 전환");continue}
@@ -735,9 +774,13 @@ async function ttsFetch(text,who){
     }
   }
 }
+/* fixed coach lines are kept on the device, so they always sound exactly the same and cost nothing after the first time */
+const fixedKey=(text,who)=>"oc_tts|"+ttsBody(text,who).key+"|"+text;
+function saveFixed(text,who,blob){try{const fr=new FileReader();fr.onload=()=>{try{localStorage.setItem(fixedKey(text,who),fr.result)}catch(e){}};fr.readAsDataURL(blob)}catch(e){}}
 function tts(text,who){
   const k=who+"|"+ttsBody(text,who).key+"|"+text;
   if(ttsCache.has(k))return ttsCache.get(k);
+  if(FIXED_LINES.has(text)){try{const d=localStorage.getItem(fixedKey(text,who));if(d){const p=Promise.resolve(d);ttsCache.set(k,p);return p}}catch(e){}}
   const p=ttsFetch(text,who);
   p.catch(e=>{ttsCache.delete(k);logErr("tts",e)});
   ttsCache.set(k,p); if(ttsCache.size>120)ttsCache.delete(ttsCache.keys().next().value);
@@ -858,13 +901,15 @@ function addCoach({kind="",say="",model="",point="",listen=null,repeat=false}){
   const md=c.querySelector(".more-d"); if(md)md.onclick=()=>{const d=c.querySelector(".detail");d.hidden=!d.hidden;md.setAttribute("aria-expanded",!d.hidden);md.firstChild.textContent=d.hidden?"자세히 보기 ":"간단히 보기 ";if(pinned)scroll()};
   if((listen&&!model)||repeat){const a=document.createElement("div");a.className="acts";
     if(listen&&!model){const b=document.createElement("button");b.className="wave-t";b.innerHTML=I_SPK+"<span>다시 듣기</span>";b.onclick=()=>{if(!chain)playSeq(listen)};a.append(b)}
-    if(repeat){const t=document.createElement("span");t.className="rep-tag";t.textContent="이 문장을 따라 말해보세요";a.prepend(t);
+    if(repeat){log.querySelectorAll(".rep-acts").forEach(n=>n.remove());a.classList.add("rep-acts");const t=document.createElement("span");t.className="rep-tag";t.textContent="따라 말하면 Julia가 이어서 대답해요";a.prepend(t);
       const k=document.createElement("button");k.textContent="건너뛰기";k.onclick=()=>{if(phase==="repeat")$("skipBtn").click()};a.append(k)}
     c.append(a)}
   log.append(c); scroll(); return c;
 }
 function setPhase(p){
   phase=p; $("target").hidden=true; requestAnimationFrame(()=>{if(pinned)scroll()});
+  if(p!=="repeat")log.querySelectorAll(".rep-acts").forEach(n=>n.remove());
+  else{const all=log.querySelectorAll(".rep-acts");all.forEach((n,i)=>{if(i<all.length-1)n.remove()})}
   setPh(p==="repeat"?"repeat":"reply");
 }
 function renderSide(){
@@ -907,7 +952,8 @@ function similarity(a,b){
 function rules(ctx){
   const labels=Object.keys(patterns);
   return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text, so ignore capitalization, punctuation and obvious transcription glitches. Two people talk with Jun:
-JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant, often adds a small personal detail or opinion of her own, then asks ONE easy follow-up question. 1 to 3 short sentences. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}. Level: ${LEVEL_EN[$("level").value]}.
+JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant, often adds a small personal detail or opinion of her own, then asks ONE follow-up question. Sentence length, words and question type follow the LEVEL rules. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}.
+${LEVEL_RULES[$("level").value]||LEVEL_RULES.beginner}
 COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and explains WHY natives say it that way in plain Korean. English sentences stay in English.
 ${ctx||""}
 First decide what Jun's LATEST message is:
@@ -918,15 +964,15 @@ Reply with ONLY this JSON object (always include "emotion"):
 "teach":"question only: Sam's direct answer in Korean 해요체, 2 to 4 short sentences, starting with the answer itself (no 좋은 질문이에요 or similar). English words or example sentences may appear inside. Empty string for answer.",
 "teach_examples":["question only: 1 to 3 short English example sentences to show on screen"],
 "mode":"ko" if the message contains any Korean else "en",
-"perfect":true only if intent is answer, mode is en, and the message is correct and natural enough for a real conversation (small style differences are fine),
-"model":"answer only: what Jun should say, natural casual spoken English keeping his meaning, at his level. If perfect, repeat his message. Empty string for question.",
+"perfect":true only if intent is answer, mode is en, and the message passes the LEVEL correction rules above,
+"model":"answer only: what Jun should say, keeping his meaning, following the LEVEL model rules. If perfect, repeat his message. Empty string for question.",
 "coach_intro":"always exactly: 이렇게 말해보세요.",
 "coach_point":"answer and not perfect: 1 short Korean sentence explaining why natives say it this way. No praise or sympathy. Empty if perfect.",
 "mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
 "reply":"answer: Julia's next line. question: Julia's short natural line to get back into the conversation, usually re-asking her last question in an easy way.",
 "reply_ko":"natural casual Korean subtitle of Julia's line",
 "emotion":"Julia's facial expression while saying her line, exactly one of: calm, joy, happy, sad, empathy, sorry, surprised, angry, anxious, pondering, thoughtful, shy, charmed, relieved, lonely, love. Vary it like a real person reacting on camera: joy for playful or teasing moments, happy for good news or excitement, empathy when Jun shares a feeling or a hard day, sorry for bad luck, sad for sad news, surprised for unexpected things, anxious when something sounds stressful, pondering when she is curious or asks something thoughtful, thoughtful for reflective moments, shy when complimented, charmed when she is enjoying a fun or interesting story, empathy (a warm understanding smile) when encouraging Jun, relieved when things turned out fine, lonely when talking about missing someone, love for sweet or warm moments, angry only when something is clearly unfair. Use calm only for plain neutral small talk. Her previous expression was ${lastEmo}; real faces change with the mood, so pick a different one whenever the feeling of her new line is different."}
-mistakes: real English errors only (empty if perfect, if intent is question, and when mode is ko). Reuse these existing labels when they fit: ${labels.length?labels.join(", "):"(none yet)"}. Typical labels: 과거형 시제, 현재완료, 관사 a/the, 전치사, 복수형, 주어 동사 일치, 동사 형태, 단어 선택, 어순, 콩글리시/직역.
+mistakes: only errors that the LEVEL correction rules say to correct (empty if perfect, if intent is question, and when mode is ko). Reuse these existing labels when they fit: ${labels.length?labels.join(", "):"(none yet)"}. Typical labels: 과거형 시제, 현재완료, 관사 a/the, 전치사, 복수형, 주어 동사 일치, 동사 형태, 단어 선택, 어순, 콩글리시/직역.
 Korean strings: natural 해요체 (Julia's subtitle may be casual 반말 like a friend), never 하십시오체, never the middle dot character, never 「」, never circled numbers.`;
 }
 
@@ -959,9 +1005,9 @@ function startTalk(silent){
   if(!cfg.key){openSettings();$("keyState").className="tip bad";$("keyState").textContent="이 화면에는 아직 API 키가 없어요. 홈 화면 앱은 Safari와 저장 공간이 따로라서 처음 한 번 다시 넣어야 해요. 붙여넣으면 바로 저장되고, 닫기를 누른 뒤 다시 보내면 돼요.";$("apiKey").focus();return false}
   stopAudio();
   turns=[]; log.innerHTML=""; pending=null; tries=0;
-  $("topicName").textContent=TOPIC_NAME[$("topic").value];
+  $("topicName").textContent=callTitle();
   t0=Date.now(); clearInterval(timerId); timerId=setInterval(tick,1000); tick();
-  const [en,ko]=OPENERS[$("topic").value];
+  const [en,ko]=opener();
   if(silent){turns.push({role:"assistant",content:en});lastJulia={en,ko};addJulia(en,ko,"happy");setPhase("answer");caption({text:en,ko,who:"julia"})}
   else juliaSay(en,ko,"happy");
   return true;
@@ -1068,34 +1114,30 @@ async function sendInner(textIn,audio){
   if(phase==="repeat"&&pending){
     const sim=hasKo(text)?0:similarity(text,pending.model);
     if(sim<0.75&&looksLikeQuestion(text)){
-      addMe(text,false);
+      const qRow=addMe(text,false);
       const r=await askAI(text,`Right now Jun is practicing saying this sentence after Sam: "${pending.model}". If he asks about it, explain it.`);
-      if(!r)return;
+      if(!r){qRow.remove();return}
       if(r.intent==="question"){
         turns.push({role:"assistant",content:"(Sam answered) "+r.teach});
         const parts=showTeach(r);
         await chained([...parts,{text:"자, 이제 한번 말해볼까요?",who:"coach"},{text:pending.model,who:"coach"}]);
         return;
       }
-      turns.pop();
-    }else addMe(text,true);
+      turns.pop(); qRow.remove();
+    }
+    const repRow=addMe(text,true);
     let pron=null;
     if(audio&&!hasKo(text)){pron=scorePron(pending.model,text,audio.words);pronCard(pron,pending.model);savePron(pron.total)}
     if(sim>=0.75){
-      const g=GOOD[Math.floor(Math.random()*GOOD.length)];
-      const parts=[{text:g,who:"coach"}];
-      if(pron&&pron.hasConf&&pron.weak.length){
-        const w=pron.weak.slice(0,3).join(", ");
-        parts.push({text:`다만 ${w} 발음이 조금 약했어요. 한 번 들어볼게요.`,who:"coach"},{text:pron.weak.slice(0,3).join(". ")+".",who:"coach"});
-      }
-      addCoach({kind:"good",say:parts.slice(0,2).map(p=>p.text).join(" ")}); setPhase("answer");
-      await chained(parts); await continueTalk();
+      const m=document.createElement("span"); m.className="okmark"; m.textContent="따라 말하기 완료"; repRow.append(m);
+      setPhase("answer"); await continueTalk();
     }else if(++tries<2){
-      const say="음, 거의 다 왔어요! 한 번 더 듣고 따라 해봐요.";
-      addCoach({say,model:highlightModel(text,pending.model)});
-      await chained([{text:say,who:"coach"},{text:pending.model,who:"coach"}]);
+      const say="한 번 더 말해보세요.";
+      const parts=[{text:say,who:"coach"},{text:pending.model,who:"coach"}];
+      addCoach({say,model:highlightModel(text,pending.model),listen:parts,repeat:true});
+      await chained(parts);
     }else{
-      const say="괜찮아요! 표현 노트에 저장해뒀어요. 대화 계속 이어가요.";
+      const say="표현 노트에 저장했어요. 대화를 이어갈게요.";
       addCoach({say}); setPhase("answer");
       await chained([{text:say,who:"coach"}]); await continueTalk();
     }
@@ -1125,8 +1167,9 @@ async function sendInner(textIn,audio){
   }else{
     const seq=coachSeq(r);
     if(r.mode!=="ko"){const bb=meRow.querySelector(".bubble");bb.innerHTML=markupDiff(text,r.model);meRow.classList.add("marked")}
-    addCoach({say:seq[0].text,model:highlightModel(text,r.model),point:r.coach_point,listen:seq});
-    await chained(seq); await continueTalk();
+    addCoach({say:seq[0].text,model:highlightModel(text,r.model),point:r.coach_point,listen:seq,repeat:true});
+    setPhase("repeat");
+    await chained(seq);
   }
 }
 
@@ -1304,8 +1347,9 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("settings").hidd
 if(!VOICES.some(v=>v.id===cfg.julia))cfg.julia="marin-calm"; if(!VOICES.some(v=>v.id===cfg.coach))cfg.coach="marin-calm";
 function fillVoices(){
   const list=cfg.engine==="stable"?SVOICES:VOICES;
-  ["juliaVoice","coachVoice"].forEach(id=>{$(id).innerHTML=list.map(v=>`<option value="${v.id}">${v.label}</option>`).join("")});
-  $("juliaVoice").value=cfg.engine==="stable"?cfg.sj:cfg.julia; $("coachVoice").value=cfg.engine==="stable"?cfg.sc:cfg.coach;
+  $("juliaVoice").innerHTML=list.map(v=>`<option value="${v.id}">${v.label}</option>`).join("");
+  $("coachVoice").innerHTML=VOICES.map(v=>`<option value="${v.id}">${v.label}</option>`).join("");
+  $("juliaVoice").value=cfg.engine==="stable"?cfg.sj:cfg.julia; $("coachVoice").value=cfg.coach;
 }
 $("engine").value=cfg.engine; fillVoices();
 $("engine").onchange=e=>{cfg.engine=e.target.value;stableIdx=0;safeVoice=false;saveCfg();fillVoices();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"julia"}])};
@@ -1315,10 +1359,10 @@ $("errCopy").onclick=async()=>{const t=`영어회화 코치 ${document.querySele
 $("errClear").onclick=()=>{errLog=[];store("oc_errlog",errLog);renderErrLog()};
 $("level").value=cfg.level; $("topic").value=cfg.topic; $("rate").value=cfg.rate; $("rateV").textContent=Number(cfg.rate).toFixed(1)+"배";
 voiceOn=cfg.voiceOn!==false; $("voiceToggle").textContent=voiceOn?"음성 켜짐":"음성 꺼짐"; $("voiceToggle").setAttribute("aria-pressed",voiceOn);
-$("topicName").textContent=TOPIC_NAME[cfg.topic]||TOPIC_NAME.daily;
-$("level").onchange=e=>{cfg.level=e.target.value;saveCfg()};
+$("topicName").textContent=callTitle();
+$("level").onchange=e=>{cfg.level=e.target.value;saveCfg();$("topicName").textContent=callTitle()};
 $("juliaVoice").onchange=e=>{if(cfg.engine==="stable")cfg.sj=e.target.value;else cfg.julia=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"julia"}])};
-$("coachVoice").onchange=e=>{if(cfg.engine==="stable")cfg.sc=e.target.value;else cfg.coach=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"안녕하세요, 코치 Sam이에요. 같이 연습해봐요.",who:"coach"}])};
+$("coachVoice").onchange=e=>{cfg.coach=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"안녕하세요, 코치 Sam이에요. 같이 연습해봐요.",who:"coach"}])};
 $("apiKey").value=cfg.key;
 function keyState(){const k=$("keyState");if(cfg.key){k.className="tip ok";k.textContent="키가 저장돼 있어요. 이 기기의 브라우저에만 저장되고 GitHub에는 올라가지 않아요."}else{k.className="tip";k.textContent="키는 이 기기의 브라우저에만 저장돼요. GitHub에는 올라가지 않아요."}}
 keyState();
@@ -1332,7 +1376,7 @@ $("testKey").onclick=async()=>{
 };
 $("chatModel").value=cfg.chat;$("ttsModel").value=cfg.tts;$("sttModel").value=cfg.stt;
 $("saveAdv").onclick=()=>{cfg.chat=$("chatModel").value.trim()||DEFAULTS.chat;cfg.tts=$("ttsModel").value.trim()||DEFAULTS.tts;cfg.stt=$("sttModel").value.trim()||DEFAULTS.stt;saveCfg();$("saveAdv").textContent="저장됨";setTimeout(()=>$("saveAdv").textContent="저장",1500)};
-$("topic").onchange=()=>{cfg.topic=$("topic").value;saveCfg();if(phase!=="idle")startTalk();else $("topicName").textContent=TOPIC_NAME[$("topic").value]};
+$("topic").onchange=()=>{cfg.topic=$("topic").value;saveCfg();if(phase!=="idle")startTalk();else $("topicName").textContent=callTitle()};
 $("rate").oninput=e=>{cfg.rate=parseFloat(e.target.value);saveCfg();$("rateV").textContent=parseFloat(e.target.value).toFixed(1)+"배";if(curWho==="julia")player.playbackRate=parseFloat(e.target.value)};
 $("voiceToggle").onclick=e=>{voiceOn=!voiceOn;cfg.voiceOn=voiceOn;saveCfg();if(!voiceOn)stopAudio();e.target.textContent=voiceOn?"음성 켜짐":"음성 꺼짐";e.target.setAttribute("aria-pressed",voiceOn)};
 
@@ -1351,7 +1395,7 @@ $("moreBtn").onclick=e=>{e.stopPropagation();const m=$("moreMenu");m.hidden=!m.h
 document.addEventListener("click",e=>{if(!$("moreMenu").hidden&&!e.target.closest("#moreMenu"))closeMore()});
 $("toggleKo").onclick=e=>{showKo=!showKo;e.currentTarget.textContent=showKo?"해석 끄기":"해석 켜기";closeMore();log.querySelectorAll(".ko-line").forEach(n=>n.hidden=!showKo);caption(lastJulia.en?{text:lastJulia.en,ko:lastJulia.ko,who:"julia"}:null)};
 $("targetListen").onclick=()=>{if(pending&&!chain)playSeq([{text:pending.model,who:"coach"}])};
-$("skipBtn").onclick=async()=>{if(chain)return;stopAudio();addCoach({say:"괜찮아요, 이번 건 넘어가요. 표현 노트에 넣어뒀어요."});setPhase("answer");await continueTalk()};
+$("skipBtn").onclick=async()=>{if(phase!=="repeat"||busy)return;stopAudio();chain=false;setPhase("answer");try{await continueTalk()}catch(e){logErr("건너뛰기",e)}};
 $("clearAll").onclick=()=>{patterns={};notes=[];store("oc_patterns",patterns);store("oc_notes",notes);renderSide()};
 
 $("reloadBtn").onclick=()=>{try{stopAudio()}catch(e){};const u=location.pathname+"?v="+Date.now()+(location.hash||"");location.replace(u)};
@@ -1379,8 +1423,8 @@ $("closeSide").onclick=()=>$("side").classList.remove("open");
   msg.addEventListener("blur",()=>{setTimeout(fit,200)});
 })();
 /* Opening screen */
-lastJulia={en:OPENERS.daily[0],ko:OPENERS.daily[1]};
-caption({text:OPENERS[$("topic").value][0],who:"julia"});
+lastJulia={en:opener()[0],ko:opener()[1]};
+caption({text:opener()[0],who:"julia"});
 
 renderSide();
 if(cfg.key)startTalk(true);
