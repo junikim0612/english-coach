@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v4.7</title>
+<title>영어회화 코치 v4.8</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -444,12 +444,13 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sysnote{align-self:center;font-size:12px;color:#6b7280;background:#f5f6f8;border-radius:999px;padding:4px 12px}
 .okbtn{color:var(--good)!important;border-color:#cfe9d6!important}
 .reptag{display:inline-block;align-self:flex-start;font-size:11.5px;font-weight:600;color:#b45309;background:#fde7b0;border-radius:999px;padding:2px 9px}
+.revlist{display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:500}.revrow b{font-weight:700}.revrow .n{color:#b45309;font-size:12.5px;font-weight:700}.revrow .tip{font-size:12.5px;color:#6b5a2a;font-weight:400}.revrow ins{text-decoration:none;color:var(--coral-deep);font-weight:700}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v4.7</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v4.8</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -501,6 +502,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     <div class="sec">
       <h2>자주 하는 실수</h2>
       <div class="pat" id="pat"></div>
+      <div class="acts"><button id="reviewNow">지금 복습하기</button></div>
     </div>
     <div class="sec">
       <h2>표현 노트</h2>
@@ -539,6 +541,10 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             <option value="advanced">고급</option>
           </select>
         </label>
+      </div>
+      <div class="grid2">
+        <label>복습 간격<select id="revEvery"><option value="10">10번 말할 때마다</option><option value="20">20번 말할 때마다</option><option value="30">30번 말할 때마다</option><option value="0">끄기</option></select></label>
+        <label>복습 문장 수<select id="revCount"><option value="3">3개</option><option value="5">5개</option></select></label>
       </div>
       <label>음성 방식<select id="engine"><option value="stable">안정 (Julia 목소리가 항상 같아요)</option><option value="expressive">감정 표현 (Julia 목소리가 가끔 달라질 수 있어요)</option></select></label>
       <div class="grid2">
@@ -689,7 +695,7 @@ const saveCfg=()=>store("oc_cfg",cfg);
 let turns=[], phase="idle", pending=null, tries=0, busy=false, chain=false, showKo=false, voiceOn=true;
 let lastJulia={en:"",ko:""}, t0=0, timerId=0;
 const log=$("log"), msg=$("msg");
-const PHS={reply:["Reply to Julia...","Reply..."],repeat:["따라 말해보세요"],rec:["듣고 있어요. 다 말하면 마이크를 다시 누르세요","듣고 있어요. 끝나면 마이크 누르기","듣고 있어요"]};
+const PHS={review:["영어로 말해보세요","영어로 말하기"],reply:["Reply to Julia...","Reply..."],repeat:["따라 말해보세요"],rec:["듣고 있어요. 다 말하면 마이크를 다시 누르세요","듣고 있어요. 끝나면 마이크 누르기","듣고 있어요"]};
 function fitPh(){const list=PHS[msg.dataset.phk]||PHS.reply;const cs=getComputedStyle(msg);const avail=msg.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2;if(avail<=0)return;const c=fitPh.c||(fitPh.c=document.createElement("canvas").getContext("2d"));c.font=cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;msg.placeholder=list.find(t=>c.measureText(t).width<=avail)||list[list.length-1]}
 function setPh(k){msg.dataset.phk=k;fitPh()}
 try{new ResizeObserver(()=>fitPh()).observe(msg)}catch(e){addEventListener("resize",fitPh)}
@@ -973,7 +979,7 @@ function addMe(text,rep){
 function addCoach({kind="",say="",model="",point="",listen=null,repeat=false,okBtn=null,clearLabel="",repeatTag=""}){
   if(curTurn&&curTurn.active)curTurn.rendered=true;
   const c=document.createElement("div"); c.className="coach "+kind;
-  const lbl=kind==="review"?"Coach Sam / 반복 실수":kind==="teach"?"Coach Sam / 질문 답변":"Coach Sam";
+  const lbl=kind==="review"?"Coach Sam / 반복 실수":kind==="teach"?"Coach Sam / 질문 답변":kind==="recap"?"Coach Sam / 복습":kind==="quiz"?"Coach Sam / 복습 문제":"Coach Sam";
   c.innerHTML=`<span class="lbl">${I_SPARK}${lbl}</span>${say?`<div class="say">${esc(clean(say))}</div>`:""}${model?`<div class="modelbox"><div class="model">${model}</div>${listen?`<button class="wave" aria-label="다시 듣기">${I_WAVE}</button>`:""}</div>`:""}${point?`<button class="more-d" aria-expanded="false">자세히 보기 <span class="chev">&#8964;</span></button><div class="detail" hidden>${esc(clean(point))}</div>`:""}`;
   if(repeatTag){const tg=document.createElement("div");tg.className="reptag";tg.textContent=repeatTag;c.querySelector(".lbl").after(tg)}
   const wv=c.querySelector(".wave"); if(wv)wv.onclick=()=>{if(!chain)playSeq(listen)};
@@ -991,7 +997,7 @@ function setPhase(p){
   phase=p; $("target").hidden=true; requestAnimationFrame(()=>{if(pinned)scroll()});
   if(p!=="repeat")log.querySelectorAll(".rep-acts").forEach(n=>n.remove());
   else{const all=log.querySelectorAll(".rep-acts");all.forEach((n,i)=>{if(i<all.length-1)n.remove()})}
-  setPh(p==="repeat"?"repeat":"reply");
+  setPh(p==="repeat"?"repeat":p==="review"?"review":"reply");
 }
 function renderSide(){
   const pat=$("pat"); pat.innerHTML="";
@@ -1034,11 +1040,13 @@ let callFacts=[], callFixes=[];
 function juliaQuestions(){const q=[];turns.forEach(t=>{if(t.role==="assistant"){(String(t.content).match(/[^.!?]*\?/g)||[]).forEach(x=>q.push(x.trim()))}});return q.slice(-10)}
 function liveContext(ctx,latest){
   const labels=Object.keys(patterns);
-  const mem=`\nWhat Jun already told Julia in this call (remember it, build on it, NEVER ask about it again in any form): ${callFacts.length?callFacts.join("; "):"(nothing yet)"}\nQuestions Julia already asked in this call (never ask these or the same thing in other words; move the talk forward instead): ${juliaQuestions().join(" | ")||"(none)"}\nCorrections Sam already made in this call (if Jun now uses the right form, it is CORRECT, do not flag it again): ${callFixes.length?callFixes.join("; "):"(none)"}`;
+  const freq=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n).slice(0,5).map(([k,v])=>`${k} ${v.n}x`).join(", ");
+  const mem=`\nJun's most frequent mistake types so far: ${freq||"(none yet)"}\nWhat Jun already told Julia in this call (remember it, build on it, NEVER ask about it again in any form): ${callFacts.length?callFacts.join("; "):"(nothing yet)"}\nQuestions Julia already asked in this call (never ask these or the same thing in other words; move the talk forward instead): ${juliaQuestions().join(" | ")||"(none)"}\nCorrections Sam already made in this call (if Jun now uses the right form, it is CORRECT, do not flag it again): ${callFixes.length?callFixes.join("; "):"(none)"}`;
   return `CURRENT CONTEXT\nJun's LATEST message (the only one to classify, correct or translate): "${latest||""}"\nJulia's last line: "${lastJulia&&lastJulia.en||""}"\nJulia's previous expression: ${lastEmo}\nExisting mistake labels: ${labels.length?labels.join(", "):"(none yet)"}${mem}${ctx?"\n"+ctx:""}`;
 }
 function rules(){
-  return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text of accented English, so words are often mis-heard (e.g. "work" heard as "walk", "I'm fine" as "I'm find"). Always work out what he most likely MEANT from the conversation (especially Julia's last question) and answer that meaning; never react to a mis-heard word literally. If Jun's sentence is already correct and natural enough for his level, it IS perfect: never rewrite a correct sentence just for style, and never flag a form Sam already taught him when he now uses it right (e.g. after "drink -> drinking", "I don't like drinking hot coffee" is perfect).
+  return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text of accented English, so words are often mis-heard (e.g. "work" heard as "walk", "I'm fine" as "I'm find"). Always work out what he most likely MEANT from the conversation (especially Julia's last question) and answer that meaning; never react to a mis-heard word literally. If Jun makes a mistake of a type he has already made 2 or more times (see frequent mistake types in CURRENT CONTEXT), coach_point first says so briefly and concretely, e.g. "진행형을 자주 헷갈려요." or "like 뒤 동사 형태를 또 틀렸어요.", then the explanation.
+If Jun's sentence is already correct and natural enough for his level, it IS perfect: never rewrite a correct sentence just for style, and never flag a form Sam already taught him when he now uses it right (e.g. after "drink -> drinking", "I don't like drinking hot coffee" is perfect).
 NEVER count a likely speech-recognition slip as Jun's grammar mistake: words listed as "not sure" in CURRENT CONTEXT, and small sound-alike slips such as I/It, a/the dropped, and/in, can/can't, missing -s or -ed, when the rest of his sentence shows he knows the grammar. In that case assume he said it right: if nothing else is wrong, perfect=true and no mistakes. If you really cannot tell what he meant, Julia asks a short natural check like "Sorry, did you mean ...?" instead of guessing wildly. Ignore capitalization and punctuation. Two people talk with Jun:
 JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant and remembers what he said earlier in the call. Not an interview: build on his answer, often add a small related detail or story of her own, and ask ONE natural follow-up question most of the time (sometimes just react and leave room for him to keep talking). Keep the topic flowing like a real chat instead of jumping to new topics. Sentence length, words and question type follow the LEVEL rules. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}.
 ${LEVEL_RULES[$("level").value]||LEVEL_RULES.beginner}
@@ -1130,7 +1138,7 @@ async function juliaSay(en,ko,emo,T){
 function startTalk(silent){
   if(!cfg.key){openSettings();$("keyState").className="tip bad";$("keyState").textContent="이 화면에는 아직 API 키가 없어요. 홈 화면 앱은 Safari와 저장 공간이 따로라서 처음 한 번 다시 넣어야 해요. 붙여넣으면 바로 저장되고, 닫기를 누른 뒤 다시 보내면 돼요.";$("apiKey").focus();return false}
   stopAudio();
-  turns=[]; log.innerHTML=""; pending=null; tries=0; callFacts=[]; callFixes=[];
+  turns=[]; log.innerHTML=""; pending=null; tries=0; callFacts=[]; callFixes=[]; review=null;
   $("topicName").textContent=callTitle();
   t0=Date.now(); clearInterval(timerId); timerId=setInterval(tick,1000); tick();
   const [en,ko]=opener();
@@ -1153,7 +1161,7 @@ function recordMistakes(r,said){
     patterns[k]=p;
     if(REVIEW_AT.includes(p.n)&&(!review||p.n>review.n))review={label:k,...p};
   });
-  if(!r.perfect&&r.model&&!notes.some(n=>n.said===said&&n.model===r.model))notes.push({said,model:r.model,why:r.coach_point||""});
+  if(!r.perfect&&r.model&&!notes.some(n=>n.said===said&&n.model===r.model))notes.push({said,model:r.model,why:r.coach_point||"",label:(r.mistakes&&r.mistakes[0]&&clean(r.mistakes[0].label||"").trim())||(r.mode==="ko"?"영어로 말하기":"")});
   notes=notes.slice(-80);
   store("oc_patterns",patterns); store("oc_notes",notes); renderSide();
   return review;
@@ -1163,6 +1171,7 @@ async function continueTalk(T){
   if(!r){setPhase("answer");return}
   checkTurn(T);
   await juliaSay(r.reply,r.reply_ko,r.emotion,T);
+  await maybeReview();
 }
 function historyFor(){
   if(turns.length>200)turns=turns.slice(-120);
@@ -1227,6 +1236,92 @@ function showTeach(r){
   return parts;
 }
 
+/* ---------- Review: every N turns Sam sums up what Jun often gets wrong, then quizzes the corrected sentences ---------- */
+let review=null, turnCount=load("oc_turncount",0), lastReviewAt=load("oc_lastreview",0);
+function countTurn(){turnCount++;store("oc_turncount",turnCount)}
+function reviewCandidates(n){
+  const top=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n).slice(0,3).map(x=>x[0]);
+  const c=notes.map((x,i)=>({x,i})).filter(o=>o.x&&o.x.model&&(o.x.reviewOk||0)<2);
+  c.forEach(o=>o.score=(o.x.reviewFail||0)*10+(top.includes(o.x.label)?5:0)+o.i/100);
+  c.sort((a,b)=>b.score-a.score);
+  return c.slice(0,n).map(o=>o.x);
+}
+const REVIEW_SYS=`You prepare a short review for a Korean beginner English learner named Jun. Reply ONLY with JSON: {"insight":"...","items":[{"model":"the same English sentence you were given","ko":"its natural Korean meaning, short casual 해요체"}]}.
+insight: natural spoken Korean 해요체, 1 or 2 short sentences, concrete about what he tends to confuse, based on the mistake counts and examples, with one clear rule. e.g. "진행형을 자주 헷갈려요. 지금 하고 있는 일은 am, is, are 다음에 -ing를 붙여요." No praise, never the middle dot, never 「」.
+items: keep the same order and the same English sentences.`;
+function fallbackInsight(){const t=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n)[0];return t?`${t[0]} 부분을 가장 자주 틀렸어요.${t[1].tipKo?" "+t[1].tipKo:""}`:"자주 틀린 문장을 다시 말해볼게요."}
+async function maybeReview(){
+  const every=+cfg.revEvery||0;
+  if(!every||review||phase!=="answer"||turnCount-lastReviewAt<every)return;
+  lastReviewAt=turnCount; store("oc_lastreview",lastReviewAt);
+  const items=reviewCandidates(+cfg.revCount||3); if(!items.length)return;
+  await startReview(items);
+}
+async function startReview(items){
+  review={items,idx:0,tries:0,ok:0}; setPhase("review");
+  lastReviewAt=turnCount; store("oc_lastreview",lastReviewAt);
+  const wait=document.createElement("div"); wait.className="thinking"; wait.textContent="복습 준비 중..."; log.append(wait); scroll();
+  busy=true; lockUI(); let prep=null;
+  try{
+    const counts=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n).slice(0,5).map(([k,v])=>({type:k,times:v.n,example:v.ex?`${v.ex.from} -> ${v.ex.to}`:""}));
+    prep=await chatJSON([{role:"system",content:REVIEW_SYS},{role:"user",content:JSON.stringify({mistake_counts:counts,sentences:items.map(x=>({said:x.said,model:x.model}))})}]);
+  }catch(e){logErr("복습",e)}
+  finally{busy=false;lockUI();wait.remove()}
+  const kos=prep&&Array.isArray(prep.items)?prep.items:[];
+  items.forEach((it,i)=>{const k=kos[i]&&String(kos[i].ko||"").trim();it._ko=k&&hasKo(k)?clean(k):""});
+  const insight=clean(String(prep&&prep.insight||"").trim()||fallbackInsight());
+  const top=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n).slice(0,3);
+  const list=top.map(([k,v])=>`<div class="revrow"><b>${esc(k)}</b> <span class="n">${v.n}번</span>${v.ex?`<div>${esc(v.ex.from)} → <ins>${esc(v.ex.to)}</ins></div>`:""}${v.tipKo?`<div class="tip">${esc(clean(v.tipKo))}</div>`:""}</div>`).join("");
+  const parts=[{text:insight,who:"coach"}];
+  await holdUntilReady(insight,"coach");
+  addCoach({kind:"recap",say:insight,model:list?`<div class="revlist">${list}</div>`:"",listen:parts});
+  await chained(parts);
+  await askReviewItem();
+}
+async function askReviewItem(){
+  const it=review.items[review.idx]; review.tries=0;
+  const parts=it._ko?[{text:it._ko,who:"coach"}]:[];
+  if(parts.length)await holdUntilReady(it._ko,"coach");
+  const c=addCoach({kind:"quiz",say:`${review.idx+1} / ${review.items.length}  ${it._ko?"영어로 말해보세요":"맞게 고쳐서 말해보세요"}`,model:esc(it._ko||it.said),listen:parts.length?parts:null});
+  const a=document.createElement("div");a.className="acts rev-acts";const b=document.createElement("button");b.textContent="복습 그만하기";b.onclick=()=>{if(review&&!busy){stopAudio();chain=false;endReview(true)}};a.append(b);c.append(a);
+  if(parts.length)await chained(parts);
+}
+async function reviewAnswer(text,audio){
+  const it=review.items[review.idx];
+  const row=addMe(text,false);
+  const sim=hasKo(text)?0:similarity(text,it.model);
+  if(sim>=0.8){
+    const m=document.createElement("span");m.className="okmark";m.textContent="정답";row.append(m);
+    it.reviewOk=(it.reviewOk||0)+1; review.ok++; store("oc_notes",notes);
+    return nextReviewItem();
+  }
+  if(++review.tries<2){
+    const parts=[{text:it.model,who:"coach"}];
+    await holdUntilReady(it.model,"coach");
+    addCoach({say:"정답은 이거예요.",model:highlightModel(text,it.model),listen:parts});
+    await chained(parts); return;
+  }
+  it.reviewOk=0; it.reviewFail=(it.reviewFail||0)+1; store("oc_notes",notes);
+  sysNote("다음 복습에 다시 나와요.");
+  return nextReviewItem();
+}
+async function nextReviewItem(){
+  review.idx++;
+  if(review.idx<review.items.length)return askReviewItem();
+  return endReview(false);
+}
+async function endReview(stopped){
+  const r=review; review=null; log.querySelectorAll(".rev-acts").forEach(n=>n.remove());
+  const say=stopped?"복습을 마칠게요.":`복습 결과, ${r.items.length}개 중 ${r.ok}개 맞혔어요.`;
+  const parts=[{text:say,who:"coach"}];
+  await holdUntilReady(say,"coach");
+  addCoach({kind:"recap",say,listen:parts});
+  await chained(parts);
+  setPhase("answer");
+  const q=juliaQuestions().slice(-1)[0];
+  await juliaSay(q?`Okay, back to our chat! ${q}`:"Okay, back to our chat! So, what else is new?","좋아, 다시 얘기하자!","happy");
+}
+
 /* ---------- Turn control: if Jun keeps talking, the answer in progress is dropped and he is heard again ---------- */
 class Superseded extends Error{}
 let turnSeq=0, curTurn=null, supersedeResolvers=[], curChatCtl=null, chatCancelled=false;
@@ -1268,6 +1363,7 @@ async function sendInner(textIn,audio,onTurn){
   if(phase==="idle"&&!startTalk(true))return;
   msg.value=""; autosize(); stopAudio();
   const T=beginTurn(text); onTurn&&onTurn(T);
+  if(phase==="review"&&review){await reviewAnswer(text,audio);return}
 
   if(phase==="repeat"&&pending){
     const sim=hasKo(text)?0:similarity(text,pending.model);
@@ -1308,6 +1404,7 @@ async function sendInner(textIn,audio,onTurn){
   checkTurn(T);
   if(!r){meRow.remove();return}
   if(r.slow_down===true)slowJulia();
+  if(r.intent!=="question")countTurn();
   if(Array.isArray(r.facts))r.facts.map(f=>String(f||"").trim()).filter(f=>f&&f.length<120&&!callFacts.includes(f)).forEach(f=>callFacts.push(f)); callFacts=callFacts.slice(-30);
   if(r.intent==="question"){
     turns.pop(); turns.push({role:"user",content:"(asked the teacher) "+text});
@@ -1658,6 +1755,11 @@ document.addEventListener("click",e=>{if(!$("moreMenu").hidden&&!e.target.closes
 $("toggleKo").onclick=e=>{showKo=!showKo;e.currentTarget.textContent=showKo?"해석 끄기":"해석 켜기";closeMore();log.querySelectorAll(".ko-line").forEach(n=>n.hidden=!showKo);caption(lastJulia.en?{text:lastJulia.en,ko:lastJulia.ko,who:"julia"}:null)};
 $("targetListen").onclick=()=>{if(pending&&!chain)playSeq([{text:pending.model,who:"coach"}])};
 $("skipBtn").onclick=async()=>{if(phase!=="repeat"||busy)return;stopAudio();chain=false;setPhase("answer");try{await continueTalk()}catch(e){logErr("건너뛰기",e)}};
+if(!cfg.revEvery&&cfg.revEvery!==0)cfg.revEvery=20; if(!cfg.revCount)cfg.revCount=3;
+$("revEvery").value=String(cfg.revEvery); $("revCount").value=String(cfg.revCount);
+$("revEvery").onchange=e=>{cfg.revEvery=+e.target.value;saveCfg()};
+$("revCount").onchange=e=>{cfg.revCount=+e.target.value;saveCfg()};
+$("reviewNow").onclick=()=>{$("side").classList.remove("open");if(phase==="idle"&&!startTalk(true))return;if(busy||chain||review){sysNote("지금 하던 말이 끝나면 다시 눌러주세요.");return}if(phase==="repeat"){sysNote("따라 말하기를 끝내거나 건너뛴 다음 눌러주세요.");return}const it=reviewCandidates(+cfg.revCount||3);if(!it.length){sysNote("복습할 문장이 아직 없어요. 코치가 고쳐준 문장이 생기면 할 수 있어요.");return}stopAudio();startReview(it).catch(e=>logErr("복습",e))};
 $("clearAll").onclick=()=>{patterns={};notes=[];store("oc_patterns",patterns);store("oc_notes",notes);renderSide()};
 
 $("reloadBtn").onclick=()=>{try{stopAudio()}catch(e){};const u=location.pathname+"?v="+Date.now()+(location.hash||"");location.replace(u)};
