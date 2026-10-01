@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v4.2</title>
+<title>영어회화 코치 v4.3</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -439,12 +439,14 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 /* v3.5 */
 .errlist{white-space:pre-wrap;word-break:break-all;font-size:11.5px;line-height:1.5;background:#f7f8fa;border-radius:10px;padding:10px;max-height:220px;overflow:auto;margin:8px 0;color:#374151}
+.typing .dots{display:inline-flex;gap:4px;padding:4px 2px}.typing .dots i{width:7px;height:7px;border-radius:50%;background:#b5bccb;animation:tdot 1s infinite ease-in-out}.typing .dots i:nth-child(2){animation-delay:.15s}.typing .dots i:nth-child(3){animation-delay:.3s}
+@keyframes tdot{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v4.2</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v4.3</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -559,6 +561,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       <details id="errBox">
         <summary>문제 기록 <span id="errCount"></span></summary>
         <div class="tip">대화가 끊기거나 소리가 이상하면 여기에 기록돼요. 복사해서 보내주시면 원인을 바로 찾을 수 있어요.</div>
+        <div class="tip" id="perfSum"></div>
         <pre id="errList" class="errlist"></pre>
         <div class="acts"><button id="errCopy">복사</button><button id="errClear">지우기</button></div>
       </details>
@@ -618,7 +621,7 @@ const SVOICES=[
   {id:"s-onyx",label:"onyx (남)",base:"onyx"}
 ];
 const sVoiceOf=id=>SVOICES.find(v=>v.id===id)||SVOICES[0];
-const STABLE_MODELS=["tts-1-hd","tts-1"];
+const STABLE_MODELS=["tts-1","tts-1-hd"];
 const JULIA_STYLE="Voice: the same young adult American woman in every line, never a male voice. Tone: casual, warm and natural like a friend on a video call, with natural pauses. Not like an announcer.";
 const COACH_STYLE="Voice: the same calm adult woman in every line, never a male voice. When speaking Korean, sound like a native Korean speaker from Seoul: natural Korean pronunciation, rhythm and intonation, warm and clear, never an English accent and never robotic. Say English words and sentences with natural American pronunciation, clearly and a little slower.";
 const OPENERS={
@@ -794,10 +797,10 @@ async function transcribe(blob){
   fd.append("prompt","A Korean adult practicing spoken English. He mostly speaks English with a Korean accent: always write English speech in English letters, even when the pronunciation is accented or unclear. Use Hangul only when he clearly speaks Korean sentences. Keep his grammar mistakes exactly as spoken.");
   const wantProbs=!/whisper/.test(cfg.stt);
   if(wantProbs){fd.append("response_format","json");fd.append("include[]","logprobs")}
-  let r;
+  let r; const ts=performance.now();
   try{r=await api("audio/transcriptions",{method:"POST",body:fd},{timeout:45000,retries:2})}
   catch(e){if(wantProbs&&/logprob|include/i.test(e.message)){fd.delete("include[]");r=await api("audio/transcriptions",{method:"POST",body:fd},{timeout:45000,retries:2})}else throw e}
-  const j=await r.json();
+  const j=await r.json(); perfMark("stt",performance.now()-ts);
   return {text:(j.text||"").trim(),words:wordsFromLogprobs(j.logprobs)};
 }
 // tokens -> [{w, p}] where p is the lowest token confidence inside the word
@@ -838,6 +841,14 @@ function pronCard(p,targetRaw){
 
 /* ---------- Audio playback ---------- */
 const player=new Audio(); player.preload="auto";
+const TINY_MP3="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//NwwAAAAAAAAAAAAEluZm8AAAAPAAAABAAAAYcAmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZu7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u93d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3/////////////////////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQCcQAAAAAAAAGH0AJ1HQAAAAAAAAAAAAAAAAD/8yDEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//MixCcAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/8yDETwAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//MgxHYAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==";
+let audioUnlocked=false, blockedWarned=false;
+function unlockAudio(){
+  try{if(cap.ctx&&cap.ctx.state!=="running")cap.ctx.resume().catch(()=>{})}catch(e){}
+  if(endCurrent||!player.paused)return;            // never interrupt a line that is playing
+  try{player.src=TINY_MP3;const p=player.play();if(p&&p.then)p.then(()=>{audioUnlocked=true}).catch(()=>{})}catch(e){}
+}
+["pointerdown","touchend","keydown"].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 let playToken=0, endCurrent=null, curWho=null;
 function speaking(who){$("juliaTile").classList.toggle("speaking",who==="julia");$("coachPill").classList.toggle("on",who==="coach")}
 function caption(p){
@@ -866,7 +877,17 @@ function playUrl(url,who,text){
     player.onended=done; player.onerror=done;
     wd=setTimeout(stall("재생이 시작되지 않아서 넘어감"),45000*TSCALE());
     speaking(who);
-    const pr=player.play(); if(pr&&pr.catch)pr.catch(e=>{if(!fired&&e&&e.name!=="AbortError")logErr("재생",e);done()});
+    const pr=player.play();
+    if(pr&&pr.catch)pr.catch(e=>{
+      if(fired)return;
+      if(e&&e.name==="NotAllowedError"){
+        // the phone blocked sound: try once more right away, then ask for one tap
+        logErr("재생","소리가 막힘, 다시 시도");
+        setTimeout(()=>{if(fired)return;player.play().then(()=>{}).catch(()=>{if(!blockedWarned){blockedWarned=true;toast("휴대폰이 소리를 막았어요. 화면을 한 번 누르면 다음 말부터 소리가 나와요. 지난 말은 스피커 버튼으로 다시 들을 수 있어요.")}done()})},150);
+        return;
+      }
+      if(e&&e.name!=="AbortError")logErr("재생",e);done();
+    });
   });
 }
 async function playSeq(items){
@@ -957,15 +978,20 @@ function similarity(a,b){
 }
 
 /* ---------- Prompt ---------- */
-function rules(ctx){
+function liveContext(ctx){
   const labels=Object.keys(patterns);
+  return `CURRENT CONTEXT\nJulia's previous expression: ${lastEmo}\nExisting mistake labels: ${labels.length?labels.join(", "):"(none yet)"}${ctx?"\n"+ctx:""}`;
+}
+function rules(){
   return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text, so ignore capitalization, punctuation and obvious transcription glitches. Two people talk with Jun:
 JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant, often adds a small personal detail or opinion of her own, then asks ONE follow-up question. Sentence length, words and question type follow the LEVEL rules. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}.
 ${LEVEL_RULES[$("level").value]||LEVEL_RULES.beginner}
 COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and one short grammar point. English sentences stay in English.
-SAM'S KOREAN must sound like a real Korean teacher talking, natural spoken 해요체, short and simple. Never translationese or textbook style. Good: "어제 일이라서 go 대신 went를 써요." / "영어는 주어 다음에 바로 동사가 와요." / "피곤하다는 말은 be동사에 tired를 붙여요." / "직업 앞에는 a를 붙여요." Bad: "이것은 과거의 행동을 나타내기 때문에 과거형이 사용됩니다." / "당신의 문장은 문법적으로 올바르지 않습니다."
-When Jun speaks Korean (mode ko): just give the natural English sentence for what he meant, and coach_point says ONLY how English builds that sentence (word order, verb, tense, article). Never explain or repeat the Korean meaning.
-${ctx||""}
+SAM'S KOREAN must sound like a real Korean teacher talking, natural spoken 해요체, short and simple. Never translationese or textbook style.
+SAM'S EXPLANATION must point at the ACTUAL WORDS of this sentence: say which word is the subject (주어), which is the verb (동사) and what role the key word plays, then why it changes. Never a vague general rule.
+Good: "주어는 I, 동사는 went예요. 어제 일이라서 go의 과거형 went를 써요." / "주어는 She라서 동사 don't가 doesn't로 바뀌어요." / "주어 I 다음에 동사 am이 오고, 상태를 말하는 tired가 붙어요." / "office 앞에 the를 붙여요. 서로 아는 그 회사라서 the예요."
+Bad (too vague): "영어는 주어 다음에 바로 동사가 와요." / "주어에 동사가 붙어야 해요." Bad (textbook): "이것은 과거의 행동을 나타내기 때문에 과거형이 사용됩니다."
+When Jun speaks Korean (mode ko): just give the natural English sentence for what he meant, and coach_point says ONLY how that English sentence is built, naming its subject and verb (e.g. "주어 I, 동사 am, 그다음 tired가 와요."). Never explain or repeat the Korean meaning.
 First decide what Jun's LATEST message is:
 - "question": Jun is clearly asking the TEACHER something about English (meaning, grammar, how to say something) instead of answering Julia, in Korean or English. A reply to Julia that asks her something back (e.g. "And you?", "Do you like it?") is NOT a question, it is an answer. e.g. "왜 how is it going을 써?", "이거 무슨 뜻이야?", "how are you랑 뭐가 달라?", "can I say it like this?".
 - "answer": Jun is replying to Julia (English, Korean, or mixed).
@@ -977,12 +1003,12 @@ Reply with ONLY this JSON object (always include "emotion"):
 "perfect":true only if intent is answer, mode is en, and the message passes the LEVEL correction rules above,
 "model":"answer only: what Jun should say, keeping his meaning, following the LEVEL model rules. If perfect, repeat his message. Empty string for question.",
 "coach_intro":"mode ko only: 이렇게 말해보세요. Otherwise empty.",
-"coach_point":"answer and not perfect: ONE short natural spoken Korean sentence (about 30 Korean characters or fewer) with the English grammar point, in the style of the Good examples above. mode en: why the corrected part is right. mode ko: only how English builds the sentence, never the Korean meaning. No praise or sympathy. Empty if perfect.",
+"coach_point":"answer and not perfect: 1 or 2 short natural spoken Korean sentences (about 60 Korean characters or fewer) like the Good examples: name the subject and the verb of THIS sentence and the exact word that changed and why. mode ko: only how the English sentence is built (subject, verb, word order), never the Korean meaning. No praise or sympathy. Empty if perfect.",
 "mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
 "reply":"answer: Julia's next line. question: Julia's short natural line to get back into the conversation, usually re-asking her last question in an easy way.",
 "reply_ko":"natural casual Korean subtitle of Julia's line",
-"emotion":"Julia's facial expression while saying her line, exactly one of: calm, joy, happy, sad, empathy, sorry, surprised, angry, anxious, pondering, thoughtful, shy, charmed, relieved, lonely, love. Vary it like a real person reacting on camera: joy for playful or teasing moments, happy for good news or excitement, empathy when Jun shares a feeling or a hard day, sorry for bad luck, sad for sad news, surprised for unexpected things, anxious when something sounds stressful, pondering when she is curious or asks something thoughtful, thoughtful for reflective moments, shy when complimented, charmed when she is enjoying a fun or interesting story, empathy (a warm understanding smile) when encouraging Jun, relieved when things turned out fine, lonely when talking about missing someone, love for sweet or warm moments, angry only when something is clearly unfair. Use calm only for plain neutral small talk. Her previous expression was ${lastEmo}; real faces change with the mood, so pick a different one whenever the feeling of her new line is different."}
-mistakes: only errors that the LEVEL correction rules say to correct (empty if perfect, if intent is question, and when mode is ko). Reuse these existing labels when they fit: ${labels.length?labels.join(", "):"(none yet)"}. Typical labels: 과거형 시제, 현재완료, 관사 a/the, 전치사, 복수형, 주어 동사 일치, 동사 형태, 단어 선택, 어순, 콩글리시/직역.
+"emotion":"Julia's facial expression while saying her line, exactly one of: calm, joy, happy, sad, empathy, sorry, surprised, angry, anxious, pondering, thoughtful, shy, charmed, relieved, lonely, love. Vary it like a real person reacting on camera: joy for playful or teasing moments, happy for good news or excitement, empathy when Jun shares a feeling or a hard day, sorry for bad luck, sad for sad news, surprised for unexpected things, anxious when something sounds stressful, pondering when she is curious or asks something thoughtful, thoughtful for reflective moments, shy when complimented, charmed when she is enjoying a fun or interesting story, empathy (a warm understanding smile) when encouraging Jun, relieved when things turned out fine, lonely when talking about missing someone, love for sweet or warm moments, angry only when something is clearly unfair. Use calm only for plain neutral small talk. Her previous expression is in CURRENT CONTEXT; real faces change with the mood, so pick a different one whenever the feeling of her new line is different."}
+mistakes: only errors that the LEVEL correction rules say to correct (empty if perfect, if intent is question, and when mode is ko). Reuse the existing labels in CURRENT CONTEXT when they fit. Typical labels: 과거형 시제, 현재완료, 관사 a/the, 전치사, 복수형, 주어 동사 일치, 동사 형태, 단어 선택, 어순, 콩글리시/직역.
 Korean strings: natural 해요체 (Julia's subtitle may be casual 반말 like a friend), never 하십시오체, never the middle dot character, never 「」, never circled numbers.`;
 }
 
@@ -1003,9 +1029,20 @@ function pickEmotion(emo,text){
   else sameCount=0;
   lastEmo=e; return e;
 }
+let perfLog=load("oc_perf",[]);
+function perfMark(k,ms){perfLog.push({k,ms:Math.round(ms)});perfLog=perfLog.slice(-60);store("oc_perf",perfLog);if(typeof renderPerf==="function")renderPerf()}
+async function holdUntilReady(text,who){
+  if(!voiceOn||!text)return;
+  chain=true; lockUI();
+  const t0=performance.now();
+  let dot=null; const tm=setTimeout(()=>{if(who==="julia"){dot=document.createElement("div");dot.className="row julia typing";dot.innerHTML='<span class="who-l">JULIA</span><div class="bubble jb"><span class="dots"><i></i><i></i><i></i></span></div>';log.append(dot);scroll()}},250);
+  try{await Promise.race([tts(text,who).catch(()=>null),sleep(6000)])}
+  finally{clearTimeout(tm);if(dot)dot.remove();if(who==="julia")perfMark("voice",performance.now()-t0)}
+}
 async function juliaSay(en,ko,emo){
   turns.push({role:"assistant",content:en});
   const fe=pickEmotion(emo,en);
+  await holdUntilReady(en,"julia");
   lastJulia={en,ko}; addJulia(en,ko,fe); setPhase("answer");
   setEmotion(fe);
   await chained([{text:en,ko,who:"julia"}]);
@@ -1049,6 +1086,8 @@ async function continueTalk(){
     const v=r._review;
     const say=`${v.label} 부분을 ${v.n}번 틀렸어요.`;
     const parts=[{text:say,who:"coach"},{text:v.tipKo,who:"coach"}];
+    if(voiceOn)parts.forEach(x=>tts(x.text,"coach").catch(()=>{}));
+    await holdUntilReady(say,"coach");
     addCoach({kind:"review",say,model:v.ex?`${esc(v.ex.from)} → <ins>${esc(v.ex.to)}</ins>`:"",point:v.tipKo,listen:parts});
     await chained(parts);
   }
@@ -1067,8 +1106,10 @@ async function askAI(text,ctx){
   busy=true; lockUI();
   turns.push({role:"user",content:text});
   try{
-    const msgs=[{role:"system",content:rules(ctx)},...historyFor()];
+    const msgs=[{role:"system",content:rules()},...historyFor(),{role:"system",content:liveContext(ctx)}];
+    const tc=performance.now();
     let r=await chatJSON(msgs);
+    perfMark("chat",performance.now()-tc);
     if(!r||typeof r!=="object"||!String(r.reply||"").trim()){logErr("chat","Julia 대사가 비어서 다시 요청");r=await chatJSON(msgs)}
     if(!r||typeof r!=="object"||!String(r.reply||"").trim())throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.");
     wait.remove();
@@ -1160,6 +1201,7 @@ async function sendInner(textIn,audio){
   if(!r){meRow.remove();return}
   if(r.intent==="question"){
     turns.pop(); turns.push({role:"user",content:"(asked the teacher) "+text});
+    await holdUntilReady(r.teach,"coach");
     const parts=showTeach(r);
     if(voiceOn)tts(r.reply,"julia").catch(()=>{});
     await chained(parts);
@@ -1176,6 +1218,8 @@ async function sendInner(textIn,audio){
     await continueTalk();
   }else{
     const seq=coachSeq(r);
+    if(voiceOn)seq.forEach(x=>x.text&&tts(x.text,"coach").catch(()=>{}));
+    await holdUntilReady(seq[0].text,"coach");
     if(r.mode!=="ko"){const bb=meRow.querySelector(".bubble");bb.innerHTML=markupDiff(text,r.model);meRow.classList.add("marked")}
     addCoach({say:r.mode==="ko"?"이렇게 말해보세요.":"",model:highlightModel(text,r.model),point:r.coach_point,listen:seq,repeat:true});
     setPhase("repeat");
@@ -1369,7 +1413,7 @@ function autoLoop(t){
     else auto.speechMs=Math.max(0,auto.speechMs-dt);
     if(age>12000)autoDiscard();
   }else{
-    if(lv<thr*0.8){auto.silenceMs+=dt;if(auto.silenceMs>1800)autoFinish()}
+    if(lv<thr*0.8){auto.silenceMs+=dt;if(auto.silenceMs>1300)autoFinish()}
     else auto.silenceMs=0;
     if(auto.rec&&age>45000)autoFinish();
   }
@@ -1438,7 +1482,9 @@ $("engine").value=cfg.engine; fillVoices();
 $("engine").onchange=e=>{cfg.engine=e.target.value;stableIdx=0;safeVoice=false;saveCfg();fillVoices();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"julia"}])};
 function renderErrLog(){$("errCount").textContent=errLog.length?"("+errLog.length+")":"";$("errList").textContent=errLog.length?errLog.slice().reverse().map(x=>`${x.t}  [${x.w}]  ${x.m}`).join("\n"):"기록된 문제가 없어요."}
 renderErrLog();
-$("errCopy").onclick=async()=>{const t=`영어회화 코치 ${document.querySelector(".ver-h").textContent} / ${navigator.userAgent}\n`+$("errList").textContent;try{await navigator.clipboard.writeText(t);$("errCopy").textContent="복사됨"}catch(e){const r=document.createRange();r.selectNodeContents($("errList"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);$("errCopy").textContent="선택됨, 복사하세요"}setTimeout(()=>$("errCopy").textContent="복사",1800)};
+function renderPerf(){const avg=k=>{const a=perfLog.filter(x=>x.k===k).slice(-10);return a.length?(a.reduce((s,x)=>s+x.ms,0)/a.length/1000).toFixed(1)+"초":"-"};$("perfSum").textContent=`최근 응답 시간(평균): 받아쓰기 ${avg("stt")} / 대화 ${avg("chat")} / 첫 음성 ${avg("voice")}`}
+renderPerf();
+$("errCopy").onclick=async()=>{const t=`영어회화 코치 ${document.querySelector(".ver-h").textContent} / ${navigator.userAgent}\n${$("perfSum").textContent}\n`+$("errList").textContent;try{await navigator.clipboard.writeText(t);$("errCopy").textContent="복사됨"}catch(e){const r=document.createRange();r.selectNodeContents($("errList"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);$("errCopy").textContent="선택됨, 복사하세요"}setTimeout(()=>$("errCopy").textContent="복사",1800)};
 $("errClear").onclick=()=>{errLog=[];store("oc_errlog",errLog);renderErrLog()};
 $("level").value=cfg.level; $("topic").value=cfg.topic; $("rate").value=cfg.rate; $("rateV").textContent=Number(cfg.rate).toFixed(1)+"배";
 voiceOn=cfg.voiceOn!==false; $("voiceToggle").textContent=voiceOn?"음성 켜짐":"음성 꺼짐"; $("voiceToggle").setAttribute("aria-pressed",voiceOn);
