@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v3.9</title>
+<title>영어회화 코치 v4.1</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -444,7 +444,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v3.9</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v4.1</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -619,7 +619,7 @@ const SVOICES=[
 const sVoiceOf=id=>SVOICES.find(v=>v.id===id)||SVOICES[0];
 const STABLE_MODELS=["tts-1-hd","tts-1"];
 const JULIA_STYLE="Voice: the same young adult American woman in every line, never a male voice. Tone: casual, warm and natural like a friend on a video call, with natural pauses. Not like an announcer.";
-const COACH_STYLE="Voice: the same calm adult woman in every line, never a male voice. Speak Korean naturally and kindly like a patient teacher. Say English sentences with natural American pronunciation, clearly and a little slower.";
+const COACH_STYLE="Voice: the same calm adult woman in every line, never a male voice. When speaking Korean, sound like a native Korean speaker from Seoul: natural Korean pronunciation, rhythm and intonation, warm and clear, never an English accent and never robotic. Say English words and sentences with natural American pronunciation, clearly and a little slower.";
 const OPENERS={
   daily:["Hey! Oh good, I can hear you. So how's your day going so far?","안녕! 오, 잘 들린다. 오늘 하루 어떻게 보내고 있어?"],
   work:["Hi! Sorry, I just got out of a meeting, haha. How's work been for you lately?","안녕! 미안, 방금 회의 끝났어 ㅎㅎ 요즘 일은 어때?"],
@@ -742,8 +742,8 @@ const ttsCache=new Map(); let ttsWarned=false;
 let stableIdx=0, safeVoice=false;
 /* Coach speaks Korean: classic TTS reads Korean badly, so the coach always uses the newer speech model
    (pinned snapshot first for a steadier voice), in a female voice */
-const COACH_MODELS=["gpt-4o-mini-tts-2025-12-15"]; let coachIdx=cfg.coachIdx||0;
-const FIXED_LINES=new Set(["이렇게 말해보세요.","자, 이제 한번 말해볼까요?","한 번 더 말해보세요.","표현 노트에 저장했어요. 대화를 이어갈게요."]);
+const COACH_MODELS=["gpt-4o-mini-tts-2025-03-20","gpt-4o-mini-tts-2025-12-15"]; if(!cfg.v11){cfg.coachIdx=0;cfg.v11=1;saveCfg()} let coachIdx=cfg.coachIdx||0;
+const FIXED_LINES=new Set(["이렇게 말해보세요."]);
 function ttsBody(text,who){
   if(who==="coach"){
     const vo=voiceOf(cfg.coach), model=COACH_MODELS[coachIdx]||cfg.tts;
@@ -764,11 +764,11 @@ async function ttsFetch(text,who){
       if(FIXED_LINES.has(text))saveFixed(text,who,b);
       return URL.createObjectURL(b)}
     catch(e){
-      if(who==="coach"&&COACH_MODELS.includes(body.model)&&[400,403,404].includes(e.status)&&/model|not.?found|does not exist|access|invalid|unsupported|available/i.test(e.message)){logErr("tts",body.model+" 사용 불가, 기본 음성 모델로 전환");coachIdx++;cfg.coachIdx=coachIdx;saveCfg();continue}
+      if(who==="coach"&&COACH_MODELS.includes(body.model)&&[400,403,404].includes(e.status)&&/does not exist|not.?found|not available|access|deprecat|retired|shut down|unsupported model|invalid model|model/i.test(e.message)){const bad=COACH_MODELS.indexOf(body.model);if(bad>=coachIdx){coachIdx=bad+1;cfg.coachIdx=coachIdx;saveCfg();logErr("tts",body.model+" 사용 불가, 다음 음성 모델로 전환")}continue}
       // stable model not available on this account: fall back to the next one
       if(cfg.engine==="stable"&&STABLE_MODELS.includes(body.model)&&[400,403,404].includes(e.status)){
         if(/voice/i.test(e.message)&&!safeVoice){safeVoice=true;logErr("tts",body.voice+" 목소리 사용 불가, 기본 목소리로 전환");continue}
-        if(/model/i.test(e.message)&&/not.?found|does not exist|access|invalid|unsupported|available/i.test(e.message)){logErr("tts",body.model+" 사용 불가, 다음 모델로 전환");stableIdx++;continue}
+        if(/model/i.test(e.message)&&/not.?found|does not exist|access|invalid|unsupported|available/i.test(e.message)){const bad=STABLE_MODELS.indexOf(body.model);if(bad>=stableIdx){stableIdx=bad+1;logErr("tts",body.model+" 사용 불가, 다음 모델로 전환")}continue}
       }
       throw e;
     }
@@ -954,20 +954,22 @@ function rules(ctx){
   return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text, so ignore capitalization, punctuation and obvious transcription glitches. Two people talk with Jun:
 JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant, often adds a small personal detail or opinion of her own, then asks ONE follow-up question. Sentence length, words and question type follow the LEVEL rules. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}.
 ${LEVEL_RULES[$("level").value]||LEVEL_RULES.beginner}
-COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and explains WHY natives say it that way in plain Korean. English sentences stay in English.
+COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and one short grammar point. English sentences stay in English.
+SAM'S KOREAN must sound like a real Korean teacher talking, natural spoken 해요체, short and simple. Never translationese or textbook style. Good: "어제 일이라서 go 대신 went를 써요." / "영어는 주어 다음에 바로 동사가 와요." / "피곤하다는 말은 be동사에 tired를 붙여요." / "직업 앞에는 a를 붙여요." Bad: "이것은 과거의 행동을 나타내기 때문에 과거형이 사용됩니다." / "당신의 문장은 문법적으로 올바르지 않습니다."
+When Jun speaks Korean (mode ko): just give the natural English sentence for what he meant, and coach_point says ONLY how English builds that sentence (word order, verb, tense, article). Never explain or repeat the Korean meaning.
 ${ctx||""}
 First decide what Jun's LATEST message is:
 - "question": Jun is clearly asking the TEACHER something about English (meaning, grammar, how to say something) instead of answering Julia, in Korean or English. A reply to Julia that asks her something back (e.g. "And you?", "Do you like it?") is NOT a question, it is an answer. e.g. "왜 how is it going을 써?", "이거 무슨 뜻이야?", "how are you랑 뭐가 달라?", "can I say it like this?".
 - "answer": Jun is replying to Julia (English, Korean, or mixed).
 Reply with ONLY this JSON object (always include "emotion"):
 {"emotion":"see the emotion rules below","intent":"answer" or "question",
-"teach":"question only: Sam's direct answer in Korean 해요체, 2 to 4 short sentences, starting with the answer itself (no 좋은 질문이에요 or similar). English words or example sentences may appear inside. Empty string for answer.",
+"teach":"question only: Sam's direct answer in natural spoken Korean 해요체 like the Good examples, 2 to 4 short sentences, starting with the answer itself (no 좋은 질문이에요 or similar). English words or example sentences may appear inside. Empty string for answer.",
 "teach_examples":["question only: 1 to 3 short English example sentences to show on screen"],
 "mode":"ko" if the message contains any Korean else "en",
 "perfect":true only if intent is answer, mode is en, and the message passes the LEVEL correction rules above,
 "model":"answer only: what Jun should say, keeping his meaning, following the LEVEL model rules. If perfect, repeat his message. Empty string for question.",
-"coach_intro":"always exactly: 이렇게 말해보세요.",
-"coach_point":"answer and not perfect: 1 short Korean sentence explaining why natives say it this way. No praise or sympathy. Empty if perfect.",
+"coach_intro":"mode ko only: 이렇게 말해보세요. Otherwise empty.",
+"coach_point":"answer and not perfect: ONE short natural spoken Korean sentence (about 30 Korean characters or fewer) with the English grammar point, in the style of the Good examples above. mode en: why the corrected part is right. mode ko: only how English builds the sentence, never the Korean meaning. No praise or sympathy. Empty if perfect.",
 "mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
 "reply":"answer: Julia's next line. question: Julia's short natural line to get back into the conversation, usually re-asking her last question in an easy way.",
 "reply_ko":"natural casual Korean subtitle of Julia's line",
@@ -1013,7 +1015,9 @@ function startTalk(silent){
   return true;
 }
 function coachSeq(r){
-  return [{text:"이렇게 말해보세요.",who:"coach"},{text:r.model,who:"coach"},{text:r.coach_point,who:"coach"}];
+  // Korean input: "이렇게 말해보세요." first. English input: go straight to the corrected sentence.
+  const lead=r.mode==="ko"?[{text:"이렇게 말해보세요.",who:"coach"}]:[];
+  return [...lead,{text:r.model,who:"coach"},{text:r.coach_point,who:"coach"}];
 }
 function recordMistakes(r,said){
   let review=null;
@@ -1120,7 +1124,7 @@ async function sendInner(textIn,audio){
       if(r.intent==="question"){
         turns.push({role:"assistant",content:"(Sam answered) "+r.teach});
         const parts=showTeach(r);
-        await chained([...parts,{text:"자, 이제 한번 말해볼까요?",who:"coach"},{text:pending.model,who:"coach"}]);
+        await chained([...parts,{text:pending.model,who:"coach"}]);
         return;
       }
       turns.pop(); qRow.remove();
@@ -1132,14 +1136,12 @@ async function sendInner(textIn,audio){
       const m=document.createElement("span"); m.className="okmark"; m.textContent="따라 말하기 완료"; repRow.append(m);
       setPhase("answer"); await continueTalk();
     }else if(++tries<2){
-      const say="한 번 더 말해보세요.";
-      const parts=[{text:say,who:"coach"},{text:pending.model,who:"coach"}];
-      addCoach({say,model:highlightModel(text,pending.model),listen:parts,repeat:true});
+      const parts=[{text:pending.model,who:"coach"}];
+      addCoach({model:highlightModel(text,pending.model),listen:parts,repeat:true});
       await chained(parts);
     }else{
-      const say="표현 노트에 저장했어요. 대화를 이어갈게요.";
-      addCoach({say}); setPhase("answer");
-      await chained([{text:say,who:"coach"}]); await continueTalk();
+      addCoach({say:"표현 노트에 저장했어요."}); setPhase("answer");
+      await continueTalk();
     }
     return;
   }
@@ -1157,7 +1159,7 @@ async function sendInner(textIn,audio){
     return;
   }
   r.mistakes=Array.isArray(r.mistakes)?r.mistakes:[];
-  if(hasKo(text)){r.mode="ko";r.perfect=false;r.mistakes=[]}
+  if(hasKo(text)){r.mode="ko";r.perfect=false;r.mistakes=[]}else r.mode="en";
   r._review=recordMistakes(r,text);
   pending=r; tries=0;
   if(voiceOn)tts(r.reply,"julia").catch(()=>{});
@@ -1167,7 +1169,7 @@ async function sendInner(textIn,audio){
   }else{
     const seq=coachSeq(r);
     if(r.mode!=="ko"){const bb=meRow.querySelector(".bubble");bb.innerHTML=markupDiff(text,r.model);meRow.classList.add("marked")}
-    addCoach({say:seq[0].text,model:highlightModel(text,r.model),point:r.coach_point,listen:seq,repeat:true});
+    addCoach({say:r.mode==="ko"?"이렇게 말해보세요.":"",model:highlightModel(text,r.model),point:r.coach_point,listen:seq,repeat:true});
     setPhase("repeat");
     await chained(seq);
   }
