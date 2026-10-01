@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v4.3</title>
+<title>영어회화 코치 v4.4</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -446,7 +446,7 @@ textarea::placeholder{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v4.3</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v4.4</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -728,6 +728,49 @@ async function api(path,opts,o={}){
     const e=new ApiError(label); e.status=res.status; e.code=code; throw e;
   }
 }
+function parseJSONText(txt){
+  try{return JSON.parse(txt)}catch(e){const m=String(txt).match(/\{[\s\S]*\}/);if(m){try{return JSON.parse(m[0])}catch(x){}}}
+  return null;
+}
+async function chatStream(messages,onPart){
+  const body={model:cfg.chat,messages,response_format:{type:"json_object"},stream:true};
+  if(/^(gpt-5|gpt-6|o\d)/.test(cfg.chat))body.reasoning_effort=/luna|nano|mini/.test(cfg.chat)?"none":"low";
+  const ctl=new AbortController(); let idle=setTimeout(()=>ctl.abort(),20000*TSCALE()); const hard=setTimeout(()=>ctl.abort(),45000*TSCALE());
+  try{
+    const res=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",signal:ctl.signal,headers:{Authorization:"Bearer "+cfg.key,"Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(!res.ok){const e=new Error("stream "+res.status);e.status=res.status;throw e}
+    let txt="";
+    if(!/event-stream/.test(res.headers.get("content-type")||"")||!res.body||!res.body.getReader){
+      const j=await res.json(); txt=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||""; onPart&&onPart(txt);
+    }else{
+      const rd=res.body.getReader(), dec=new TextDecoder(); let buf="";
+      for(;;){
+        const {value,done}=await rd.read(); if(done)break;
+        clearTimeout(idle); idle=setTimeout(()=>ctl.abort(),20000*TSCALE());
+        buf+=dec.decode(value,{stream:true}); let i;
+        while((i=buf.indexOf("\n"))>=0){
+          const line=buf.slice(0,i).trim(); buf=buf.slice(i+1);
+          if(!line.startsWith("data:"))continue; const d=line.slice(5).trim(); if(!d||d==="[DONE]")continue;
+          try{const j=JSON.parse(d);const c=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(c){txt+=c;onPart&&onPart(txt)}}catch(e){}
+        }
+      }
+    }
+    const r=parseJSONText(txt); if(!r)throw new Error("stream unreadable"); return r;
+  }finally{clearTimeout(idle);clearTimeout(hard)}
+}
+/* while the answer is still being written, start making the voices for the corrected sentence and Julia's line */
+function earlyVoices(){
+  const st={};
+  return txt=>{
+    if(!voiceOn)return;
+    if(!st.model){const m=txt.match(/"perfect"\s*:\s*(true|false)[\s\S]*?"model"\s*:\s*"((?:[^"\\]|\\.)*)"/);if(m){st.model=1;if(m[1]==="false"){try{const t=JSON.parse('"'+m[2]+'"').trim();if(t)tts(t,"coach").catch(()=>{})}catch(e){}}}}
+    if(!st.reply){const m=txt.match(/"reply"\s*:\s*"((?:[^"\\]|\\.)*)"/);if(m){st.reply=1;try{const t=JSON.parse('"'+m[1]+'"').trim();if(t)tts(t,"julia").catch(()=>{})}catch(e){}}}
+  };
+}
+async function chatFast(messages){
+  try{return await chatStream(messages,earlyVoices())}
+  catch(e){logErr("chat","빠른 응답 실패, 일반 방식으로 다시 요청 ("+(e.message||e)+")");return chatJSON(messages)}
+}
 async function chatJSON(messages){
   const body={model:cfg.chat,messages,response_format:{type:"json_object"}};
   if(/^(gpt-5|gpt-6|o\d)/.test(cfg.chat))body.reasoning_effort=/luna|nano|mini/.test(cfg.chat)?"none":"low";
@@ -794,7 +837,8 @@ async function transcribe(blob){
   const fd=new FormData();
   const ext=/mp4|m4a|aac/.test(blob.type)?"mp4":/ogg/.test(blob.type)?"ogg":/wav/.test(blob.type)?"wav":"webm";
   fd.append("file",blob,"speech."+ext); fd.append("model",cfg.stt);
-  fd.append("prompt","A Korean adult practicing spoken English. He mostly speaks English with a Korean accent: always write English speech in English letters, even when the pronunciation is accented or unclear. Use Hangul only when he clearly speaks Korean sentences. Keep his grammar mistakes exactly as spoken.");
+  const said=phase==="repeat"&&pending&&pending.model?` He is trying to repeat this sentence: "${pending.model}".`:(lastJulia&&lastJulia.en?` He is answering this: "${lastJulia.en}".`:"");
+  fd.append("prompt","A Korean adult practicing spoken English. He mostly speaks English with a Korean accent: always write English speech in English letters, even when the pronunciation is accented or unclear. Use Hangul only when he clearly speaks Korean sentences. Keep his grammar mistakes exactly as spoken."+said);
   const wantProbs=!/whisper/.test(cfg.stt);
   if(wantProbs){fd.append("response_format","json");fd.append("include[]","logprobs")}
   let r; const ts=performance.now();
@@ -983,8 +1027,8 @@ function liveContext(ctx){
   return `CURRENT CONTEXT\nJulia's previous expression: ${lastEmo}\nExisting mistake labels: ${labels.length?labels.join(", "):"(none yet)"}${ctx?"\n"+ctx:""}`;
 }
 function rules(){
-  return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text, so ignore capitalization, punctuation and obvious transcription glitches. Two people talk with Jun:
-JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant, often adds a small personal detail or opinion of her own, then asks ONE follow-up question. Sentence length, words and question type follow the LEVEL rules. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}.
+  return `You run a video-call English speaking class for a Korean adult learner named Jun. Jun's messages come from speech-to-text of accented English, so words are often mis-heard (e.g. "work" heard as "walk", "I'm fine" as "I'm find"). Always work out what he most likely MEANT from the conversation (especially Julia's last question) and answer that meaning; never react to a mis-heard word literally. If you really cannot tell what he meant, Julia asks a short natural check like "Sorry, did you mean ...?" instead of guessing wildly. Ignore capitalization and punctuation. Two people talk with Jun:
+JULIA: a real-feeling American woman in her late 20s, Jun's English conversation partner. She talks exactly like a person on a casual video call, not like an AI or a teacher: contractions, short sentences, natural fillers now and then (oh, haha, honestly, wait, I mean, you know), genuine reactions (No way! Oh, that's so cool. Ugh, I feel that.). She reacts to what Jun actually meant and remembers what he said earlier in the call. Not an interview: build on his answer, often add a small related detail or story of her own, and ask ONE natural follow-up question most of the time (sometimes just react and leave room for him to keep talking). Keep the topic flowing like a real chat instead of jumping to new topics. Sentence length, words and question type follow the LEVEL rules. Never stiff. Never corrects Jun herself. Topic: ${TOPIC_EN[$("topic").value]}.
 ${LEVEL_RULES[$("level").value]||LEVEL_RULES.beginner}
 COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and one short grammar point. English sentences stay in English.
 SAM'S KOREAN must sound like a real Korean teacher talking, natural spoken 해요체, short and simple. Never translationese or textbook style.
@@ -995,18 +1039,18 @@ When Jun speaks Korean (mode ko): just give the natural English sentence for wha
 First decide what Jun's LATEST message is:
 - "question": Jun is clearly asking the TEACHER something about English (meaning, grammar, how to say something) instead of answering Julia, in Korean or English. A reply to Julia that asks her something back (e.g. "And you?", "Do you like it?") is NOT a question, it is an answer. e.g. "왜 how is it going을 써?", "이거 무슨 뜻이야?", "how are you랑 뭐가 달라?", "can I say it like this?".
 - "answer": Jun is replying to Julia (English, Korean, or mixed).
-Reply with ONLY this JSON object (always include "emotion"):
-{"emotion":"see the emotion rules below","intent":"answer" or "question",
-"teach":"question only: Sam's direct answer in natural spoken Korean 해요체 like the Good examples, 2 to 4 short sentences, starting with the answer itself (no 좋은 질문이에요 or similar). English words or example sentences may appear inside. Empty string for answer.",
-"teach_examples":["question only: 1 to 3 short English example sentences to show on screen"],
+Reply with ONLY this JSON object, keys in exactly this order (always include "emotion"):
+{"intent":"answer" or "question",
 "mode":"ko" if the message contains any Korean else "en",
 "perfect":true only if intent is answer, mode is en, and the message passes the LEVEL correction rules above,
 "model":"answer only: what Jun should say, keeping his meaning, following the LEVEL model rules. If perfect, repeat his message. Empty string for question.",
-"coach_intro":"mode ko only: 이렇게 말해보세요. Otherwise empty.",
-"coach_point":"answer and not perfect: 1 or 2 short natural spoken Korean sentences (about 60 Korean characters or fewer) like the Good examples: name the subject and the verb of THIS sentence and the exact word that changed and why. mode ko: only how the English sentence is built (subject, verb, word order), never the Korean meaning. No praise or sympathy. Empty if perfect.",
-"mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
 "reply":"answer: Julia's next line. question: Julia's short natural line to get back into the conversation, usually re-asking her last question in an easy way.",
 "reply_ko":"natural casual Korean subtitle of Julia's line",
+"coach_point":"answer and not perfect: 1 or 2 short natural spoken Korean sentences (about 60 Korean characters or fewer) like the Good examples: name the subject and the verb of THIS sentence and the exact word that changed and why. mode ko: only how the English sentence is built (subject, verb, word order), never the Korean meaning. No praise or sympathy. Empty if perfect.",
+"mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
+"teach":"question only: Sam's direct answer in natural spoken Korean 해요체 like the Good examples, 2 to 4 short sentences, starting with the answer itself (no 좋은 질문이에요 or similar). English words or example sentences may appear inside. Empty string for answer.",
+"teach_examples":["question only: 1 to 3 short English example sentences to show on screen"],
+"coach_intro":"mode ko only: 이렇게 말해보세요. Otherwise empty.",
 "emotion":"Julia's facial expression while saying her line, exactly one of: calm, joy, happy, sad, empathy, sorry, surprised, angry, anxious, pondering, thoughtful, shy, charmed, relieved, lonely, love. Vary it like a real person reacting on camera: joy for playful or teasing moments, happy for good news or excitement, empathy when Jun shares a feeling or a hard day, sorry for bad luck, sad for sad news, surprised for unexpected things, anxious when something sounds stressful, pondering when she is curious or asks something thoughtful, thoughtful for reflective moments, shy when complimented, charmed when she is enjoying a fun or interesting story, empathy (a warm understanding smile) when encouraging Jun, relieved when things turned out fine, lonely when talking about missing someone, love for sweet or warm moments, angry only when something is clearly unfair. Use calm only for plain neutral small talk. Her previous expression is in CURRENT CONTEXT; real faces change with the mood, so pick a different one whenever the feeling of her new line is different."}
 mistakes: only errors that the LEVEL correction rules say to correct (empty if perfect, if intent is question, and when mode is ko). Reuse the existing labels in CURRENT CONTEXT when they fit. Typical labels: 과거형 시제, 현재완료, 관사 a/the, 전치사, 복수형, 주어 동사 일치, 동사 형태, 단어 선택, 어순, 콩글리시/직역.
 Korean strings: natural 해요체 (Julia's subtitle may be casual 반말 like a friend), never 하십시오체, never the middle dot character, never 「」, never circled numbers.`;
@@ -1108,7 +1152,7 @@ async function askAI(text,ctx){
   try{
     const msgs=[{role:"system",content:rules()},...historyFor(),{role:"system",content:liveContext(ctx)}];
     const tc=performance.now();
-    let r=await chatJSON(msgs);
+    let r=await chatFast(msgs);
     perfMark("chat",performance.now()-tc);
     if(!r||typeof r!=="object"||!String(r.reply||"").trim()){logErr("chat","Julia 대사가 비어서 다시 요청");r=await chatJSON(msgs)}
     if(!r||typeof r!=="object"||!String(r.reply||"").trim())throw new ApiError("답을 읽지 못했어요. 한 번 더 보내주세요.");
