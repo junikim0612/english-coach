@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v5.6</title>
+<title>영어회화 코치 v5.7</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -708,18 +708,129 @@ body.ended .stage img.face{filter:saturate(.55) brightness(.8);transition:filter
 .qz-skip{align-self:center;margin-top:10px;border:0!important;background:transparent!important;color:#8a93a6!important;font-size:12.5px!important;text-decoration:underline;text-underline-offset:3px}
 .ex-item{align-items:flex-start}
 .ex-item .ex-play{margin-top:2px}
+
+/* v5.7: app screens (home / call / role-play / record) with a floating tab bar */
+:root{--v-bg:#f3f4f7;--v-ink:#0e1726;--v-mu:#6b7385;--v-mu2:#9aa1b0;--v-navy:#1b2b4b;--v-coral:#e8513f;--v-amber:#f2a93b}
+body[data-view]{background:var(--v-bg)!important}
+.pane.chat{background:var(--v-bg)!important;border:0!important}
+.log{background:transparent!important}
+.view{grid-column:1;grid-row:2;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:4px 20px 130px;display:flex;flex-direction:column}
+body:not([data-view="home"]) #homeView,body:not([data-view="rp"]) #rpView{display:none}
+body[data-view="home"] .pane.chat,body[data-view="rp"] .pane.chat{display:none!important}
+body[data-view="home"] header,body[data-view="rp"] header,body[data-view="rec"] header{display:none!important}
+@media (max-width:900px){body[data-view="rec"] .pane.chat{display:none!important}body[data-view]{padding-inline:0!important}.view{padding-left:18px;padding-right:18px}}
+@media (min-width:901px){body[data-view="rec"] header{display:flex!important}}
+#backHome{flex:none}
+.hv-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:10px 0 18px}
+.hv-date{font-size:14.5px;font-weight:600;color:var(--v-mu);margin-bottom:6px}
+.hv-title{margin:0;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.18;color:var(--v-ink);font-family:var(--f-body)}
+.hv-gear{flex:none;width:46px!important;height:46px!important;border-radius:50%!important;border:0!important;background:#fff!important;color:var(--v-ink)!important;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(14,23,38,.06)}
+.hv-sec{display:flex;align-items:baseline;justify-content:space-between;margin:24px 2px 12px}
+.hv-sec b{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--v-ink)}.hv-sec span{font-size:13px;color:var(--v-mu)}
+/* horizontal card rail */
+.rail{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-left:20px;padding:4px 20px 16px;margin:0 -20px;scrollbar-width:none;flex:none}
+@media (max-width:900px){.rail{padding-left:18px;padding-right:18px;margin:0 -18px;scroll-padding-left:18px}}
+.rail::-webkit-scrollbar{display:none}
+.rc{flex:none;width:148px;height:216px;border-radius:24px!important;overflow:hidden;background:#fff!important;border:0!important;padding:0!important;scroll-snap-align:start;display:flex!important;flex-direction:column;text-align:left;color:var(--v-ink)!important;box-shadow:0 1px 2px rgba(14,23,38,.06),0 8px 20px rgba(14,23,38,.05);white-space:normal!important;font-size:inherit!important;transition:transform .15s}
+.rc:active{transform:scale(.97)}
+.rc.big{width:226px}
+.rc .vis{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;min-height:0}
+.rc .vis img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.rc .vis .pill{position:absolute;left:10px;top:10px;background:rgba(14,23,38,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 9px;display:inline-flex;align-items:center;gap:5px;z-index:1}
+.rc .vis .pill i{width:7px;height:7px;border-radius:50%;background:#4ade80}
+.rc .vis .pill.live i{background:#ff5a4a}
+.rc .vis .go{position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:50%;background:var(--v-coral);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(232,81,63,.45);z-index:1}
+.rc .vis .big{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1;font-family:var(--f-display)}
+.rc .vis .big small{font-size:18px;opacity:.8;margin-left:2px}
+.rc .vis .ico{opacity:.95}
+.rc .lab{padding:11px 14px 13px;background:#fff;flex:none}
+.rc .lab b{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.01em;line-height:1.3}
+.rc .lab span{display:block;font-size:12.5px;color:var(--v-mu);line-height:1.35;margin-top:2px}
+.g-quiz{background:linear-gradient(150deg,#ff8a73,#e8513f)}
+.g-expr{background:linear-gradient(150deg,#ffd27a,#f2a93b)}
+.g-rec{background:linear-gradient(150deg,#2f4675,#1b2b4b)}
+.g-set{background:linear-gradient(150deg,#c9ced8,#9aa3b5)}
+.g-rec svg.hv-spark{position:absolute;left:14px;right:14px;bottom:14px;width:calc(100% - 28px);height:46px}
+.g-rec .big{position:absolute;left:14px;top:14px;font-size:30px!important}
+/* home lists */
+.hv-sent{display:flex;flex-direction:column;gap:10px}
+.hs{background:#fff;border-radius:20px;padding:13px 12px 13px 18px;display:flex;align-items:center;gap:12px}
+.hs .t{flex:1;min-width:0}.hs .t b{display:block;font-size:16px;font-weight:700;letter-spacing:-.01em;font-family:var(--f-en);line-height:1.35;color:var(--v-ink)}.hs .t span{font-size:13.5px;color:var(--v-mu)}
+.hs.used{box-shadow:inset 0 0 0 2px #cfe9d6}
+.hs .pl{flex:none;width:40px!important;height:40px!important;border-radius:50%!important;border:0!important;background:var(--v-bg)!important;color:var(--v-ink)!important;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center}
+.hv-empty{background:#fff;border-radius:20px;padding:16px 18px;font-size:14px;color:var(--v-mu)}
+.hv-stats,.hl-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hl-tiles{grid-template-columns:1fr 1fr}
+.st{background:#fff;border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.st .dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
+.st .k{font-size:13px;color:var(--v-mu);font-weight:600;white-space:nowrap}
+.st .v{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1;white-space:nowrap;color:var(--v-ink)}
+.st .v small{font-size:14px;color:var(--v-mu);font-weight:700;margin-left:2px}
+/* role-play */
+.rp-fil{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
+.rp-fil button{border:0!important;background:#fff!important;color:var(--v-mu)!important;font-weight:700;font-size:14px!important;padding:9px 16px!important;border-radius:999px!important}
+.rp-fil button[aria-pressed="true"]{background:var(--v-navy)!important;color:#fff!important}
+.rp-rail .rc{width:168px;height:236px}
+.rp-rail .rc[aria-pressed="true"]{box-shadow:0 0 0 3px var(--v-navy),0 8px 20px rgba(14,23,38,.12)}
+.rc .vis .tag{position:absolute;left:10px;top:10px;background:rgba(255,255,255,.92);color:var(--v-ink);font-size:11.5px;font-weight:800;border-radius:999px;padding:4px 9px;z-index:1}
+.rc .vis .done{position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;z-index:1}
+.rp-detail{background:#fff;border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.rp-detail .nm{font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--v-ink)}
+.rp-detail .row2{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.5;color:#374151}
+.rp-detail .row2 .k{flex:none;width:58px;font-weight:700;color:var(--v-mu)}
+.rp-detail .st2{align-self:flex-start;font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px;background:#e8f5ec;color:#16803c}
+.rp-start{height:54px;border-radius:18px!important;border:0!important;background:var(--v-navy)!important;color:#fff!important;font-size:16px!important;font-weight:800;margin-top:6px;display:flex!important;align-items:center;justify-content:center}
+/* floating tab bar */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(420px,calc(100% - 28px));height:70px;border-radius:35px;background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 12px 32px rgba(14,23,38,.16),0 0 0 1px rgba(14,23,38,.05);display:flex;align-items:center;justify-content:space-around;padding:0 8px;z-index:45}
+body[data-view="call"] .tabbar,body.kb .tabbar{display:none}
+.tabbar button{flex:1;max-width:96px;height:56px;border:0!important;background:transparent!important;border-radius:28px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0!important;color:var(--v-mu2)!important;font-size:12px!important;font-weight:700}
+.tabbar button[aria-current="page"]{background:rgba(27,43,75,.08)!important;color:var(--v-navy)!important}
+@media (min-width:901px){.tabbar .tb-rec{display:none!important}}
+@media (max-width:900px){body[data-view="rec"] .side.open .sd-body{padding-bottom:130px}}
+.side .sd-close{display:none}
+
+/* v5.7 chat on the grey canvas */
+body[data-view] .julia .bubble{background:#fff!important;border:0!important}
+body[data-view] .me .bubble,body[data-view] .me.marked .bubble{background:#1b2b4b!important;color:#fff!important;border:0!important;border-radius:20px 20px 6px 20px!important}
+body[data-view] .me.marked .bubble s{color:#9fb0cc!important}
+body[data-view] .me.marked .bubble ins{color:#ffb4a6!important}
+body[data-view] .me.rep .bubble{background:#e3e8f2!important;color:#0e1726!important}
+body[data-view] .sysnote{background:#e9ebf0!important}
+body[data-view] .compose{background:var(--v-bg)!important;border-top:0!important}
+body[data-view] .compose textarea{background:#fff!important;border:0!important}
+@media (max-width:900px){
+ body[data-view="rec"] .sd-head{display:flex!important;justify-content:flex-start!important;height:auto!important;padding:14px 20px 4px!important}
+ body[data-view="rec"] .sd-head h2{font-size:30px!important;font-weight:800!important;letter-spacing:-.03em}
+}
+
+@media (min-width:901px){.app>.pane.chat{grid-column:1;grid-row:2}.app>.pane.side{grid-column:2;grid-row:2}.app>header{grid-column:1/-1;grid-row:1}}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v5.6</span></h1>
+    <button class="gear ico" id="backHome" aria-label="홈으로" title="홈으로"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <h1>영어회화 코치 <span class="ver-h">v5.7</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="gear ico" id="openSettings" aria-haspopup="dialog" aria-label="설정" title="설정"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
   </header>
 
+  <section class="view" id="homeView" aria-label="홈">
+    <div class="hv-top"><div><div class="hv-date" id="hvDate"></div><h2 class="hv-title" id="hvTitle">오늘도 10분만<br>영어로 말해봐요</h2></div><button class="hv-gear" id="hvSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
+    <div class="rail" id="homeRail" role="list"></div>
+    <div class="hv-sec"><b>오늘의 문장</b><span>자정에 바뀌어요</span></div>
+    <div class="hv-sent" id="hvSent"></div>
+    <div class="hv-sec"><b>이번 주</b><span id="hvRange"></span></div>
+    <div class="hv-stats" id="hvStats"></div>
+  </section>
+  <section class="view" id="rpView" aria-label="상황극">
+    <div class="hv-top"><h2 class="hv-title">상황극</h2><button class="hv-gear" id="rpSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
+    <div class="rp-fil" id="rpFil" role="group" aria-label="분류"></div>
+    <div class="rail rp-rail" id="rpRail" role="list"></div>
+    <div class="rp-detail" id="rpDetail"></div>
+  </section>
   <section class="pane chat" aria-label="화상 대화">
     <div class="call">
       <div class="tile stage" id="juliaTile">
@@ -771,6 +882,7 @@ body.ended .stage img.face{filter:saturate(.55) brightness(.8);transition:filter
     </div>
     <div class="sd-body">
       <section class="sd-pane" data-pane="report">
+        <div class="hl-tiles" id="hlTiles"></div>
         <div id="weekly"></div>
         <div class="sd-card">
           <div class="sd-ct">8주 변화<span class="sd-cs">일주일씩 묶어서 봐요</span></div>
@@ -812,6 +924,12 @@ body.ended .stage img.face{filter:saturate(.55) brightness(.8);transition:filter
     </div>
   </aside>
 </div>
+<nav class="tabbar" id="tabBar" aria-label="화면 이동">
+  <button data-view="home"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>홈</span></button>
+  <button data-view="call"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 10l5-3v10l-5-3z"/><rect x="3" y="6" width="12" height="12" rx="3"/></svg><span>대화</span></button>
+  <button data-view="rp"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3.2 3.2 0 0 1 0 7M18 20a6 6 0 0 0-3-5.2"/></svg><span>상황극</span></button>
+  <button data-view="rec" class="tb-rec"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span>기록</span></button>
+</nav>
 
 <div class="modal" id="quizSheet" role="dialog" aria-modal="true" aria-labelledby="qzTitle" hidden>
   <div class="sheet qzsheet">
@@ -943,7 +1061,7 @@ body.ended .stage img.face{filter:saturate(.55) brightness(.8);transition:filter
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v5.6<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
+      <div class="set-ver">영어회화 코치 v5.7<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
     </div>
   </div>
 </div>
@@ -1920,8 +2038,8 @@ const ROLEPLAYS=[
   {id:"meeting",name:"해외 고객 미팅 자기소개",roleKo:"처음 만나는 해외 고객",role:"a new overseas client meeting Jun for the first time on a video call",goal:"이름, 회사, 하는 일을 소개하고 오늘 미팅 목적 말하기",goal_en:"introduce his name, his company and what he does, then say the purpose of today's meeting",open:["Hi, nice to finally meet you! Could you introduce yourself?","안녕하세요, 드디어 뵙네요! 자기소개 부탁드려요."]}
 ];
 let rp=null;
-function openRoleplay(){closeMore();$("rpSheet").hidden=false}
-function startRoleplay(id){const x=ROLEPLAYS.find(r=>r.id===id);if(!x)return;$("rpSheet").hidden=true;stopAudio();rp=Object.assign({},x,{done:false});startTalk(false)}
+function openRoleplay(){closeMore();showView("rp")}
+function startRoleplay(id){const x=ROLEPLAYS.find(r=>r.id===id);if(!x)return;$("rpSheet").hidden=true;stopAudio();rp=Object.assign({},x,{done:false});showView("call");startTalk(false)}
 async function showRpDone(){
   const say=`목표를 마쳤어요. ${callStats.turns}번 말해서 끝냈어요.`;
   const parts=[{text:say,who:"coach"}];
@@ -2004,7 +2122,7 @@ function renderHistory(){
     el.innerHTML=`<summary><span class="dt">${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}</span><span class="sm">${h.minutes}분 / ${h.turns}번 / 교정 ${h.fixes}${h.pron!==null?" / 발음 "+h.pron+"점":""}<span class="ttl">${esc(h.title||"")}</span></span></summary>${reportHTML(h)}`;
     box.append(el);
   });
-  renderWeekly(); renderTrend();
+  renderWeekly(); renderTrend(); renderHighlights(); if(typeof view!=="undefined"&&view==="home")renderHome();
 }
 
 /* ---------- Keep the call when the page is refreshed ---------- */
@@ -2764,6 +2882,78 @@ syncSettingsUI(); updateStudyBar();
 function sideTab(t){document.querySelectorAll(".sd-tabs [data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));document.querySelectorAll(".sd-pane").forEach(p=>p.hidden=p.dataset.pane!==t);try{localStorage.setItem("oc_sidetab",t)}catch(e){}}
 document.querySelectorAll(".sd-tabs [data-tab]").forEach(b=>b.onclick=()=>sideTab(b.dataset.tab));
 try{const t=localStorage.getItem("oc_sidetab");if(t&&document.querySelector(`.sd-pane[data-pane="${t}"]`))sideTab(t)}catch(e){}
+
+/* ---------- v5.7 screens: home / call / role-play / record ---------- */
+var view="home", lastView="home";
+const RP_META={cafe:{cat:"일상",img:"happy"},airport:{cat:"여행",img:"thoughtful"},hotel:{cat:"여행",img:"charmed"},restaurant:{cat:"일상",img:"joy"},directions:{cat:"여행",img:"surprised"},meeting:{cat:"회사",img:"pondering"}};
+const PHONE_SVG='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>';
+const ic2=(p,s=34)=>`<svg class="ico" viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+function showView(v){
+  if(!["home","call","rp","rec"].includes(v))v="home";
+  if(v!=="rec"&&v!==view)lastView=v; if(view!=="rec"&&v==="rec")lastView=view;
+  view=v; document.body.dataset.view=v; try{sessionStorage.setItem("oc_view",v)}catch(e){}
+  document.querySelectorAll("#tabBar [data-view]").forEach(b=>{if(b.dataset.view===v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  if(innerWidth<=900)$("side").classList.toggle("open",v==="rec"); else $("side").classList.remove("open");
+  if(v!=="call"&&typeof auto!=="undefined"&&auto.on)stopAuto();
+  if(v==="home")renderHome(); if(v==="rp")renderRp(); if(v==="rec"){renderSide();renderHistory()}
+  closeMore();
+}
+function enterCall(){
+  if(!cfg.key){openSettings();return}
+  showView("call");
+  if(callEnded){restartTalk();return}
+  if(phase==="idle"){rp=null;startTalk(false);if(!callHistory.length&&!log.querySelector(".coach.intro"))log.prepend(introCard())}
+}
+function introCard(){const c=addCoach({noTurn:true,say:"안녕하세요, 코치 Sam이에요. Julia랑 친구처럼 편하게 영어로 얘기하세요. 막히면 한국어로 말해도 되고, 궁금한 게 있으면 왜 이렇게 말해요? 처럼 언제든 저한테 물어보세요. 맞게 말하면 저는 조용히 있고, 더 자연스러운 표현이 있을 때만 알려드릴게요."});c.classList.add("intro");return c}
+function streakDays(){let n=0;const d=new Date();d.setHours(12,0,0,0);if(!(daily[dayKey(d)]||{}).t)d.setDate(d.getDate()-1);for(;;){const r=daily[dayKey(d)];if(!r||!r.t)break;n++;d.setDate(d.getDate()-1)}return n}
+function totalTurns(){return Object.values(daily).reduce((a,r)=>a+(r.t||0),0)}
+const tileHTML=(c,p,k,v,u)=>`<div class="st"><div class="dot" style="background:${c}">${ic2(p,18)}</div><div class="k">${k}</div><div class="v">${v}<small>${u||""}</small></div></div>`;
+const P_QUOTE='<path d="M7 7h4v4c0 3-2 5-4 6M15 7h4v4c0 3-2 5-4 6"/>', P_CLOCK='<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', P_FLAME='<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-7 2 1 3 3 3 5"/>', P_TARGET='<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/>', P_QUIZ='<path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/><path d="M8.5 11.5l3 3L21 5"/>', P_BOOK='<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/>';
+function renderHome(){
+  if(!$("homeRail"))return;
+  const now=new Date(), W="일월화수목금토";
+  $("hvDate").textContent=`${now.getMonth()+1}월 ${now.getDate()}일 ${W[now.getDay()]}요일`;
+  const live=phase!=="idle"&&!callEnded;
+  const qn=quizPending(), eu=todayExpr.filter(x=>x.used).length, et=todayExpr.length;
+  const wk=weekSum(0), wk8=[];for(let w=7;w>=0;w--){const x=weekSum(w);wk8.push(x.acc===null?null:x.acc)}
+  const pts=wk8.map((v,i)=>v===null?null:[i/7*100,40-v*36]).filter(Boolean);
+  const spark=pts.length>1?`<svg class="hv-spark" viewBox="0 0 100 44" preserveAspectRatio="none"><path d="${pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`:"";
+  const cards=[
+    `<button class="rc big" data-go="call" role="listitem"><span class="vis"><img src="${EMO.happy}" alt=""><span class="pill ${live?"live":""}"><i></i><em id="hvLive" style="font-style:normal">${live?"대화 중 "+$("timer").textContent:callEnded?"대화 종료":"Julia 대기 중"}</em></span><span class="go">${PHONE_SVG}</span></span><span class="lab"><b>${live?"대화 이어서 하기":"Julia와 대화하기"}</b><span>${esc(callTitle())}</span></span></button>`,
+    `<button class="rc" data-go="rp" role="listitem"><span class="vis"><img src="${EMO.charmed}" alt=""></span><span class="lab"><b>상황극</b><span>${ROLEPLAYS.length}가지 상황</span></span></button>`,
+    `<button class="rc" data-go="quiz" role="listitem"><span class="vis g-quiz">${qn?`<span class="big">${qn}<small>문제</small></span>`:ic2(P_QUIZ,52)}</span><span class="lab"><b>오늘의 퀴즈</b><span>${qn?"틀린 문장 다시 풀기":"오늘 문제 없음"}</span></span></button>`,
+    `<button class="rc" data-go="expr" role="listitem"><span class="vis g-expr">${et?`<span class="big">${eu}<small>/${et}</small></span>`:ic2(P_BOOK,52)}</span><span class="lab"><b>오늘의 문장</b><span>대화에서 써보기</span></span></button>`,
+    `<button class="rc" data-go="rec" role="listitem"><span class="vis g-rec">${wk.acc!==null?`<span class="big">${pct(wk.acc)}<small>%</small></span>`:""}${spark||ic2('<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',52)}</span><span class="lab"><b>기록</b><span>주간 리포트</span></span></button>`,
+    `<button class="rc" data-go="set" role="listitem"><span class="vis g-set">${ic2('<circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z"/>',52)}</span><span class="lab"><b>설정</b><span>수준, 목소리, 키</span></span></button>`];
+  const rail=$("homeRail"), sl=rail.scrollLeft; rail.innerHTML=cards.join(""); rail.scrollLeft=sl;
+  const sent=$("hvSent");
+  sent.innerHTML=et?todayExpr.map((x,i)=>`<div class="hs${x.used?" used":""}"><div class="t"><b>${esc(x.en)}</b><span>${esc(x.ko)}${x.used?" / 대화에서 썼어요":""}</span></div><button class="pl" data-i="${i}" aria-label="듣기">${PLAY_SVG}</button></div>`).join(""):`<div class="hv-empty">${cfg.exprOn===0?"설정에서 오늘의 표현을 켜면 매일 실용 문장 3개가 나와요.":!cfg.key?"API 키를 넣으면 오늘의 문장 3개가 나와요.":"오늘의 문장을 받고 있어요."}</div>`;
+  sent.querySelectorAll(".pl").forEach(b=>b.onclick=()=>{const t=todayExpr[+b.dataset.i];if(t&&!chain)playSeq([{text:t.en,who:"coach"}])});
+  $("hvRange").textContent=`${md(wk.from)} ~ ${md(wk.to)}`;
+  $("hvStats").innerHTML=tileHTML("#16a34a",P_CLOCK,"연습 시간",wk.min,"분")+tileHTML("#7c5cff",P_QUOTE,"말한 횟수",wk.t,"번")+tileHTML("#e8513f",P_FLAME,"연속 학습",streakDays(),"일");
+}
+var rpSel=null, rpCat="전체";
+function rpDoneSet(){const s=new Set();callHistory.forEach(h=>{if(h.roleplay&&h.roleplay.done)s.add(h.roleplay.name)});if(callStats.roleplay&&callStats.roleplay.done)s.add(callStats.roleplay.name);return s}
+function renderRp(){
+  if(!$("rpRail"))return;
+  const cats=["전체","일상","여행","회사"], done=rpDoneSet();
+  $("rpFil").innerHTML=cats.map(c=>`<button data-cat="${c}" aria-pressed="${c===rpCat}">${c}</button>`).join("");
+  const list=ROLEPLAYS.filter(x=>rpCat==="전체"||(RP_META[x.id]||{}).cat===rpCat);
+  if(!rpSel||!list.some(x=>x.id===rpSel))rpSel=list[0]&&list[0].id;
+  $("rpRail").innerHTML=list.map(x=>{const m=RP_META[x.id]||{cat:"",img:"happy"};return `<button class="rc" data-rp="${x.id}" role="listitem" aria-pressed="${x.id===rpSel}"><span class="vis"><img src="${EMO[m.img]||EMO.happy}" alt=""><span class="tag">${m.cat}</span>${done.has(x.name)?'<span class="done">✓</span>':""}</span><span class="lab"><b>${esc(x.name)}</b><span>Julia: ${esc(x.roleKo)}</span></span></button>`}).join("");
+  const x=ROLEPLAYS.find(r=>r.id===rpSel);
+  $("rpDetail").innerHTML=x?`<div class="nm">${esc(x.name)}</div>${done.has(x.name)?'<span class="st2">완료한 상황이에요</span>':""}<div class="row2"><span class="k">Julia</span><span>${esc(x.roleKo)} 역할이에요.</span></div><div class="row2"><span class="k">목표</span><span>${esc(x.goal)}</span></div><button class="rp-start" id="rpStart">${rp&&rp.id===x.id&&phase!=="idle"&&!callEnded?"이어서 하기":"시작하기"}</button>`:"";
+  if(x)$("rpStart").onclick=()=>{if(!cfg.key){openSettings();return}if(rp&&rp.id===x.id&&phase!=="idle"&&!callEnded){showView("call");return}startRoleplay(x.id)};
+}
+$("rpFil").addEventListener("click",e=>{const b=e.target.closest("[data-cat]");if(!b)return;rpCat=b.dataset.cat;rpSel=null;renderRp()});
+$("rpRail").addEventListener("click",e=>{const b=e.target.closest("[data-rp]");if(!b)return;rpSel=b.dataset.rp;renderRp()});
+$("homeRail").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;
+  if(g==="call")enterCall(); else if(g==="rp")showView("rp"); else if(g==="quiz")openQuiz(); else if(g==="expr")openExpr(); else if(g==="rec")showView("rec"); else if(g==="set")openSettings()});
+$("tabBar").addEventListener("click",e=>{const b=e.target.closest("[data-view]");if(!b)return;if(b.dataset.view==="call")enterCall();else showView(b.dataset.view)});
+$("backHome").onclick=()=>showView("home");
+$("hvSettings").onclick=openSettings; $("rpSettings").onclick=openSettings;
+setInterval(()=>{const e=$("hvLive");if(view==="home"&&e&&phase!=="idle"&&!callEnded)e.textContent="대화 중 "+$("timer").textContent},1000);   // only the clock text changes, so swiping the cards is never interrupted
+function renderHighlights(){const el=$("hlTiles");if(!el)return;const w=weekSum(0);el.innerHTML=tileHTML("#7c5cff",P_QUOTE,"말한 문장",totalTurns(),"개")+tileHTML("#16a34a",P_CLOCK,"이번 주 연습",w.min,"분")+tileHTML("#e8513f",P_FLAME,"연속 학습",streakDays(),"일")+tileHTML("#2f6bff",P_TARGET,"이번 주 정확도",w.acc===null?"-":pct(w.acc),w.acc===null?"":"%")}
 $("clearAll").onclick=()=>{
   if(!confirm("주간 리포트, 자주 하는 실수, 표현 노트, 발음 점수, 지난 기록과 지금 대화를 모두 지울까요?"))return;
   stopAudio(); if(auto.on)stopAuto();
@@ -2777,8 +2967,8 @@ $("clearAll").onclick=()=>{
 };
 
 $("reloadBtn").onclick=()=>{try{stopAudio()}catch(e){};const u=location.pathname+"?v="+Date.now()+(location.hash||"");location.replace(u)};
-$("openSide").onclick=()=>$("side").classList.add("open");
-$("closeSide").onclick=()=>$("side").classList.remove("open");
+$("openSide").onclick=()=>showView("rec");
+$("closeSide").onclick=()=>showView(lastView&&lastView!=="rec"?lastView:"home");
 
 /* Keep the layout inside the visible screen (iPhone keyboard) and keep the chat pinned to the newest message */
 (function(){
@@ -2805,11 +2995,13 @@ lastJulia={en:opener()[0],ko:opener()[1]};
 caption({text:opener()[0],who:"julia"});
 
 renderSide(); renderHistory();
-if(cfg.key&&restoreCall()){sysNote("새로고침 전 대화를 이어서 해요.");updateStudyBar()}
-else{
-if(cfg.key)startTalk(true);
-log.prepend(addCoach({noTurn:true,say:"안녕하세요, 코치 Sam이에요. Julia랑 친구처럼 편하게 영어로 얘기하세요. 막히면 한국어로 말해도 되고, 궁금한 게 있으면 왜 이렇게 말해요? 처럼 언제든 저한테 물어보세요. 맞게 말하면 저는 조용히 있고, 더 자연스러운 표현이 있을 때만 알려드릴게요."}));
-}
+{let v0=null;try{v0=sessionStorage.getItem("oc_view")}catch(e){}
+if(cfg.key&&restoreCall()){sysNote("새로고침 전 대화를 이어서 해요.");updateStudyBar();showView(v0&&v0!=="call"?v0:"call")}
+else if(v0==="call"){
+  if(cfg.key)startTalk(true);
+  log.prepend(introCard());
+  showView("call");
+}else{showView(v0||"home");if(cfg.key)genExpressions()}}
 if(!cfg.key)openSettings();
 
 </script>
