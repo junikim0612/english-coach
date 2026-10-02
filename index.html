@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v5.1</title>
+<title>영어회화 코치 v5.2</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -580,12 +580,109 @@ body.kb .studybar{display:none}
 #settings .set-row select~*,#settings .set-row:has(select:not(.sr-sel)) .set-lab{white-space:nowrap}
 @media (min-width:901px){.studybar{justify-content:center}.studybar .sb-btn{flex:0 1 280px}}
 @media (max-width:380px){#settings .seg button{padding:6px 10px!important}#settings .set-lab{font-size:15px}}
+
+/* v5.2: record panel + weekly report */
+@media (min-width:1200px){.app{grid-template-columns:minmax(0,1fr) 380px!important}}
+.pane.side{background:#f4f5f8!important;border-color:#e7e9ee!important;overflow:hidden!important;display:flex;flex-direction:column}
+@media (max-width:900px){.side{display:none!important}.side.open{display:flex!important;position:fixed;inset:0;z-index:40;border-radius:0!important;border:0!important;padding-top:env(safe-area-inset-top,0px)}}
+.sd-head{display:none;align-items:center;justify-content:center;position:relative;height:52px;flex:none;background:#f4f5f8}
+.sd-head h2{margin:0;font-size:17px;font-weight:700;color:#111827;font-family:var(--f-body)}
+.sd-head .sd-close{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0!important;background:transparent!important;color:#e8513f!important;font-weight:700;font-size:16px!important;padding:8px!important}
+@media (max-width:900px){.side.open .sd-head{display:flex}}
+.sd-tabs{display:flex;gap:2px;margin:12px 14px 4px;padding:2px;background:#e8eaef;border-radius:11px;flex:none}
+.sd-tabs button{flex:1;border:0!important;border-radius:9px!important;padding:7px 4px!important;font-size:13px!important;font-weight:600;background:transparent!important;color:#6b7280!important;white-space:nowrap}
+.sd-tabs button[aria-selected="true"]{background:#fff!important;color:#111827!important;box-shadow:0 1px 3px rgba(15,23,42,.14)}
+.sd-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:8px 14px calc(24px + env(safe-area-inset-bottom,0px))}
+.sd-pane{display:flex;flex-direction:column;gap:12px}
+.sd-pane[hidden]{display:none}
+.sd-card{background:#fff;border-radius:16px;padding:14px 14px 12px;box-shadow:0 1px 2px rgba(15,23,42,.05);display:flex;flex-direction:column;gap:10px;min-width:0}
+.sd-ct{font-size:14.5px;font-weight:700;color:#111827;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sd-cs{font-size:12px;font-weight:500;color:#8a93a6}
+.sd-acts{display:flex;gap:8px}
+.sd-acts.top{margin-top:-2px}
+.sd-primary{border:0!important;background:#1b2b4b!important;color:#fff!important;font-weight:700;font-size:13.5px!important;padding:9px 16px!important;border-radius:12px!important}
+.sd-primary:hover{background:#24385f!important}
+.sd-danger{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px}
+.sd-danger button{border:1px solid #f3c7bf!important;background:#fff!important;color:#c43a2a!important;font-weight:600;font-size:13.5px!important;padding:10px 18px!important;border-radius:12px!important}
+.sd-note{font-size:12px;color:#a3a9b6}
+/* weekly report */
+.wk{background:linear-gradient(160deg,#1b2b4b 0%,#24385f 100%);color:#fff;border-radius:18px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:12px;box-shadow:0 6px 18px rgba(27,43,75,.18)}
+.wk-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.wk-k{font-size:12.5px;font-weight:700;color:#c7d2e6;letter-spacing:.02em}
+.wk-range{font-size:20px;font-weight:800;font-family:var(--f-display);letter-spacing:-.01em;margin-top:2px}
+.wk-v{flex:none;font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 10px;background:rgba(255,255,255,.12);color:#fff;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.wk-v.up{background:#e8f5ec;color:#1a7f37}.wk-v.down{background:#fdf3e7;color:#b45309}
+.wk-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.wk-t{background:rgba(255,255,255,.08);border-radius:12px;padding:9px 10px 8px;min-width:0}
+.wk-t .k{font-size:11.5px;color:#c7d2e6;white-space:nowrap}
+.wk-t .v{font-size:19px;font-weight:800;font-family:var(--f-display);line-height:1.25;margin-top:2px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.wk-t .v small{font-size:12px;font-weight:600;color:#c7d2e6;margin-left:1px}
+.wk-t .d{font-size:11.5px;font-weight:700;margin-top:1px;white-space:nowrap;color:#c7d2e6}
+.wk-t .d.good{color:#86efac}.wk-t .d.bad{color:#fcd34d}
+.wk-ins{background:#fff;color:#1f2937;border-radius:14px;padding:4px 12px;display:flex;flex-direction:column}
+.wk-i{display:flex;gap:10px;align-items:flex-start;padding:9px 0;font-size:13.5px;line-height:1.5}
+.wk-i+.wk-i{border-top:1px solid #eef0f4}
+.wk-i .ic{width:22px;height:22px;border-radius:7px;flex:none;display:inline-flex;align-items:center;justify-content:center;margin-top:1px;font-size:12px;font-weight:800}
+.wk-i.up .ic{background:#e8f5ec;color:#1a7f37}.wk-i.down .ic{background:#fdf3e7;color:#b45309}.wk-i.flat .ic{background:#f1f3f7;color:#6b7280}.wk-i.info .ic{background:#eaf0fa;color:#2f5fae}
+.wk-goal{background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.5}
+.wk-goal b{display:block;font-size:12px;color:#ffd7cf;margin-bottom:2px}
+.wk-empty{font-size:13.5px;color:#dbe3f1;line-height:1.55}
+/* charts */
+.tr-chips{display:flex;gap:6px;flex-wrap:wrap}
+.tr-chips button{border:1px solid #e3e6ec!important;background:#fff!important;color:#4b5563!important;font-size:12.5px!important;font-weight:600;padding:5px 11px!important;border-radius:999px!important}
+.tr-chips button[aria-pressed="true"]{background:#1b2b4b!important;border-color:#1b2b4b!important;color:#fff!important}
+#trend svg,#histChart svg{width:100%;height:auto;display:block;overflow:visible}
+.ch-grid{stroke:#eceef3;stroke-width:1}
+.ch-ax{font-size:10px;fill:#8a93a6}
+.ch-ax.on{fill:#111827;font-weight:700}
+.ch-line{fill:none;stroke:#2f5fae;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.ch-area{fill:#2f5fae;opacity:.1}
+.ch-dot{fill:#2f5fae;stroke:#fff;stroke-width:2}
+.ch-dot.on{r:6}
+.ch-end{font-size:11px;font-weight:700;fill:#111827}
+.ch-hit{fill:transparent;cursor:pointer}
+.ch-cross{stroke:#c3c8d2;stroke-width:1}
+.hb{fill:#2f5fae}.hb.on{fill:#1b2b4b}
+.hb0{fill:#e3e6ec}
+.ch-cap{font-size:12.5px;color:#4b5563;min-height:18px;line-height:1.45}
+.ch-cap b{color:#111827}
+.ch-empty{font-size:13px;color:#8a93a6;padding:18px 0;text-align:center}
+#histChart .hc-title{display:none}
+/* mistakes */
+.pat{display:flex;flex-direction:column;gap:2px}
+.pat .p{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;padding:10px 0;border-bottom:1px solid #eef0f4}
+.pat .p:last-child{border-bottom:0}
+.pat .p .lb{font-size:14px;font-weight:700;color:#111827}
+.pat .p .n{font-size:13px;font-weight:700;color:#111827;text-align:right;font-variant-numeric:tabular-nums}
+.pat .p .bar{grid-column:1/-1;height:6px;border-radius:3px;background:#f1f3f7;overflow:hidden}
+.pat .p .bar i{display:block;height:100%;background:#e8513f;border-radius:3px}
+.pat .p .wkd{font-size:12px;font-weight:700;text-align:right;white-space:nowrap}
+.pat .p .wkd.good{color:#1a7f37}.pat .p .wkd.bad{color:#b45309}.pat .p .wkd.flat{color:#8a93a6}
+.pat .p .ex{grid-column:auto!important;font-family:var(--f-en);font-size:12.5px;color:#6b7280}
+.pat .p .tipk{grid-column:1/-1;font-size:12.5px;color:#6b7280;line-height:1.45}
+/* notes */
+.notes{display:flex;flex-direction:column;gap:8px}
+.nd{font-size:12px;font-weight:700;color:#8a93a6;margin:6px 2px 0}
+.notes .note{border:0!important;background:#f7f8fa;border-radius:12px!important;padding:10px 12px!important;gap:3px!important}
+.notes .note .w{font-size:12.5px}
+.notes .note .r{font-size:14.5px}
+.notes .more{align-self:center;border:0!important;background:transparent!important;color:#2f5fae!important;font-weight:600}
+/* calls */
+.hist{gap:8px!important}
+.hist .hi{border:0!important;background:#f7f8fa!important;border-radius:12px!important;padding:10px 12px!important}
+.hist .hi summary{list-style:none;display:flex!important;align-items:center;gap:10px!important}
+.hist .hi summary::-webkit-details-marker{display:none}
+.hist .hi .dt{font-weight:700;color:#111827;font-size:13.5px;white-space:nowrap}
+.hist .hi .sm{flex:1;min-width:0;font-size:12.5px;color:#6b7280}
+.hist .hi .ttl{display:block;font-size:12px;color:#8a93a6}
+.hist .hi[open]{background:#fff!important;box-shadow:0 0 0 1px #e7e9ee}
+.empty{font-size:13px;color:#8a93a6;line-height:1.5}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v5.1</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v5.2</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -635,25 +732,50 @@ body.kb .studybar{display:none}
   </section>
 
   <aside class="pane side" id="side" aria-label="기록">
-    <div class="sec side-head"><h2>기록</h2><button id="closeSide">닫기</button></div>
-    <div class="sec">
-      <h2>발음 점수</h2>
-      <div class="ph-row" id="pronAvg"></div>
+    <div class="sd-head"><h2>기록</h2><button id="closeSide" class="sd-close">닫기</button></div>
+    <div class="sd-tabs" role="tablist" aria-label="기록 보기">
+      <button role="tab" data-tab="report" aria-selected="true">리포트</button><button role="tab" data-tab="mist" aria-selected="false">실수</button><button role="tab" data-tab="notes" aria-selected="false">표현 노트</button><button role="tab" data-tab="calls" aria-selected="false">통화</button>
     </div>
-    <div class="sec">
-      <h2>자주 하는 실수</h2>
-      <div class="pat" id="pat"></div>
-      <div class="acts"><button id="reviewNow">지금 복습하기</button></div>
-    </div>
-    <div class="sec">
-      <h2>표현 노트</h2>
-      <div class="notes" id="notes"></div>
-      <div class="acts"><button id="quizSide">오늘의 퀴즈</button><button id="clearAll">기록과 대화 모두 지우기</button></div>
-    </div>
-    <div class="sec">
-      <h2>지난 기록</h2>
-      <div id="histChart"></div>
-      <div class="hist" id="histList"></div>
+    <div class="sd-body">
+      <section class="sd-pane" data-pane="report">
+        <div id="weekly"></div>
+        <div class="sd-card">
+          <div class="sd-ct">8주 변화<span class="sd-cs">일주일씩 묶어서 봐요</span></div>
+          <div class="tr-chips" id="trChips" role="group" aria-label="지표"></div>
+          <div id="trend"></div>
+          <div class="ch-cap" id="trendCap"></div>
+        </div>
+        <div class="sd-card">
+          <div class="sd-ct">최근 7일<span class="sd-cs">하루에 말한 횟수</span></div>
+          <div id="histChart"></div>
+          <div class="ch-cap" id="histCap"></div>
+        </div>
+        <div class="sd-card">
+          <div class="sd-ct">발음 점수</div>
+          <div class="ph-row" id="pronAvg"></div>
+        </div>
+      </section>
+      <section class="sd-pane" data-pane="mist" hidden>
+        <div class="sd-card">
+          <div class="sd-ct">자주 하는 실수<span class="sd-cs">전체 횟수 / 이번 주 변화</span></div>
+          <div class="pat" id="pat"></div>
+          <div class="sd-acts"><button id="reviewNow" class="sd-primary">지금 복습하기</button></div>
+        </div>
+      </section>
+      <section class="sd-pane" data-pane="notes" hidden>
+        <div class="sd-card">
+          <div class="sd-ct">표현 노트<span class="sd-cs">Coach Sam이 고쳐준 문장</span></div>
+          <div class="sd-acts top"><button id="quizSide" class="sd-primary">오늘의 퀴즈 풀기</button></div>
+          <div class="notes" id="notes"></div>
+        </div>
+      </section>
+      <section class="sd-pane" data-pane="calls" hidden>
+        <div class="sd-card">
+          <div class="sd-ct">지난 통화<span class="sd-cs">최근 20개</span></div>
+          <div class="hist" id="histList"></div>
+        </div>
+        <div class="sd-danger"><button id="clearAll">기록과 대화 모두 지우기</button><div class="sd-note">모든 기록은 이 기기에만 저장돼요.</div></div>
+      </section>
     </div>
   </aside>
 </div>
@@ -788,7 +910,7 @@ body.kb .studybar{display:none}
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v5.1<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
+      <div class="set-ver">영어회화 코치 v5.2<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
     </div>
   </div>
 </div>
@@ -1207,23 +1329,31 @@ function setPhase(p){
 }
 function renderSide(){
   const pat=$("pat"); pat.innerHTML="";
-  const arr=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n).slice(0,6);
+  const arr=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n).slice(0,8);
   if(!arr.length)pat.innerHTML='<div class="empty">대화하면서 반복되는 실수가 여기에 쌓여요.</div>';
   const max=arr.length?arr[0][1].n:1;
+  const tw=typeof weekSum==="function"?weekSum(0):{lb:{}}, lw=typeof weekSum==="function"?weekSum(1):{lb:{}};
   arr.forEach(([label,v])=>{
+    const a1=tw.lb[label]||0, a0=lw.lb[label]||0;
+    const wk=!a1&&!a0?'<span class="wkd flat">이번 주 0번</span>':a1<a0?`<span class="wkd good">이번 주 ${a1}번 ▼${a0-a1}</span>`:a1>a0?`<span class="wkd bad">이번 주 ${a1}번 ▲${a1-a0}</span>`:`<span class="wkd flat">이번 주 ${a1}번</span>`;
     const d=document.createElement("div"); d.className="p";
-    d.innerHTML=`<span>${esc(label)}</span><span class="n">${v.n}회</span><span class="bar"><i style="width:${Math.round(v.n/max*100)}%"></i></span>${v.ex?`<span class="ex">${esc(v.ex.from)} → ${esc(v.ex.to)}</span>`:""}`;
+    d.innerHTML=`<span class="lb">${esc(label)}</span><span class="n">${v.n}회</span><span class="bar"><i style="width:${Math.round(v.n/max*100)}%"></i></span>${v.ex?`<span class="ex">${esc(v.ex.from)} → ${esc(v.ex.to)}</span>`:"<span></span>"}${wk}${v.tipKo?`<span class="tipk">${esc(clean(v.tipKo))}</span>`:""}`;
     pat.append(d);
   });
   const pa=$("pronAvg");
   if(pa){if(pronHist.length){const last=pronHist.slice(-10);pa.innerHTML=`<span class="score">${Math.round(last.reduce((a,b)=>a+b,0)/last.length)}</span><span class="unit">점</span><span class="grade">최근 ${last.length}번 말하기 평균</span>`}else pa.innerHTML='<span class="empty">마이크로 말하면 발음 점수가 쌓여요.</span>'}
   const box=$("notes"); box.innerHTML="";
-  if(!notes.length)box.innerHTML='<div class="empty">Coach Sam이 고쳐준 문장이 여기에 모여요.</div>';
-  notes.slice().reverse().forEach(n=>{
+  if(!notes.length){box.innerHTML='<div class="empty">Coach Sam이 고쳐준 문장이 여기에 모여요.</div>';return}
+  const today=dayKey(), yest=dayKey(new Date(Date.now()-864e5)); let last="";
+  const lim=renderSide.all?notes.length:40;
+  notes.slice().reverse().slice(0,lim).forEach(n=>{
+    const k=n.at?dayKey(new Date(n.at)):"";
+    if(k!==last){last=k;const h=document.createElement("div");h.className="nd";h.textContent=!k?"예전":k===today?"오늘":k===yest?"어제":`${+k.slice(5,7)}/${+k.slice(8)}`;box.append(h)}
     const d=document.createElement("div"); d.className="note";
     d.innerHTML=`<span class="w">${esc(n.said)}</span><span class="r">${esc(n.model)}</span>${n.why?`<span class="why">${esc(clean(n.why))}</span>`:""}`;
     box.append(d);
   });
+  if(notes.length>lim){const m=document.createElement("button");m.className="more";m.textContent=`${notes.length-lim}개 더 보기`;m.onclick=()=>{renderSide.all=true;renderSide()};box.append(m)}
 }
 
 /* ---------- Compare ---------- */
@@ -1325,7 +1455,7 @@ function markCorrect(r,said,meRow){
   if(meRow){const m=document.createElement("span");m.className="okmark";m.textContent="맞게 말한 걸로 처리했어요";meRow.append(m)}
   turns.push({role:"user",content:"(Jun says the coach was wrong: he said it correctly, it was a speech-recognition slip)"});
   (r.mistakes||[]).forEach(m=>{if(m&&m.from&&m.to){const k=`"${m.from}" -> "${m.to}"`;callFixes=callFixes.filter(x=>x!==k)}});
-  r._review=null; setPhase("answer"); continueTalk().catch(e=>logErr("맞게 말했어요",e));
+  dailyUndoFix(r); r._review=null; setPhase("answer"); continueTalk().catch(e=>logErr("맞게 말했어요",e));
 }
 function sysNote(t){const d=document.createElement("div");d.className="sysnote";d.textContent=t;log.append(d);scroll()}
 function slowJulia(){
@@ -1429,7 +1559,7 @@ function markClarity(row,words){
   row.append(m); savePron(avg);
 }
 let pronHist=load("oc_pron",[]);
-function savePron(v){if(typeof callStats!=="undefined")callStats.pron.push(v);pronHist.push(v);pronHist=pronHist.slice(-50);store("oc_pron",pronHist);renderSide()}
+function savePron(v){if(typeof callStats!=="undefined")callStats.pron.push(v);try{dAdd("ps",v);dAdd("pn");saveDaily()}catch(e){}pronHist.push(v);pronHist=pronHist.slice(-50);store("oc_pron",pronHist);renderSide()}
 function markupDiff(said,model){
   const A=said.split(/\s+/).filter(Boolean), B=model.split(/\s+/).filter(Boolean);
   const a=A.map(w=>norm(w)[0]||w.toLowerCase()), b=B.map(w=>norm(w)[0]||w.toLowerCase());
@@ -1483,7 +1613,7 @@ async function genExpressions(){
     if(my!==callId)return;
     const ex=(r&&Array.isArray(r.expressions)?r.expressions:[]).filter(x=>x&&x.en&&x.match).slice(0,3).map(x=>({en:String(x.en).trim(),ko:clean(String(x.ko||"")),ex:String(x.example||"").trim(),exKo:clean(String(x.example_ko||"")),match:norm(String(x.match).replace(/\.\.\.|…/g," ")).join(" "),used:false})).filter(x=>x.match);
     if(!ex.length)return;
-    todayExpr=ex; renderExprCard(); saveCallSoon(); updateStudyBar(); if(!$("exprSheet").hidden)renderExprSheet();
+    todayExpr=ex; dAdd("et",ex.length); saveDaily(); renderExprCard(); saveCallSoon(); updateStudyBar(); if(!$("exprSheet").hidden)renderExprSheet();
   }catch(e){logErr("오늘의 표현",e)}
 }
 function exprHTML(){return `<div class="exprs">${todayExpr.map((x,i)=>`<div class="ex${x.used?" used":""}"><span class="chk">${x.used?"✓":i+1}</span><div class="exb"><div class="en">${esc(x.en)}</div><div class="ko">${esc(x.ko)}</div>${x.ex?`<div class="exs"><span class="tag">예문</span><div><div class="se">${esc(x.ex)}</div>${x.exKo?`<div class="sk">${esc(x.exKo)}</div>`:""}</div></div>`:""}</div></div>`).join("")}</div><div class="tip">대화 중에 쓰면 체크돼요.</div>`}
@@ -1495,7 +1625,7 @@ function renderExprCard(){
 function checkExpressions(text,row){
   if(!todayExpr.length||hasKo(text))return;
   const t=" "+norm(text).join(" ")+" "; let hit=false;
-  todayExpr.forEach(x=>{if(!x.used&&x.match&&t.includes(" "+x.match+" ")){x.used=true;hit=true}});
+  todayExpr.forEach(x=>{if(!x.used&&x.match&&t.includes(" "+x.match+" ")){x.used=true;hit=true;dAdd("eu");saveDaily()}});
   if(!hit)return;
   renderExprCard();
   if(row){const m=document.createElement("span");m.className="okmark";m.textContent="오늘의 표현 사용";row.append(m)}
@@ -1638,7 +1768,7 @@ function answerQuiz(ok,given,note){
 function quizResult(){
   clearInterval(renderQuiz.t);
   const n=quiz.res.filter(Boolean).length, tot=quiz.res.length;
-  callStats.quiz={ok:n,total:tot}; saveCallSoon();
+  callStats.quiz={ok:n,total:tot}; saveCallSoon(); dAdd("qo",n); dAdd("qt",tot); saveDaily(); renderHistory();
   const wrong=quiz.qs.filter((q,i)=>!quiz.res[i]);
   $("qzProg").textContent="";
   $("qzBody").innerHTML=`<div class="qz-score"><b>${n}</b> / ${tot}</div><div class="qz-q">${tot}문제 중 ${n}개 맞았어요.</div><div class="qz-list">${quiz.qs.map((q,i)=>`<div class="qz-row"><span class="mk ${quiz.res[i]?"o":"x"}">${quiz.res[i]?"O":"X"}</span><span>${esc(q.type==="blank"?q.ans:q.it.model)} <span class="ko">${esc(q.ko)}</span></span></div>`).join("")}</div><div class="acts">${wrong.length?'<button id="qzRetry" class="primary">틀린 것만 다시</button>':""}<button id="qzDone">닫기</button></div>`;
@@ -1741,19 +1871,22 @@ async function endCall(){
 function renderHistory(){
   const box=$("histList"), ch=$("histChart"); if(!box||!ch)return;
   // last 7 days, number of times Jun spoke per day
-  const days=[]; for(let i=6;i>=0;i--){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);days.push({d,n:0})}
-  const add=(k,n)=>{const x=days.find(y=>dayKey(y.d)===k);if(x)x.n+=n};
-  callHistory.forEach(h=>{if(h.days)Object.entries(h.days).forEach(([k,n])=>add(k,n));else add(dayKey(new Date(h.at)),h.turns)});
-  if(!callStats.archived&&callStats.days)Object.entries(callStats.days).forEach(([k,n])=>add(k,n));   // the call in progress counts too
-  const max=Math.max(5,...days.map(x=>x.n)), W=280,H=96,bw=28,gap=(W-bw*7)/6;
-  ch.innerHTML=`<div class="hc-title">최근 7일 말한 횟수</div><svg viewBox="0 0 ${W} ${H+18}" role="img" aria-label="최근 7일 말한 횟수">${days.map((x,i)=>{const h=Math.round(x.n/max*H),xx=Math.round(i*(bw+gap));const lab=`${x.d.getMonth()+1}/${x.d.getDate()}`;return `<g><title>${lab}: ${x.n}번</title>${h?`<path d="M${xx},${H} v-${Math.max(0,h-4)} q0,-4 4,-4 h${bw-8} q4,0 4,4 v${Math.max(0,h-4)} z" class="hb${i===6?" today":""}"/>`:""}${x.n&&(i===6||x.n===max)?`<text x="${xx+bw/2}" y="${H-h-4}" class="hv">${x.n}</text>`:""}<text x="${xx+bw/2}" y="${H+14}" class="hd">${lab}</text></g>`}).join("")}<line x1="0" x2="${W}" y1="${H}" y2="${H}" class="hbase"/></svg>`;
+  const days=[]; for(let i=6;i>=0;i--){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);const r=daily[dayKey(d)]||{};days.push({d,n:r.t||0,m:Math.round((r.ms||0)/60000),acc:r.en?Math.round(r.p/r.en*100):null})}
+  const max=Math.max(5,...days.map(x=>x.n)), W=300,H=96,slot=W/7,bw=24, WD="일월화수목금토";
+  const sel=renderHistory.sel??6;
+  ch.innerHTML=`<svg viewBox="0 -6 ${W} ${H+30}" role="img" aria-label="최근 7일 말한 횟수"><line class="ch-grid" x1="0" x2="${W}" y1="${H}" y2="${H}"/>${days.map((x,i)=>{const h=Math.round(x.n/max*H),xx=Math.round(i*slot+(slot-bw)/2);const lab=`${x.d.getMonth()+1}/${x.d.getDate()}`;
+    const bar=h?`<path class="hb${i===sel?" on":""}" d="M${xx},${H} v-${Math.max(0,h-4)} q0,-4 4,-4 h${bw-8} q4,0 4,4 v${Math.max(0,h-4)} z"/>`:`<rect class="hb0" x="${xx}" y="${H-2}" width="${bw}" height="2" rx="1"/>`;
+    return `<g>${bar}<text class="ch-ax${i===sel?" on":""}" x="${xx+bw/2}" y="${H+14}" text-anchor="middle">${i===6?"오늘":WD[x.d.getDay()]}</text><text class="ch-ax" x="${xx+bw/2}" y="${H+26}" text-anchor="middle">${lab}</text><rect class="ch-hit" data-i="${i}" x="${Math.round(i*slot)}" y="-6" width="${Math.round(slot)}" height="${H+36}"><title>${lab}: ${x.n}번</title></rect></g>`}).join("")}</svg>`;
+  const sd=days[sel]; $("histCap").innerHTML=`<b>${sd.d.getMonth()+1}/${sd.d.getDate()} (${WD[sd.d.getDay()]})</b> ${sd.n?`${sd.n}번 말했어요 / ${sd.m}분${sd.acc!==null?` / 정확도 ${sd.acc}%`:""}`:"연습하지 않은 날이에요"}`;
+  ch.querySelectorAll(".ch-hit").forEach(r=>r.onclick=()=>{renderHistory.sel=+r.dataset.i;renderHistory()});
   box.innerHTML="";
-  if(!callHistory.length){box.innerHTML='<div class="empty">통화를 마치면 리포트가 여기에 쌓여요.</div>';return}
-  callHistory.slice(-10).reverse().forEach(h=>{
+  if(!callHistory.length){box.innerHTML='<div class="empty">통화를 마치면 리포트가 여기에 쌓여요.</div>'}
+  else callHistory.slice(-20).reverse().forEach(h=>{
     const d=new Date(h.at), el=document.createElement("details"); el.className="hi";
-    el.innerHTML=`<summary><span class="dt">${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}</span><span>${h.minutes}분 / ${h.turns}번 / 교정 ${h.fixes}${h.pron!==null?" / 발음 "+h.pron+"점":""}</span></summary>${reportHTML(h)}`;
+    el.innerHTML=`<summary><span class="dt">${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}</span><span class="sm">${h.minutes}분 / ${h.turns}번 / 교정 ${h.fixes}${h.pron!==null?" / 발음 "+h.pron+"점":""}<span class="ttl">${esc(h.title||"")}</span></span></summary>${reportHTML(h)}`;
     box.append(el);
   });
+  renderWeekly(); renderTrend();
 }
 
 /* ---------- Keep the call when the page is refreshed ---------- */
@@ -1794,9 +1927,153 @@ const dayKey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padSta
 function countTurnHook(){if(typeof renderHistory==="function")renderHistory()}
 function countTurn(){
   turnCount++; store("oc_turncount",turnCount); callStats.turns++;
-  const now=Date.now(); callStats.activeMs=(callStats.activeMs||0)+(callStats.lastAt?Math.min(now-callStats.lastAt,120000):30000); callStats.lastAt=now;
+  const now=Date.now(), gap=callStats.lastAt?Math.min(now-callStats.lastAt,120000):30000; callStats.activeMs=(callStats.activeMs||0)+gap; callStats.lastAt=now;
   callStats.days=callStats.days||{}; const k=dayKey(); callStats.days[k]=(callStats.days[k]||0)+1;
+  dAdd("t"); dAdd("ms",gap); saveDaily();
   countTurnHook();
+}
+
+/* ---------- Daily learning data, kept on this device (oc_daily) ---------- */
+let daily=load("oc_daily",null);
+if(!daily||typeof daily!=="object"){   // first run: rebuild what we can from past call reports
+  daily={};
+  (load("oc_history",[])||[]).forEach(h=>{const k=dayKey(new Date(h.at)),d=daily[k]||(daily[k]={old:1});
+    const add=(f,n)=>{if(n)d[f]=(d[f]||0)+n};
+    add("ms",(h.minutes||0)*60000);add("t",h.turns);add("p",h.perfect);add("f",h.fixes);add("en",(h.perfect||0)+(h.fixes||0));
+    if(h.pron!=null){add("ps",h.pron);add("pn",1)}
+    if(h.top&&h.topN){d.lb=d.lb||{};d.lb[h.top]=(d.lb[h.top]||0)+h.topN}
+    if(h.quiz){add("qo",h.quiz.ok);add("qt",h.quiz.total)} if(h.review){add("ro",h.review.ok);add("rt",h.review.total)}});
+  store("oc_daily",daily);
+}
+function dayRec(k){k=k||dayKey();return daily[k]||(daily[k]={})}
+function dAdd(f,n=1){const d=dayRec();d[f]=(d[f]||0)+n}
+function dLabel(k,n){const d=dayRec();d.lb=d.lb||{};d.lb[k]=Math.max(0,(d.lb[k]||0)+n);if(!d.lb[k])delete d.lb[k]}
+function saveDaily(){const ks=Object.keys(daily).sort();if(ks.length>400)ks.slice(0,ks.length-400).forEach(k=>delete daily[k]);store("oc_daily",daily);clearTimeout(saveDaily.t);saveDaily.t=setTimeout(()=>{try{renderHistory();renderSide()}catch(e){}},120)}
+function dailyAnswer(text,r){
+  if(r.mode==="ko"||hasKo(text))dAdd("ko"); else{dAdd("en");dAdd("w",norm(text).length);dAdd("wn")}
+  dAdd(r.perfect?"p":"f");
+  (r.mistakes||[]).forEach(m=>{const k=m&&clean(m.label||"").trim();if(k)dLabel(k,1)});
+  saveDaily();
+}
+function dailyUndoFix(r){dAdd("f",-1);dAdd("p",1);(r.mistakes||[]).forEach(m=>{const k=m&&clean(m.label||"").trim();if(k)dLabel(k,-1)});saveDaily()}
+// w=0: the last 7 days (today included), w=1: the 7 days before that, ...
+function weekSum(w){
+  const s={ms:0,t:0,p:0,f:0,en:0,ko:0,tn:0,w:0,wn:0,ps:0,pn:0,qo:0,qt:0,ro:0,rt:0,eu:0,et:0,lb:{},days:0,from:null,to:null};
+  for(let i=7*w+6;i>=7*w;i--){
+    const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i); if(i===7*w+6)s.from=new Date(d); if(i===7*w)s.to=new Date(d);
+    const r=daily[dayKey(d)]; if(!r)continue;
+    if(r.t>0)s.days++;
+    ["ms","t","p","f","en","ko","w","wn","ps","pn","qo","qt","ro","rt","eu","et"].forEach(f=>{if(typeof r[f]==="number")s[f]+=r[f]});
+    if(!r.old)s.tn+=r.t||0;
+    if(r.lb)Object.entries(r.lb).forEach(([k,v])=>s.lb[k]=(s.lb[k]||0)+v);
+  }
+  s.min=Math.round(s.ms/60000);
+  s.acc=s.en>=3?s.p/s.en:null;
+  s.koR=s.tn>=3?s.ko/s.tn:null;
+  s.len=s.wn>=3?s.w/s.wn:null;
+  s.pron=s.pn>=2?s.ps/s.pn:null;
+  s.quiz=s.qt?s.qo/s.qt:null; s.rev=s.rt?s.ro/s.rt:null;
+  return s;
+}
+const md=d=>`${d.getMonth()+1}/${d.getDate()}`;
+const pct=x=>Math.round(x*100);
+function weeklyInsights(){
+  const a=weekSum(0), b=weekSum(1), out=[]; let good=0, bad=0;
+  const hasB=b.t>0;
+  if(!a.t)return {a,b,empty:true};
+  // practice
+  if(hasB){const d=a.min-b.min; out.push({k:d>=5?"up":d<=-5?"down":"flat",t:`이번 주 ${a.days}일, ${a.min}분 연습했어요. ${d>=5?`지난주보다 ${d}분 늘었어요.`:d<=-5?`지난주보다 ${-d}분 줄었어요.`:"지난주와 비슷해요."}`});if(d>=5)good++;else if(d<=-5)bad++}
+  else out.push({k:"info",t:`이번 주 ${a.days}일, ${a.min}분 연습했어요.`});
+  // accuracy
+  if(a.acc!==null&&b.acc!==null&&b.en>=5&&a.en>=5){const d=pct(a.acc)-pct(b.acc);
+    if(d>=5){good++;out.push({k:"up",t:`맞게 말한 문장 비율이 ${pct(b.acc)}%에서 ${pct(a.acc)}%로 올랐어요.`})}
+    else if(d<=-5){bad++;out.push({k:"down",t:`맞게 말한 문장 비율이 ${pct(b.acc)}%에서 ${pct(a.acc)}%로 내려갔어요. 새 표현을 많이 시도했다면 자연스러운 일이에요.`})}
+    else out.push({k:"flat",t:`맞게 말한 문장 비율은 ${pct(a.acc)}%로 지난주와 비슷해요.`})}
+  else if(a.acc!==null)out.push({k:"info",t:`영어로 말한 문장 중 ${pct(a.acc)}%를 맞게 말했어요.`});
+  // Korean use
+  if(a.koR!==null&&b.koR!==null){const d=pct(a.koR)-pct(b.koR);
+    if(d<=-5){good++;out.push({k:"up",t:`한국어로 말한 비율이 ${pct(b.koR)}%에서 ${pct(a.koR)}%로 줄었어요. 영어로 버티는 힘이 늘었어요.`})}
+    else if(d>=5){bad++;out.push({k:"down",t:`한국어로 말한 비율이 ${pct(b.koR)}%에서 ${pct(a.koR)}%로 늘었어요.`})}}
+  // sentence length
+  if(a.len!==null&&b.len!==null){const d=a.len-b.len;
+    if(d>=0.8){good++;out.push({k:"up",t:`문장이 평균 ${b.len.toFixed(1)}단어에서 ${a.len.toFixed(1)}단어로 길어졌어요.`})}
+    else if(d<=-0.8){bad++;out.push({k:"down",t:`문장이 평균 ${b.len.toFixed(1)}단어에서 ${a.len.toFixed(1)}단어로 짧아졌어요.`})}}
+  // mistakes that went down / still the most frequent
+  const labs=new Set([...Object.keys(a.lb),...Object.keys(b.lb)]);
+  let best=null; labs.forEach(k=>{const d=(b.lb[k]||0)-(a.lb[k]||0);if(d>=2&&(!best||d>best.d))best={k,d}});
+  if(best&&hasB){good++;out.push({k:"up",t:`${best.k} 실수가 ${b.lb[best.k]||0}번에서 ${a.lb[best.k]||0}번으로 줄었어요.`})}
+  const top=Object.entries(a.lb).sort((x,y)=>y[1]-x[1])[0];
+  if(top&&top[1]>=2&&(!best||best.k!==top[0])){const prev=b.lb[top[0]]||0;
+    if(hasB&&top[1]>prev){bad++;out.push({k:"down",t:`${top[0]} 실수가 이번 주 ${top[1]}번으로 가장 많고, 지난주보다 늘었어요.`})}
+    else out.push({k:"flat",t:`${top[0]} 실수가 이번 주 ${top[1]}번으로 가장 많아요.`})}
+  // pronunciation
+  if(a.pron!==null&&b.pron!==null){const d=Math.round(a.pron-b.pron);if(d>=3){good++;out.push({k:"up",t:`발음 점수가 ${Math.round(b.pron)}점에서 ${Math.round(a.pron)}점으로 올랐어요.`})}else if(d<=-3){bad++;out.push({k:"down",t:`발음 점수가 ${Math.round(b.pron)}점에서 ${Math.round(a.pron)}점으로 내려갔어요.`})}}
+  // quiz and review
+  const qr=a.qt+a.rt; if(qr)out.push({k:"info",t:`퀴즈와 복습 ${qr}문제 중 ${a.qo+a.ro}개를 맞혔어요.`});
+  // verdict
+  const v=!hasB?{c:"info",t:"첫 주 기록"}:good-bad>=2?{c:"up",t:"좋아지고 있어요"}:bad-good>=2?{c:"down",t:"조금 주춤했어요"}:{c:"flat",t:"꾸준히 유지 중"};
+  // next goal
+  let goal;
+  if(top&&top[1]>=2){const tip=patterns[top[0]]&&patterns[top[0]].tipKo;goal=`${top[0]} 실수 줄이기${tip?": "+clean(tip):""}`}
+  else if(a.koR!==null&&a.koR>0.3)goal="막힐 때 한국어 대신 아는 쉬운 영어 단어로 바꿔 말해보기";
+  else if(a.days<3)goal="일주일에 3일 이상, 하루 10분씩 대화하기";
+  else if(a.len!==null&&a.len<6)goal="and, because로 이어서 문장을 조금 더 길게 말해보기";
+  else goal="오늘의 표현을 대화에서 하루 2개 이상 써보기";
+  return {a,b,hasB,items:out.slice(0,6),v,goal};
+}
+function renderWeekly(){
+  const el=$("weekly"); if(!el)return;
+  const W=weeklyInsights(), a=W.a, b=W.b;
+  const range=`${md(a.from)} ~ ${md(a.to)}`;
+  if(W.empty){el.innerHTML=`<div class="wk"><div class="wk-top"><div><div class="wk-k">주간 리포트</div><div class="wk-range">${range}</div></div></div><div class="wk-empty">이번 주는 아직 연습 기록이 없어요. Julia와 5분만 대화해도 여기에 이번 주 변화와 지난주 비교가 나와요.</div></div>`;return}
+  const dl=(cur,prev,fmt,better,unit,th)=>{if(cur===null||prev===null||!W.hasB)return '<div class="d">&nbsp;</div>';const d=cur-prev;const r=Math.round(fmt(d)*10)/10;if(!r)return '<div class="d">지난주와 같음</div>';const g=better==="up"?d>0:d<0;const big=Math.abs(fmt(d))>=th;return `<div class="d ${big?(g?"good":"bad"):""}">${d>0?"▲":"▼"} ${Math.abs(r)}${unit}</div>`};
+  const tile=(k,v,u,d)=>`<div class="wk-t"><div class="k">${k}</div><div class="v">${v}${u?`<small>${u}</small>`:""}</div>${d}</div>`;
+  const ico={up:"▲",down:"▼",flat:"=",info:"i"};
+  el.innerHTML=`<div class="wk">
+    <div class="wk-top"><div><div class="wk-k">주간 리포트</div><div class="wk-range">${range}</div></div><span class="wk-v ${W.v.c}">${W.v.t}</span></div>
+    <div class="wk-tiles">
+      ${tile("연습 시간",a.min,"분",dl(a.min,b.t?b.min:null,x=>Math.round(x),"up","분",5))}
+      ${tile("연습한 날",a.days,"/7일",dl(a.days,b.t?b.days:null,x=>x,"up","일",1))}
+      ${tile("말한 횟수",a.t,"번",dl(a.t,b.t?b.t:null,x=>x,"up","번",Math.max(5,b.t*0.1)))}
+      ${tile("정확도",a.acc===null?"-":pct(a.acc),a.acc===null?"":"%",dl(a.acc,b.acc,x=>Math.round(x*100),"up","%p",5))}
+      ${tile("한국어 비율",a.koR===null?"-":pct(a.koR),a.koR===null?"":"%",dl(a.koR,b.koR,x=>Math.round(x*100),"down","%p",5))}
+      ${tile("문장 길이",a.len===null?"-":a.len.toFixed(1),a.len===null?"":"단어",dl(a.len,b.len,x=>Math.round(x*10)/10,"up","단어",0.8))}
+    </div>
+    <div class="wk-ins">${W.items.map(x=>`<div class="wk-i ${x.k}"><span class="ic">${ico[x.k]}</span><span>${esc(x.t)}</span></div>`).join("")}</div>
+    <div class="wk-goal"><b>다음 주 목표</b>${esc(W.goal)}</div>
+  </div>`;
+}
+const TREND={acc:{n:"정확도",f:s=>s.acc===null?null:pct(s.acc),u:"%",max:100,cap:(s,v)=>`영어 문장 ${s.en}개 중 ${s.p}개를 맞게 말했어요 (${v}%)`},
+  ko:{n:"한국어 비율",f:s=>s.koR===null?null:pct(s.koR),u:"%",max:100,cap:(s,v)=>`${s.tn}번 중 ${s.ko}번 한국어를 섞었어요 (${v}%)`},
+  len:{n:"문장 길이",f:s=>s.len===null?null:Math.round(s.len*10)/10,u:"단어",cap:(s,v)=>`영어 문장 평균 ${v}단어`},
+  min:{n:"연습 시간",f:s=>s.t?s.min:0,u:"분",cap:(s,v)=>`${s.days}일 동안 ${v}분 연습했어요`},
+  pron:{n:"발음",f:s=>s.pron===null?null:Math.round(s.pron),u:"점",max:100,cap:(s,v)=>`발음 평균 ${v}점`}};
+function renderTrend(){
+  const el=$("trend"), chips=$("trChips"); if(!el||!chips)return;
+  let m=renderTrend.m||(()=>{try{return localStorage.getItem("oc_trend")}catch(e){return null}})()||"acc"; if(!TREND[m])m="acc";
+  chips.innerHTML=Object.entries(TREND).map(([k,x])=>`<button data-m="${k}" aria-pressed="${k===m}">${x.n}</button>`).join("");
+  chips.querySelectorAll("button").forEach(b=>b.onclick=()=>{renderTrend.m=b.dataset.m;renderTrend.sel=null;try{localStorage.setItem("oc_trend",b.dataset.m)}catch(e){}renderTrend()});
+  const T=TREND[m], weeks=[]; for(let w=7;w>=0;w--){const s=weekSum(w);weeks.push({s,v:T.f(s)})}
+  const vals=weeks.map(x=>x.v).filter(v=>v!==null);
+  if(vals.length<1||!weeks.some(x=>x.s.t>0)){el.innerHTML='<div class="ch-empty">대화를 하면 주마다 변화가 여기에 그려져요.</div>';$("trendCap").innerHTML="";return}
+  const W=300,H=120,L=28,R=34,top=8;
+  let ymax=T.max||Math.max(...vals,1); if(!T.max){const st=ymax<=10?2:ymax<=30?10:ymax<=100?20:50;ymax=Math.ceil(ymax*1.15/st)*st}
+  const ticks=[0,ymax/2,ymax], X=i=>L+(W-L-R)*i/7, Y=v=>top+(H-top)*(1-v/ymax);
+  let path="",area="",seg=[];
+  const flush=()=>{if(!seg.length)return;path+=seg.map((p,j)=>`${j?"L":"M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ")+" ";if(seg.length>1)area+=`M${seg[0][0].toFixed(1)},${H} `+seg.map(p=>`L${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ")+` L${seg[seg.length-1][0].toFixed(1)},${H} Z `;seg=[]};
+  weeks.forEach((x,i)=>{if(x.v===null)flush();else seg.push([X(i),Y(x.v)])}); flush();
+  let lastI=-1; weeks.forEach((x,i)=>{if(x.v!==null)lastI=i});
+  const sel=renderTrend.sel??lastI;
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H+30}" role="img" aria-label="최근 8주 ${T.n}">
+    ${ticks.map(t=>`<line class="ch-grid" x1="${L}" x2="${W-R+6}" y1="${Y(t).toFixed(1)}" y2="${Y(t).toFixed(1)}"/><text class="ch-ax" x="${L-6}" y="${(Y(t)+3).toFixed(1)}" text-anchor="end">${Math.round(t*10)/10}</text>`).join("")}
+    ${sel>=0&&weeks[sel]&&weeks[sel].v!==null?`<line class="ch-cross" x1="${X(sel).toFixed(1)}" x2="${X(sel).toFixed(1)}" y1="${top}" y2="${H}"/>`:""}
+    <path class="ch-area" d="${area}"/><path class="ch-line" d="${path}"/>
+    ${weeks.map((x,i)=>x.v===null?"":`<circle class="ch-dot${i===sel?" on":""}" cx="${X(i).toFixed(1)}" cy="${Y(x.v).toFixed(1)}" r="${i===sel?6:4}"/>`).join("")}
+    ${lastI>=0?`<text class="ch-end" x="${(X(lastI)+9).toFixed(1)}" y="${(Y(weeks[lastI].v)+4).toFixed(1)}">${weeks[lastI].v}${T.u==="%"?"%":""}</text>`:""}
+    ${weeks.map((x,i)=>`<text class="ch-ax${i===sel?" on":""}" x="${X(i).toFixed(1)}" y="${H+16}" text-anchor="middle">${i===7?"이번 주":md(x.s.to)}</text><rect class="ch-hit" data-i="${i}" x="${(X(i)-(W-L-R)/14).toFixed(1)}" y="0" width="${((W-L-R)/7).toFixed(1)}" height="${H+30}"><title>${md(x.s.from)} ~ ${md(x.s.to)}: ${x.v===null?"기록 없음":x.v+T.u}</title></rect>`).join("")}
+  </svg>`;
+  el.querySelectorAll(".ch-hit").forEach(r=>r.onclick=()=>{renderTrend.sel=+r.dataset.i;renderTrend()});
+  const w=weeks[sel]; $("trendCap").innerHTML=w?`<b>${md(w.s.from)} ~ ${md(w.s.to)}</b> ${w.v===null?(w.s.t?"비교할 만큼 기록이 적어요":"연습 기록이 없어요"):esc(T.cap(w.s,w.v))}`:"";
 }
 function reviewCandidates(n){
   const top=Object.entries(patterns).sort((a,b)=>b[1].n-a[1].n).slice(0,3).map(x=>x[0]);
@@ -1872,7 +2149,7 @@ async function nextReviewItem(){
 async function endReview(stopped){
   const r=review; review=null; log.querySelectorAll(".rev-acts").forEach(n=>n.remove());
   const say=stopped?"복습을 마칠게요.":`복습 결과, ${r.items.length}개 중 ${r.ok}개 맞혔어요.`;
-  if(!stopped)callStats.review={ok:r.ok,total:r.items.length};
+  if(!stopped){callStats.review={ok:r.ok,total:r.items.length};dAdd("ro",r.ok);dAdd("rt",r.items.length);saveDaily();renderHistory()}
   const parts=[{text:say,who:"coach"}];
   await holdUntilReady(say,"coach");
   addCoach({kind:"recap",say,listen:parts});
@@ -1980,7 +2257,7 @@ async function sendInner(textIn,audio,onTurn){
   if(hasKo(text)){r.mode="ko";r.perfect=false;r.mistakes=[]}else r.mode="en";
   r._review=recordMistakes(r,text);
   pending=r; tries=0; r._said=text; r._tid=String(T.id); meRow.dataset.tid=String(T.id);
-  stat(r.perfect?"perfect":"fixes"); if(!r.perfect&&r.model){callStats.learned.push({said:text,model:r.model});callStats.learned=callStats.learned.slice(-20)}
+  stat(r.perfect?"perfect":"fixes"); dailyAnswer(text,r); if(!r.perfect&&r.model){callStats.learned.push({said:text,model:r.model});callStats.learned=callStats.learned.slice(-20)}
   (r.mistakes||[]).forEach(m=>{const k=m&&clean(m.label||"").trim();if(k)callStats.labels[k]=(callStats.labels[k]||0)+1});
 
   if(voiceOn)tts(r.reply,"julia").catch(()=>{});
@@ -2358,11 +2635,16 @@ $("exprOpen").onclick=openExpr; $("quizOpen").onclick=()=>openQuiz();
 $("exClose").onclick=closeExpr; $("exprSheet").addEventListener("click",e=>{if(e.target.id==="exprSheet")closeExpr()});
 document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(!$("exprSheet").hidden)closeExpr();if(!$("quizSheet").hidden)closeQuiz()});
 syncSettingsUI(); updateStudyBar();
+
+/* v5.2 record tabs */
+function sideTab(t){document.querySelectorAll(".sd-tabs [data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));document.querySelectorAll(".sd-pane").forEach(p=>p.hidden=p.dataset.pane!==t);try{localStorage.setItem("oc_sidetab",t)}catch(e){}}
+document.querySelectorAll(".sd-tabs [data-tab]").forEach(b=>b.onclick=()=>sideTab(b.dataset.tab));
+try{const t=localStorage.getItem("oc_sidetab");if(t&&document.querySelector(`.sd-pane[data-pane="${t}"]`))sideTab(t)}catch(e){}
 $("clearAll").onclick=()=>{
-  if(!confirm("자주 하는 실수, 표현 노트, 발음 점수, 지난 기록과 지금 대화를 모두 지울까요?"))return;
+  if(!confirm("주간 리포트, 자주 하는 실수, 표현 노트, 발음 점수, 지난 기록과 지금 대화를 모두 지울까요?"))return;
   stopAudio(); if(auto.on)stopAuto();
-  patterns={}; notes=[]; pronHist=[]; callHistory=[]; turnCount=0; lastReviewAt=0;
-  ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_qz"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  patterns={}; notes=[]; pronHist=[]; callHistory=[]; turnCount=0; lastReviewAt=0; daily={};
+  ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_qz","oc_daily"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
   callStats=newStats(); callStats.archived=true; rp=null; review=null; pending=null;
   $("side").classList.remove("open");
   renderSide(); renderHistory();
