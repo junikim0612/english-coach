@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v5.2</title>
+<title>영어회화 코치 v5.4</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -677,12 +677,27 @@ body.kb .studybar{display:none}
 .hist .hi .ttl{display:block;font-size:12px;color:#8a93a6}
 .hist .hi[open]{background:#fff!important;box-shadow:0 0 0 1px #e7e9ee}
 .empty{font-size:13px;color:#8a93a6;line-height:1.5}
+
+/* v5.3: clear end of a conversation */
+.endbar{display:flex;align-items:center;gap:12px;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid #e7e9ee;background:#fff;flex:none}
+.endbar[hidden]{display:none}
+.eb-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.eb-tx b{font-size:15px;color:#111827}
+.eb-tx span{font-size:12.5px;color:#6b7280;line-height:1.4}
+.eb-btn{flex:none;height:46px;padding:0 20px!important;border-radius:14px!important;border:0!important;background:#e8513f!important;color:#fff!important;font-weight:700;font-size:15px!important;display:inline-flex;align-items:center}
+.eb-btn:hover{background:#c43a2a!important}
+body.ended .compose,body.ended #target{display:none!important}
+body.ended .callbar .rec{background:#9ca3af!important;animation:none!important}
+body.ended .stage img.face{filter:saturate(.55) brightness(.8);transition:filter .3s}
+.stage .callbar{z-index:9}
+.endpill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(17,24,39,.62);color:#fff;font-size:14px;font-weight:700;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none}
+.endpill[hidden]{display:none}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v5.2</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v5.4</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -703,7 +718,7 @@ body.kb .studybar{display:none}
         <div class="menu" id="moreMenu" role="menu" hidden>
           <button role="menuitem" id="toggleKo">해석 켜기</button>
           <button role="menuitem" id="rpBtn">상황극</button>
-          <button role="menuitem" id="endBtn">통화 마치기</button>
+          <button role="menuitem" id="endBtn">대화 종료하기</button>
           <button role="menuitem" id="skipAudio" disabled hidden aria-hidden="true">음성 넘기기</button>
         </div>
       </div>
@@ -715,6 +730,7 @@ body.kb .studybar{display:none}
           <div class="name"><span class="bars"><i></i><i></i><i></i></span>Jun</div>
           </div>
           <div class="cap" id="cap" aria-live="polite"></div>
+          <div class="endpill" id="endPill" hidden><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="7" y="6" width="3.5" height="12" rx="1" fill="currentColor"/><rect x="13.5" y="6" width="3.5" height="12" rx="1" fill="currentColor"/></svg>대화 종료</div>
       </div>
     </div>
     <div class="studybar" id="studyBar">
@@ -723,6 +739,7 @@ body.kb .studybar{display:none}
     </div>
     <div class="log" id="log"></div>
     <div class="target" id="target" hidden><span>따라 말해보세요</span><b id="targetText"></b><button id="targetListen">듣기</button><button id="skipBtn">건너뛰기</button></div>
+    <div class="endbar" id="endBar" hidden><div class="eb-tx"><b>대화를 종료했어요</b><span id="endSum">오늘 기록은 저장됐어요.</span></div><button id="restartBtn" class="eb-btn">재시작하기</button></div>
     <div class="compose">
       <textarea id="msg" rows="1" placeholder="Reply to Julia..."></textarea>
       <button class="autob" id="autoBtn" aria-pressed="false"><span class="autodot2"></span><span id="autoLabel">자동 듣기</span></button>
@@ -734,7 +751,7 @@ body.kb .studybar{display:none}
   <aside class="pane side" id="side" aria-label="기록">
     <div class="sd-head"><h2>기록</h2><button id="closeSide" class="sd-close">닫기</button></div>
     <div class="sd-tabs" role="tablist" aria-label="기록 보기">
-      <button role="tab" data-tab="report" aria-selected="true">리포트</button><button role="tab" data-tab="mist" aria-selected="false">실수</button><button role="tab" data-tab="notes" aria-selected="false">표현 노트</button><button role="tab" data-tab="calls" aria-selected="false">통화</button>
+      <button role="tab" data-tab="report" aria-selected="true">리포트</button><button role="tab" data-tab="mist" aria-selected="false">실수</button><button role="tab" data-tab="notes" aria-selected="false">표현 노트</button><button role="tab" data-tab="calls" aria-selected="false">지난 대화</button>
     </div>
     <div class="sd-body">
       <section class="sd-pane" data-pane="report">
@@ -771,7 +788,7 @@ body.kb .studybar{display:none}
       </section>
       <section class="sd-pane" data-pane="calls" hidden>
         <div class="sd-card">
-          <div class="sd-ct">지난 통화<span class="sd-cs">최근 20개</span></div>
+          <div class="sd-ct">지난 대화<span class="sd-cs">최근 20개</span></div>
           <div class="hist" id="histList"></div>
         </div>
         <div class="sd-danger"><button id="clearAll">기록과 대화 모두 지우기</button><div class="sd-note">모든 기록은 이 기기에만 저장돼요.</div></div>
@@ -838,7 +855,7 @@ body.kb .studybar{display:none}
       <div class="set-group">
         <div class="set-gt">학습</div>
         <div class="set-card">
-          <div class="set-row"><span class="set-ic" style="background:#eab308"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="set-lab">오늘의 표현<small>통화마다 표현 3개와 예문</small></div>
+          <div class="set-row"><span class="set-ic" style="background:#eab308"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="set-lab">오늘의 표현<small>대화마다 수준에 맞는 표현 3개</small></div>
             <button class="sw" id="exprSw" role="switch" aria-checked="true" aria-label="오늘의 표현"></button>
             <select id="exprOn" class="sr-sel" tabindex="-1" aria-hidden="true"><option value="1">켜기</option><option value="0">끄기</option></select>
           </div>
@@ -910,7 +927,7 @@ body.kb .studybar{display:none}
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v5.2<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
+      <div class="set-ver">영어회화 코치 v5.4<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
     </div>
   </div>
 </div>
@@ -1099,6 +1116,7 @@ function earlyVoices(){
   return txt=>{
     if(!voiceOn)return;
     if(!st.model){const m=txt.match(/"perfect"\s*:\s*(true|false)[\s\S]*?"model"\s*:\s*"((?:[^"\\]|\\.)*)"/);if(m){st.model=1;if(m[1]==="false"){try{const t=JSON.parse('"'+m[2]+'"').trim();if(t)tts(t,"coach").catch(()=>{})}catch(e){}}}}
+    if(!st.reply&&/"intent"\s*:\s*"question"/.test(txt))st.reply=1;   // Julia stays quiet after a question to Sam
     if(!st.reply){const m=txt.match(/"reply"\s*:\s*"((?:[^"\\]|\\.)*)"/);if(m){st.reply=1;try{const t=JSON.parse('"'+m[1]+'"').trim();if(t)tts(t,"julia").catch(()=>{})}catch(e){}}}
   };
 }
@@ -1478,7 +1496,7 @@ function startTalk(silent){
   if(!cfg.key){openSettings();$("keyState").className="tip bad";$("keyState").textContent="이 화면에는 아직 API 키가 없어요. 홈 화면 앱은 Safari와 저장 공간이 따로라서 처음 한 번 다시 넣어야 해요. 붙여넣으면 바로 저장되고, 닫기를 누른 뒤 다시 보내면 돼요.";$("apiKey").focus();return false}
   stopAudio();
   if(callStats.turns>0&&!callStats.archived)archiveCall();
-  callStats=newStats(); if(rp)callStats.roleplay={name:rp.name,done:false}; callId++; todayExpr=[]; updateStudyBar();
+  callStats=newStats(); if(rp)callStats.roleplay={name:rp.name,done:false}; callId++; todayExpr=[]; updateStudyBar(); setEnded(false);
   try{localStorage.removeItem(CALL_KEY)}catch(e){}
   turns=[]; log.innerHTML=""; pending=null; tries=0; callFacts=[]; callFixes=[]; review=null;
   $("topicName").textContent=callTitle();
@@ -1593,7 +1611,7 @@ log.addEventListener("click",e=>{
   if(act==="ok"){if(pending&&pending._tid===b.dataset.tid)markCorrect(pending,pending._said,log.querySelector(`.row.me[data-tid="${b.dataset.tid}"]`));return}
   if(act==="clearlabel"){delete patterns[b.dataset.label];store("oc_patterns",patterns);renderSide();b.textContent="기록에서 지웠어요";b.disabled=true;return}
   if(act==="revstop"){if(review&&!busy){stopAudio();chain=false;endReview(true)}return}
-  if(act==="newcall"){rp=null;startTalk(false);return}
+  if(act==="newcall"){restartTalk();return}
   if(act==="quiz"){openQuiz();return}
   if(act==="rp-again"){if(rp)startRoleplay(rp.id);return}
   if(act==="rp-other"){openRoleplay();return}
@@ -1602,18 +1620,23 @@ log.addEventListener("click",e=>{
 
 /* ---------- Today's expressions ---------- */
 let todayExpr=[], callId=0;
-const EXPR_SYS=`Pick 3 useful everyday English expressions for Jun, a Korean learner, to try in today's conversation. Reply ONLY JSON {"expressions":[{"en":"I'm into ...","ko":"~에 빠져 있어요","match":"i'm into","example":"I'm into hiking these days.","example_ko":"요즘 등산에 빠져 있어요."}]}.
-"example": one short natural example sentence using the expression, about everyday life on today's topic, at his level. "example_ko": its natural Korean meaning.
-Fit the topic (or role-play goal) and his level, short and very common in real talk. "match" = the shortest lowercase core words that show he used it (2 to 4 words, no dots). ko: natural short Korean, never the middle dot.`;
+const EXPR_SYS=`Pick 3 useful everyday English expressions for Jun, a Korean learner, as today's expressions. They are NOT tied to any conversation topic: pick one expression for each of the three "areas" given, so the set feels fresh and random. Reply ONLY JSON {"expressions":[{"en":"I'm into ...","ko":"~에 빠져 있어요","match":"i'm into","example":"I'm into hiking these days.","example_ko":"요즘 등산에 빠져 있어요."}]}.
+Level: beginner = very common short phrases a beginner can use right away (A1-A2). intermediate = natural everyday phrases and common phrasal verbs (B1-B2). advanced = natural idioms and native-like expressions (C1).
+Never pick an expression listed in "avoid" or a close variant of one.
+"example": one short natural example sentence from everyday life using the expression, at his level. "example_ko": its natural Korean meaning.
+"match" = the shortest lowercase core words that show he used it (2 to 4 words, no dots). ko: natural short Korean, never the middle dot.`;
+const EXPR_AREAS=["feelings and mood","making plans","agreeing and disagreeing","reacting with surprise","asking for help","saying sorry and thanking","talking about habits","describing the past day","food and eating out","weather and seasons","work and being busy","shopping and money","health and tiredness","free time and hobbies","giving an opinion","making suggestions","talking about time and being late","small talk openers","encouraging someone","complaining politely","talking about family and friends","phone and the internet","getting around town","saying you don't know or aren't sure"];
+function exprPick(){const a=EXPR_AREAS.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,3)}
 async function genExpressions(){
   if(cfg.exprOn===0||!cfg.key||phase==="idle")return;
   const my=callId;
   try{
-    const r=await chatJSON([{role:"system",content:EXPR_SYS},{role:"user",content:JSON.stringify({topic:TOPIC_EN[$("topic").value],level:$("level").value,roleplay_goal:rp?rp.goal_en:null})}]);
+    const seen=load("oc_expr_seen",[])||[];
+    const r=await chatJSON([{role:"system",content:EXPR_SYS},{role:"user",content:JSON.stringify({level:$("level").value,areas:exprPick(),avoid:seen.slice(-40)})}]);
     if(my!==callId)return;
     const ex=(r&&Array.isArray(r.expressions)?r.expressions:[]).filter(x=>x&&x.en&&x.match).slice(0,3).map(x=>({en:String(x.en).trim(),ko:clean(String(x.ko||"")),ex:String(x.example||"").trim(),exKo:clean(String(x.example_ko||"")),match:norm(String(x.match).replace(/\.\.\.|…/g," ")).join(" "),used:false})).filter(x=>x.match);
     if(!ex.length)return;
-    todayExpr=ex; dAdd("et",ex.length); saveDaily(); renderExprCard(); saveCallSoon(); updateStudyBar(); if(!$("exprSheet").hidden)renderExprSheet();
+    todayExpr=ex; store("oc_expr_seen",(load("oc_expr_seen",[])||[]).concat(ex.map(x=>x.en)).slice(-60)); dAdd("et",ex.length); saveDaily(); renderExprCard(); saveCallSoon(); updateStudyBar(); if(!$("exprSheet").hidden)renderExprSheet();
   }catch(e){logErr("오늘의 표현",e)}
 }
 function exprHTML(){return `<div class="exprs">${todayExpr.map((x,i)=>`<div class="ex${x.used?" used":""}"><span class="chk">${x.used?"✓":i+1}</span><div class="exb"><div class="en">${esc(x.en)}</div><div class="ko">${esc(x.ko)}</div>${x.ex?`<div class="exs"><span class="tag">예문</span><div><div class="se">${esc(x.ex)}</div>${x.exKo?`<div class="sk">${esc(x.exKo)}</div>`:""}</div></div>`:""}</div></div>`).join("")}</div><div class="tip">대화 중에 쓰면 체크돼요.</div>`}
@@ -1795,9 +1818,9 @@ function renderExprSheet(){
   }
   const off=cfg.exprOn===0;
   const msg=exprLoading?`<div class="qz-load"><span class="qz-dots"><i></i><i></i><i></i></span>표현을 고르고 있어요</div>`
-    :off?`<div class="qz-empty"><b>오늘의 표현이 꺼져 있어요</b><p>켜면 통화마다 주제에 맞는 표현 3개와 예문을 받아요.</p><button id="exGet" class="primary">켜고 표현 받기</button></div>`
-    :!cfg.key||phase==="idle"?`<div class="qz-empty"><b>아직 표현이 없어요</b><p>통화를 시작하면 표현 3개와 예문을 받아요.</p></div>`
-    :`<div class="qz-empty"><b>아직 표현이 없어요</b><p>지금 주제에 맞는 표현 3개와 예문을 받아볼게요.</p><button id="exGet" class="primary">표현 받기</button></div>`;
+    :off?`<div class="qz-empty"><b>오늘의 표현이 꺼져 있어요</b><p>켜면 대화마다 수준에 맞는 표현 3개와 예문을 받아요.</p><button id="exGet" class="primary">켜고 표현 받기</button></div>`
+    :!cfg.key||phase==="idle"?`<div class="qz-empty"><b>아직 표현이 없어요</b><p>대화를 시작하면 표현 3개와 예문을 받아요.</p></div>`
+    :`<div class="qz-empty"><b>아직 표현이 없어요</b><p>수준에 맞는 표현 3개와 예문을 받아볼게요.</p><button id="exGet" class="primary">표현 받기</button></div>`;
   b.innerHTML=msg;
   const g=$("exGet"); if(g)g.onclick=async()=>{if(cfg.exprOn===0){cfg.exprOn=1;saveCfg();$("exprOn").value="1";syncSettingsUI()}exprLoading=true;renderExprSheet();await genExpressions();exprLoading=false;renderExprSheet()};
 }
@@ -1857,17 +1880,29 @@ function reportHTML(x){
 }
 async function endCall(){
   closeMore();
-  if(phase==="idle"){sysNote("진행 중인 통화가 없어요.");return}
+  if(phase==="idle"){sysNote("진행 중인 대화가 없어요.");return}
   if(busy||chain){sysNote("지금 하던 말이 끝나면 눌러주세요.");return}
   stopAudio(); if(auto.on)stopAuto(); review=null;
+  clearInterval(timerId); try{msg.blur()}catch(e){}
   const sum=archiveCall()||summarize(callStats);
+  setPhase("idle"); setEnded(true,sum); caption(null);
   const say=`오늘 ${sum.turns}번 말했고, 새 표현 ${sum.learned.length}개를 배웠어요.`;
   const parts=[{text:say,who:"coach"}];
   await holdUntilReady(say,"coach");
-  addCoach({kind:"report",label:"Coach Sam / 오늘의 리포트",say,listen:parts,html:reportHTML(sum)+`<div class="acts">${koItems().length?'<button data-act="quiz">오늘의 퀴즈 풀기</button>':""}<button data-act="newcall">새 통화 시작</button></div>`,noTurn:true});
+  addCoach({kind:"report",label:"Coach Sam / 오늘의 리포트",say,listen:parts,html:reportHTML(sum)+`<div class="acts">${koItems().length?'<button data-act="quiz">오늘의 퀴즈 풀기</button>':""}</div>`,noTurn:true});
+  try{localStorage.removeItem(CALL_KEY)}catch(e){}
   await chained(parts);
-  clearInterval(timerId); setPhase("idle"); try{localStorage.removeItem(CALL_KEY)}catch(e){}
+  try{localStorage.removeItem(CALL_KEY)}catch(e){}
 }
+/* ended state: like a pause. The menu and the bottom bar offer 재시작하기; a refresh starts a new conversation (records stay) */
+var callEnded=false;
+function setEnded(on,sum){
+  callEnded=!!on; document.body.classList.toggle("ended",callEnded);
+  $("endBar").hidden=!callEnded; $("endPill").hidden=!callEnded;
+  $("endBtn").textContent=callEnded?"재시작하기":"대화 종료하기";
+  if(callEnded&&sum)$("endSum").textContent=`${sum.minutes}분 / ${sum.turns}번 말함 / 기록 저장됨`;
+}
+function restartTalk(){closeMore();if(busy||chain){sysNote("지금 하던 말이 끝나면 다시 눌러주세요.");return}rp=null;startTalk(false)}
 function renderHistory(){
   const box=$("histList"), ch=$("histChart"); if(!box||!ch)return;
   // last 7 days, number of times Jun spoke per day
@@ -1880,7 +1915,7 @@ function renderHistory(){
   const sd=days[sel]; $("histCap").innerHTML=`<b>${sd.d.getMonth()+1}/${sd.d.getDate()} (${WD[sd.d.getDay()]})</b> ${sd.n?`${sd.n}번 말했어요 / ${sd.m}분${sd.acc!==null?` / 정확도 ${sd.acc}%`:""}`:"연습하지 않은 날이에요"}`;
   ch.querySelectorAll(".ch-hit").forEach(r=>r.onclick=()=>{renderHistory.sel=+r.dataset.i;renderHistory()});
   box.innerHTML="";
-  if(!callHistory.length){box.innerHTML='<div class="empty">통화를 마치면 리포트가 여기에 쌓여요.</div>'}
+  if(!callHistory.length){box.innerHTML='<div class="empty">대화를 종료하면 리포트가 여기에 쌓여요.</div>'}
   else callHistory.slice(-20).reverse().forEach(h=>{
     const d=new Date(h.at), el=document.createElement("details"); el.className="hi";
     el.innerHTML=`<summary><span class="dt">${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}</span><span class="sm">${h.minutes}분 / ${h.turns}번 / 교정 ${h.fixes}${h.pron!==null?" / 발음 "+h.pron+"점":""}<span class="ttl">${esc(h.title||"")}</span></span></summary>${reportHTML(h)}`;
@@ -2247,10 +2282,10 @@ async function sendInner(textIn,audio,onTurn){
   if(r.intent==="question"){
     turns.pop(); turns.push({role:"user",content:"(asked the teacher) "+text});
     await holdUntilReady(r.teach,"coach"); checkTurn(T);
+    turns.push({role:"assistant",content:"(Sam answered Jun's question. Julia waited and did not speak) "+r.teach});
     const parts=showTeach(r);
-    if(voiceOn)tts(r.reply,"julia").catch(()=>{});
     await chained(parts); checkTurn(T);
-    await juliaSay(r.reply,r.reply_ko,r.emotion,T);
+    restEmotion(400); saveCallSoon();   // Jun talks next; Julia answers whatever he says then
     return;
   }
   r.mistakes=Array.isArray(r.mistakes)?r.mistakes:[];
@@ -2611,7 +2646,8 @@ $("rpBtn").onclick=()=>openRoleplay();
 $("quizSide").onclick=()=>openQuiz();
 $("qzClose").onclick=closeQuiz;
 $("quizSheet").addEventListener("click",e=>{if(e.target.id==="quizSheet")closeQuiz()});
-$("endBtn").onclick=()=>{endCall().catch(e=>logErr("통화 마치기",e))};
+$("endBtn").onclick=()=>{closeMore();if(callEnded){restartTalk();return}endCall().catch(e=>logErr("대화 종료하기",e))};
+$("restartBtn").onclick=()=>restartTalk();
 
 /* v5.1 settings controls */
 function setSw(el,on){if(!el)return;el.setAttribute("aria-checked",String(!!on));el.setAttribute("aria-pressed",String(!!on))}
