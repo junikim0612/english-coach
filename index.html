@@ -6,8 +6,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
-<meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v6.1</title>
+<meta name="theme-color" content="#f5f5f7">
+<title>영어회화 코치 v6.2</title>
+<script>(function(){var K="oc_theme";var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
+function pref(){try{var v=localStorage.getItem(K);return v==="light"||v==="dark"||v==="system"?v:"system"}catch(e){return "system"}}
+function apply(){var p=pref(),t=p==="system"?(mq&&mq.matches?"dark":"light"):p;document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#121214":"#f5f5f7");return t}
+window.ocTheme={pref:pref,apply:apply,set:function(v){try{localStorage.setItem(K,v)}catch(e){}return apply()}};apply();
+if(mq){var f=function(){if(pref()==="system")apply()};if(mq.addEventListener)mq.addEventListener("change",f);else if(mq.addListener)mq.addListener(f)}})();</script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -921,39 +926,2367 @@ body[data-view="call"] .modeseg{display:inline-flex}
 /* role-play face: a portrait on white */
 .stage.rpface img.face{object-fit:cover;object-position:center 15%;background:#f2f2f2}
 
-/* v6.1: Naver green instead of blue, illustrated menu cards */
-:root{--b-primary:#03c75a;--b-primaryT:#00a344;--b-tint:#e6f8ee;--v-navy:#03c75a}
+/* v6.2: navy brand (light theme). Dark theme overrides live in #darkTheme. */
+:root{--b-primary:#1b2a4e;--b-primaryT:#1b2a4e;--b-tint:#e8ecf5;--v-navy:#1b2a4e;--b-gold:#c9962e;--b-tile:#1b2a4e}
 .rc .vis.ill{background:#eef0f3}
 .rc .vis.ill img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
 .rc .vis.ill .cnt{position:absolute;right:10px;top:10px;min-width:26px;height:26px;padding:0 8px;border-radius:9999px;background:#fff;color:#d70015;font-size:13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.18);z-index:1;font-variant-numeric:tabular-nums}
-.rc .vis .go{background:var(--b-primary)!important;box-shadow:0 8px 18px rgba(3,199,90,.35)!important}
+.rc .vis .go{background:var(--b-primary)!important;box-shadow:0 8px 18px rgba(27,42,78,.30)!important}
 .tabbar button[aria-current="page"]{background:var(--b-tint)!important;color:var(--b-primaryT)!important}
 .sd-tabs button[aria-selected="true"]{color:var(--b-primaryT)!important;border-bottom-color:var(--b-primary)!important}
 .modeseg button[aria-pressed="true"]{color:var(--b-primaryT)!important}
 #settings .seg button[aria-pressed="true"],.tp-lv button[aria-pressed="true"]{color:var(--b-primaryT)!important}
 #settings .set-done{color:var(--b-primaryT)!important}
-.rp-rail .rc[aria-pressed="true"]{box-shadow:0 0 0 2px var(--b-primary),0 0 0 6px rgba(3,199,90,.14)!important}
-body[data-view] .me .bubble,body[data-view] .me.marked .bubble{background:#2b2b2e!important}
-body[data-view] .me.marked .bubble s{color:#9a9aa0!important}
-body[data-view] .me.marked .bubble ins{text-decoration-color:var(--b-primary)!important}
+.rp-rail .rc[aria-pressed="true"]{box-shadow:0 0 0 2px var(--b-primary),0 0 0 6px rgba(27,42,78,.14)!important}
+body[data-view] .me .bubble,body[data-view] .me.marked .bubble{background:var(--b-primary)!important}
+body[data-view] .me.marked .bubble s{color:#a3adc4!important}
+body[data-view] .me.marked .bubble ins{text-decoration-color:#e3b65c!important}
 .row.me .who-l{color:var(--b-primaryT)!important}
 .compose .mic{background:var(--b-primary)!important}
 .compose .mic.listening{background:#d70015!important}
 
-/* v6.1: no blue left in the visible UI */
+/* v6.2: navy accents everywhere */
 .ver-h{background:var(--b-tint)!important;border-color:transparent!important;color:var(--b-primaryT)!important}
 .ch-line{stroke:var(--b-primaryT)!important}.ch-dot{fill:var(--b-primaryT)!important}.ch-area{fill:var(--b-primary)!important}
 .hb{fill:var(--b-primary)!important}.hb.on{fill:var(--b-primaryT)!important}
-.wk-goal{background:rgba(3,199,90,.14)!important}.wk-goal b{color:#5ee08f!important}
-.wk-i.info .ic{background:#e6f8ee!important;color:var(--b-primaryT)!important}
+.wk-goal{background:rgba(227,182,92,.16)!important}.wk-goal b{color:#e3b65c!important}
+.wk-i.info .ic{background:var(--b-tint)!important;color:var(--b-primaryT)!important}
 .ex-play,.pl,.hs .pl{color:#1d1d1f!important}
+/* v6.2: settings like a modern app list: outline icons in the brand colour, flat grouped cards, chevrons */
+#settings .setsheet{background:#f5f5f7}
+#settings .set-head{background:#f5f5f7;border-bottom-color:transparent}
+#settings .set-gt{font-size:13px;font-weight:600;color:#7a7a7a;margin:22px 4px 8px;letter-spacing:-.1px}
+#settings .set-card{border-radius:18px;box-shadow:none}
+#settings .set-card>*+*::before{left:54px;right:16px;background:#ececf0}
+#settings .set-row,#settings details>summary{min-height:58px;gap:14px;padding:9px 16px 9px 16px}
+#settings .set-ic{width:24px;height:24px;border-radius:0;background:transparent!important;color:var(--b-primaryT)}
+#settings .set-ic svg{width:22px;height:22px}
+#settings .set-ic svg *{stroke:currentColor;stroke-width:1.7}
+#settings .set-lab{font-size:16px;font-weight:500;letter-spacing:-.2px}
+#settings .set-det{padding-left:54px}
+#settings details>summary .chev{color:#a3a9b6}
+#settings .set-row select{color:#7a7a7a!important}
+#settings .set-row select:focus-visible,#settings .set-keybox input:focus{outline-color:var(--b-primary);border-color:var(--b-primary)!important}
+#settings .set-range{accent-color:var(--b-primary)}
+#settings .set-range::-moz-range-progress{background:var(--b-primary)}
+#settings .set-keyacts .primary{background:var(--b-primary)!important;border-radius:9999px!important}
+#settings .set-keyacts #testKey{border-radius:9999px!important}
+#settings .set-val{background:#eef0f4}
+.tabbar button:not([aria-current="page"]){color:#80879a!important}
+@media (max-width:380px){#settings .set-lab{font-size:15px}#settings .set-row,#settings details>summary{gap:12px;padding-left:14px;padding-right:12px}#settings .set-row select{font-size:14px!important;max-width:58%}}
+
+</style>
+<style id="darkTheme">
+/* generated by tools/theme/gen-dark.js from the main stylesheet; do not edit by hand */
+html[data-theme="dark"] body {
+    background: var(--bg);
+    color: var(--fg)
+}
+html[data-theme="dark"] h1 {
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .sub {
+    color: var(--muted)
+}
+html[data-theme="dark"] .pane {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px
+}
+html[data-theme="dark"] button {
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--fg)
+}
+html[data-theme="dark"] button:hover {
+    border-color: var(--accent);
+    color: var(--accent)
+}
+html[data-theme="dark"] button:focus-visible,html[data-theme="dark"] select:focus-visible,html[data-theme="dark"] textarea:focus-visible,html[data-theme="dark"] input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px
+}
+html[data-theme="dark"] button.primary {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff
+}
+html[data-theme="dark"] button.primary:hover {
+    background: var(--navy-3);
+    color: #fff
+}
+html[data-theme="dark"] .call {
+    background: var(--navy)
+}
+html[data-theme="dark"] .callbar {
+    color: var(--navy-fg)
+}
+html[data-theme="dark"] .rec {
+    border-radius: 50%;
+    background: #ff5a5f
+}
+html[data-theme="dark"] .callbar button {
+    background: var(--navy-2);
+    color: var(--navy-fg);
+    border-color: transparent
+}
+html[data-theme="dark"] .callbar button.primary {
+    background: #1c1d21;
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .coachPill {
+    background: var(--navy-3);
+    border-radius: 999px
+}
+html[data-theme="dark"] .tile {
+    border-radius: 12px;
+    background: var(--navy-2);
+    color: var(--navy-fg)
+}
+html[data-theme="dark"] .tile::after {
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 0 var(--speak)
+}
+html[data-theme="dark"] .tile.speaking::after {
+    box-shadow: inset 0 0 0 3px var(--speak)
+}
+html[data-theme="dark"] .initial {
+    border-radius: 50%;
+    color: #fff;
+    background: var(--navy-3)
+}
+html[data-theme="dark"] .name {
+    background: rgba(10,20,40,.6);
+    color: #fff;
+    border-radius: 6px
+}
+html[data-theme="dark"] .bars i {
+    background: var(--speak);
+    border-radius: 1px
+}
+html[data-theme="dark"] .cap {
+    color: #fff
+}
+html[data-theme="dark"] .cap .who {
+    color: #a9c1ff
+}
+html[data-theme="dark"] .cap>span {
+    background: rgba(10,20,40,.72);
+    border-radius: 8px
+}
+html[data-theme="dark"] .cap .who {
+    background: none !important
+}
+html[data-theme="dark"] .cap .ko {
+    color: #c9d3e8
+}
+html[data-theme="dark"] .log {
+    background: var(--surface)
+}
+html[data-theme="dark"] .who-l {
+    color: var(--muted)
+}
+html[data-theme="dark"] .bubble {
+    border-radius: 15px
+}
+html[data-theme="dark"] .me .bubble {
+    background: var(--navy);
+    color: #fff;
+    border-bottom-right-radius: 5px
+}
+html[data-theme="dark"] .me.rep .bubble {
+    background: var(--accent-soft);
+    color: var(--fg)
+}
+html[data-theme="dark"] .okmark {
+    color: var(--good)
+}
+html[data-theme="dark"] .julia .bubble {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-bottom-left-radius: 5px
+}
+html[data-theme="dark"] .small {
+    color: var(--muted)
+}
+html[data-theme="dark"] .coach {
+    background: var(--coach-soft);
+    border: 1px solid #303f5a;
+    border-radius: 12px
+}
+html[data-theme="dark"] .coach .lbl {
+    color: var(--coach)
+}
+html[data-theme="dark"] .coach .model {
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .coach .model ins {
+    text-decoration: none;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent)
+}
+html[data-theme="dark"] .coach.good {
+    background: var(--good-soft);
+    border-color: #36543e
+}
+html[data-theme="dark"] .coach.good .lbl {
+    color: var(--good)
+}
+html[data-theme="dark"] .coach.review {
+    background: var(--warn-soft);
+    border-color: #5a4730
+}
+html[data-theme="dark"] .coach.review .lbl {
+    color: var(--warn)
+}
+html[data-theme="dark"] .thinking {
+    color: var(--muted)
+}
+html[data-theme="dark"] .err {
+    color: var(--warn)
+}
+html[data-theme="dark"] .target {
+    border-radius: 10px;
+    background: var(--coach-soft)
+}
+html[data-theme="dark"] .target b {
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .compose {
+    border-top: 1px solid var(--line)
+}
+html[data-theme="dark"] textarea {
+    border: 1px solid var(--line);
+    background: var(--soft);
+    color: var(--fg);
+    border-radius: 12px
+}
+html[data-theme="dark"] .micdot {
+    border-radius: 50%;
+    background: var(--muted)
+}
+html[data-theme="dark"] .mic.recording {
+    background: #e5484d;
+    border-color: #e5484d;
+    color: #fff
+}
+html[data-theme="dark"] .mic.recording .micdot {
+    background: #1c1d21
+}
+html[data-theme="dark"] .hint {
+    color: var(--muted)
+}
+html[data-theme="dark"] .sec {
+    border-bottom: 1px solid var(--line)
+}
+html[data-theme="dark"] .sec:last-child {
+    border-bottom: 0
+}
+html[data-theme="dark"] .sec h2 {
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .p .n {
+    color: var(--warn)
+}
+html[data-theme="dark"] .p .bar {
+    border-radius: 2px;
+    background: var(--line)
+}
+html[data-theme="dark"] .p .bar i {
+    background: var(--warn)
+}
+html[data-theme="dark"] .p .ex {
+    color: var(--muted)
+}
+html[data-theme="dark"] .note {
+    border: 1px solid var(--line);
+    border-radius: 10px
+}
+html[data-theme="dark"] .note .w {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: #3c424d
+}
+html[data-theme="dark"] .note .r {
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .note .why {
+    color: var(--muted)
+}
+html[data-theme="dark"] .empty {
+    color: var(--muted)
+}
+html[data-theme="dark"] .pron {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 12px
+}
+html[data-theme="dark"] .ph-row .score {
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .ph-row .unit {
+    color: var(--muted)
+}
+html[data-theme="dark"] .ph-row .grade {
+    color: var(--muted)
+}
+html[data-theme="dark"] .pw {
+    border-radius: 5px
+}
+html[data-theme="dark"] .pw.g {
+    background: var(--good-soft);
+    color: var(--good)
+}
+html[data-theme="dark"] .pw.m {
+    background: var(--warn-soft);
+    color: var(--warn)
+}
+html[data-theme="dark"] .pw.b {
+    background: #372020;
+    color: #e4777c;
+    text-decoration: underline wavy #e5484d
+}
+html[data-theme="dark"] .legend {
+    color: var(--muted)
+}
+html[data-theme="dark"] .legend i {
+    border-radius: 3px
+}
+html[data-theme="dark"] .legend i.g {
+    background: var(--good)
+}
+html[data-theme="dark"] .legend i.m {
+    background: var(--warn)
+}
+html[data-theme="dark"] .legend i.b {
+    background: #e5484d
+}
+html[data-theme="dark"] .clar {
+    color: var(--muted)
+}
+html[data-theme="dark"] .modal {
+    background: rgba(15,25,45,.45)
+}
+html[data-theme="dark"] .sheet {
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(15,25,45,.25)
+}
+html[data-theme="dark"] .sheet-head {
+    border-bottom: 1px solid var(--line)
+}
+html[data-theme="dark"] .sheet-head h2 {
+    color: var(--navy-t)
+}
+html[data-theme="dark"] label {
+    color: var(--muted)
+}
+html[data-theme="dark"] select,html[data-theme="dark"] input[type=password],html[data-theme="dark"] input[type=text] {
+    color: var(--fg);
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 10px
+}
+html[data-theme="dark"] .tip {
+    color: var(--muted)
+}
+html[data-theme="dark"] .tip.ok {
+    color: var(--good)
+}
+html[data-theme="dark"] .tip.bad {
+    color: var(--warn)
+}
+html[data-theme="dark"] details summary {
+    color: var(--muted)
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] .side.open {
+        border-radius: 0
+    }
+}
+html[data-theme="dark"] .mic {
+    background: var(--coral);
+    border-color: var(--coral);
+    color: #fff
+}
+html[data-theme="dark"] .mic:hover {
+    background: var(--coral-deep);
+    border-color: var(--coral-deep);
+    color: #fff
+}
+html[data-theme="dark"] .mic .micdot {
+    background: #1c1d21
+}
+html[data-theme="dark"] .mic.recording {
+    background: var(--navy);
+    border-color: var(--navy)
+}
+html[data-theme="dark"] .ph-row .score {
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .coachPill {
+    background: var(--coral) !important;
+    color: #fff
+}
+html[data-theme="dark"] .coachPill .bars i {
+    background: #1c1d21
+}
+html[data-theme="dark"] .coach .lbl {
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .coach.good .lbl {
+    color: var(--good)
+}
+html[data-theme="dark"] .coach.review .lbl {
+    color: var(--warn)
+}
+html[data-theme="dark"] .coach .model ins {
+    color: var(--coral-deep);
+    border-bottom-color: var(--coral)
+}
+html[data-theme="dark"] .target {
+    background: var(--coral-soft)
+}
+html[data-theme="dark"] .target b {
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .rec {
+    background: var(--coral)
+}
+html[data-theme="dark"] .callbar button.primary {
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .julia .bubble {
+    background: #202937;
+    border: 1.5px solid #30405a;
+    color: #e8ebf3
+}
+html[data-theme="dark"] .coach {
+    background: var(--coral-pale);
+    border-color: var(--coral-line)
+}
+html[data-theme="dark"] .coach.teach {
+    background: var(--coral-pale);
+    border-color: var(--coral-line)
+}
+html[data-theme="dark"] .me.rep .bubble {
+    background: var(--coral-soft);
+    color: var(--fg)
+}
+html[data-theme="dark"] .pron {
+    background: var(--coral-pale);
+    border-color: var(--coral-line)
+}
+html[data-theme="dark"] .cap .who {
+    color: #ff9c84
+}
+html[data-theme="dark"] .p .n {
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .p .bar i {
+    background: var(--coral)
+}
+html[data-theme="dark"] .autob {
+    border-color: var(--coral-line);
+    color: var(--coral-deep);
+    background: #1c1d21
+}
+html[data-theme="dark"] .autodot {
+    border-radius: 50%;
+    border: 2px solid var(--coral)
+}
+html[data-theme="dark"] .autob.on {
+    background: var(--coral-soft);
+    border-color: var(--coral)
+}
+html[data-theme="dark"] .autob.on .autodot {
+    background: var(--coral)
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] .compose .send {
+        border-radius: 14px
+    }
+}
+html[data-theme="dark"] .rep-tag {
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .ver {
+    color: var(--muted)
+}
+html[data-theme="dark"] .ver-h {
+    color: #a7b0c2
+}
+html[data-theme="dark"] .cap>span {
+    background: none !important;
+    border-radius: 0
+}
+html[data-theme="dark"] .ver-h {
+    color: var(--accent);
+    background: #202837;
+    border: 1px solid #303f5a;
+    border-radius: 7px
+}
+html[data-theme="dark"] .more {
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--navy-fg) !important
+}
+html[data-theme="dark"] .menu {
+    background: #1c1d21;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(15,25,45,.18)
+}
+html[data-theme="dark"] .menu button {
+    background: transparent !important;
+    color: var(--fg) !important;
+    border: 0 !important;
+    border-radius: 8px
+}
+html[data-theme="dark"] .menu button:hover {
+    background: var(--soft) !important
+}
+html[data-theme="dark"] .spk {
+    border-radius: 50%;
+    background: #1c1d21;
+    border: 1px solid #303f5a;
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .spk:hover {
+    color: var(--coral-deep);
+    border-color: var(--coral)
+}
+html[data-theme="dark"] .coach .lbl svg {
+    color: var(--coral)
+}
+html[data-theme="dark"] .modelbox {
+    background: var(--coral-soft);
+    border-radius: 12px
+}
+html[data-theme="dark"] .wave {
+    border-radius: 50%;
+    background: #1c1d21;
+    border: 1px solid var(--coral-line);
+    color: var(--coral)
+}
+html[data-theme="dark"] .wave:hover {
+    color: #fff;
+    background: var(--coral);
+    border-color: var(--coral)
+}
+html[data-theme="dark"] .more-d {
+    background: transparent;
+    border: 0;
+    color: var(--navy-t)
+}
+html[data-theme="dark"] .more-d:hover {
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .detail {
+    color: var(--fg);
+    background: #1c1d21;
+    border: 1px solid var(--coral-line);
+    border-radius: 10px
+}
+html[data-theme="dark"] .compose .mic {
+    border-radius: 999px
+}
+html[data-theme="dark"] .compose .autob {
+    border-radius: 999px
+}
+html[data-theme="dark"] .compose .send {
+    border-radius: 999px
+}
+html[data-theme="dark"] .mic.recording {
+    background: var(--navy) !important;
+    border-color: var(--navy) !important
+}
+html[data-theme="dark"] .autob.on {
+    background: var(--coral-soft)
+}
+html[data-theme="dark"] .call {
+    border-radius: 20px;
+    box-shadow: none
+}
+html[data-theme="dark"] .chat,html[data-theme="dark"] .log {
+    background: #1c1d21
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] .call {
+        border-radius: 18px
+    }
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] body.kb .call {
+        border-radius: 16px
+    }
+}
+html[data-theme="dark"] .call {
+    border-radius: 0 !important;
+    background: #3d5afe !important;
+    box-shadow: none !important
+}
+html[data-theme="dark"] .stage {
+    border-radius: 0 !important;
+    background: #3d5afe
+}
+html[data-theme="dark"] .stage::after {
+    border-radius: 0 !important
+}
+html[data-theme="dark"] .stage .shade {
+    background: linear-gradient(180deg,rgba(5,10,20,.55) 0,rgba(5,10,20,0) 26%,rgba(5,10,20,0) 52%,rgba(5,10,20,.78) 100%)
+}
+html[data-theme="dark"] .stage .callbar {
+    color: #fff
+}
+html[data-theme="dark"] .stage .more {
+    color: #fff !important
+}
+html[data-theme="dark"] .stage .name.jn {
+    background: rgba(5,10,20,.35)
+}
+html[data-theme="dark"] .pip {
+    border-radius: 14px !important;
+    background: #3d5afe !important;
+    border: 1.5px solid rgba(28,29,33,0.75)
+}
+html[data-theme="dark"] .pip.speaking {
+    border-color: var(--speak)
+}
+html[data-theme="dark"] .pip::after {
+    border-radius: 14px !important
+}
+html[data-theme="dark"] .stage.speaking::after {
+    box-shadow: inset 0 -3px 0 0 var(--speak) !important
+}
+html[data-theme="dark"] .stage .cap .en {
+    color: #fff
+}
+html[data-theme="dark"] .stage .cap .ko {
+    color: #dfe5f0
+}
+html[data-theme="dark"] .coachPill {
+    background: var(--coral) !important
+}
+@media (min-width:901px) {
+    html[data-theme="dark"] .call {
+        background: #3d5afe !important
+    }
+}
+html[data-theme="dark"] .julia .bubble,html[data-theme="dark"] .julia .bubble.jb {
+    background: none !important;
+    border: 0 !important;
+    color: #e8ebf3 !important;
+    border-radius: 0 !important
+}
+html[data-theme="dark"] .julia .who-l {
+    color: #8a93a6
+}
+html[data-theme="dark"] .spk {
+    border-color: #2e3036
+}
+html[data-theme="dark"] .me .bubble {
+    background: #242932 !important;
+    color: #e8ebf3 !important;
+    border-radius: 18px !important;
+    border-bottom-right-radius: 6px !important
+}
+html[data-theme="dark"] .me.marked .bubble {
+    background: #1c1d21 !important;
+    border: 1px solid #2e3036
+}
+html[data-theme="dark"] .me.marked .bubble s {
+    color: #a5acba;
+    text-decoration-color: var(--coral);
+    text-decoration-thickness: 1.5px
+}
+html[data-theme="dark"] .me.marked .bubble ins {
+    text-decoration: none;
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .coach,html[data-theme="dark"] .coach.teach,html[data-theme="dark"] .coach.review,html[data-theme="dark"] .coach.good {
+    background: none !important;
+    border: 0 !important;
+    border-top: 1px solid #2e3036 !important;
+    border-radius: 0 !important
+}
+html[data-theme="dark"] .coach .lbl {
+    color: var(--coral-deep) !important
+}
+html[data-theme="dark"] .coach.review .lbl {
+    color: var(--warn) !important
+}
+html[data-theme="dark"] .coach .say {
+    color: #9da0a5
+}
+html[data-theme="dark"] .modelbox {
+    background: none !important
+}
+html[data-theme="dark"] .modelbox .model {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .modelbox .model ins {
+    color: #e8ebf3 !important;
+    border-bottom: 0 !important;
+    text-decoration: underline;
+    text-decoration-color: var(--coral);
+    text-decoration-thickness: 2px
+}
+html[data-theme="dark"] .wave {
+    border-color: #5a3830
+}
+html[data-theme="dark"] .more-d {
+    color: #9da0a5 !important
+}
+html[data-theme="dark"] .detail {
+    border: 0 !important;
+    background: #252931 !important;
+    border-radius: 10px
+}
+html[data-theme="dark"] .compose textarea {
+    border-radius: 22px !important;
+    background: #262931 !important;
+    border: 0 !important
+}
+html[data-theme="dark"] .compose .autob {
+    border-radius: 20px !important;
+    background: #1c1d21;
+    border: 1px solid #2e3036 !important;
+    color: #b5b9be !important
+}
+html[data-theme="dark"] .compose .autob.on {
+    background: var(--coral-soft) !important;
+    border-color: var(--coral) !important;
+    color: var(--coral-deep) !important
+}
+html[data-theme="dark"] .autodot2 {
+    border-radius: 50%;
+    border: 2px solid currentColor
+}
+html[data-theme="dark"] .autob.on .autodot2 {
+    background: currentColor
+}
+html[data-theme="dark"] .compose .mic {
+    border-radius: 50% !important
+}
+html[data-theme="dark"] .compose .send {
+    border-radius: 50% !important
+}
+html[data-theme="dark"] .julia .bubble,html[data-theme="dark"] .julia .bubble.jb {
+    background: var(--bub) !important;
+    border: 0 !important;
+    border-radius: 16px !important;
+    border-bottom-left-radius: 6px !important
+}
+html[data-theme="dark"] .me .bubble,html[data-theme="dark"] .me.marked .bubble {
+    background: var(--bub) !important;
+    border: 0 !important;
+    border-radius: 16px !important;
+    border-bottom-right-radius: 6px !important
+}
+html[data-theme="dark"] .coach,html[data-theme="dark"] .coach.teach,html[data-theme="dark"] .coach.review,html[data-theme="dark"] .coach.good {
+    background: var(--bub) !important;
+    border: 0 !important;
+    border-radius: 16px !important
+}
+html[data-theme="dark"] .julia .who-l {
+    color: var(--n-julia) !important
+}
+html[data-theme="dark"] .me .who-l {
+    color: var(--n-jun) !important
+}
+html[data-theme="dark"] .coach .lbl,html[data-theme="dark"] .coach.review .lbl {
+    color: var(--n-sam) !important
+}
+html[data-theme="dark"] .detail {
+    background: #1c1d21 !important
+}
+html[data-theme="dark"] .spk,html[data-theme="dark"] .wave {
+    background: #1c1d21
+}
+html[data-theme="dark"] .coach,html[data-theme="dark"] .coach.teach,html[data-theme="dark"] .coach.review,html[data-theme="dark"] .coach.good {
+    background: var(--sam-bg) !important
+}
+html[data-theme="dark"] .coach .lbl,html[data-theme="dark"] .coach.review .lbl,html[data-theme="dark"] .coach.teach .lbl,html[data-theme="dark"] .coach.good .lbl {
+    color: var(--sam-name) !important
+}
+html[data-theme="dark"] .coach .say {
+    color: #d9c082 !important
+}
+html[data-theme="dark"] .coach.review .say,html[data-theme="dark"] .coach.teach .say {
+    color: #e8ebf3 !important
+}
+html[data-theme="dark"] .coach .wave {
+    background: #1c1d21 !important;
+    border-color: var(--sam-line) !important
+}
+html[data-theme="dark"] .coach .more-d {
+    color: #cbba90 !important
+}
+html[data-theme="dark"] .coach .detail {
+    background: #373220 !important
+}
+html[data-theme="dark"] .gear.ico {
+    color: #c3c7ce
+}
+html[data-theme="dark"] .call {
+    background: transparent !important;
+    border-radius: 20px !important
+}
+html[data-theme="dark"] .stage {
+    border-radius: 20px !important
+}
+html[data-theme="dark"] .stage::after {
+    border-radius: 20px !important
+}
+html[data-theme="dark"] .stage.speaking::after {
+    box-shadow: inset 0 0 0 3px var(--n-julia),inset 0 0 18px rgba(232,81,63,.35) !important
+}
+@media (min-width:901px) {
+    html[data-theme="dark"] .call {
+        background: transparent !important
+    }
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] .stage {
+        border-radius: 18px !important
+    }
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] .stage::after {
+        border-radius: 18px !important
+    }
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] body.kb .stage {
+        border-radius: 16px !important
+    }
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] body.kb .stage::after {
+        border-radius: 16px !important
+    }
+}
+html[data-theme="dark"] .compose .send {
+    border-radius: 50% !important
+}
+html[data-theme="dark"] .errlist {
+    background: #252931;
+    border-radius: 10px;
+    color: #c3c7ce
+}
+html[data-theme="dark"] .typing .dots i {
+    border-radius: 50%;
+    background: #4e525a
+}
+html[data-theme="dark"] .sysnote {
+    color: #9da0a5;
+    background: #26272c;
+    border-radius: 999px
+}
+html[data-theme="dark"] .okbtn {
+    color: var(--good) !important;
+    border-color: #36543e !important
+}
+html[data-theme="dark"] .reptag {
+    color: #efa56c;
+    background: #493f27;
+    border-radius: 999px
+}
+html[data-theme="dark"] .revrow .n {
+    color: #efa56c
+}
+html[data-theme="dark"] .revrow .tip {
+    color: #d1be8a
+}
+html[data-theme="dark"] .revrow ins {
+    text-decoration: none;
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .hintbtn {
+    border-radius: 999px !important;
+    background: #1c1d21 !important;
+    border: 1px dashed #2e3036 !important;
+    color: #b5b9be !important
+}
+html[data-theme="dark"] .hint-it .en {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .hint-it .ko {
+    color: #d1be8a
+}
+html[data-theme="dark"] .exprs .chk {
+    border-radius: 50%;
+    border: 2px solid #e3c77a;
+    color: #fff
+}
+html[data-theme="dark"] .exprs .ex.used .chk {
+    background: var(--good);
+    border-color: var(--good)
+}
+html[data-theme="dark"] .exprs .en {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .exprs .ko {
+    color: #d1be8a
+}
+html[data-theme="dark"] .exprs .ex.used .en {
+    color: var(--good)
+}
+html[data-theme="dark"] .chtml .tip {
+    color: #cbba90
+}
+html[data-theme="dark"] .rpmeta {
+    color: #d1be8a
+}
+html[data-theme="dark"] .rpitem {
+    border-radius: 12px !important;
+    background: #1c1d21 !important;
+    border: 1px solid var(--line) !important;
+    color: var(--fg) !important
+}
+html[data-theme="dark"] .rpitem span {
+    color: #9da0a5
+}
+html[data-theme="dark"] .rc {
+    background: #373220;
+    border-radius: 10px
+}
+html[data-theme="dark"] .rc .v {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .rc .k {
+    color: #cbba90
+}
+html[data-theme="dark"] .rsec b {
+    color: #efa56c
+}
+html[data-theme="dark"] .rl s {
+    color: #a5acba
+}
+html[data-theme="dark"] .rl ins {
+    text-decoration: none;
+    color: var(--coral-deep)
+}
+html[data-theme="dark"] .hc-title {
+    color: #9da0a5
+}
+html[data-theme="dark"] .hb {
+    fill: #9fb6e0
+}
+html[data-theme="dark"] .hb.today {
+    fill: #2f5fae
+}
+html[data-theme="dark"] .hv {
+    fill: #c3c7ce
+}
+html[data-theme="dark"] .hd {
+    fill: #8a93a6
+}
+html[data-theme="dark"] .hbase {
+    stroke: #2e3036;
+    stroke-width: 1
+}
+html[data-theme="dark"] .hi {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #1c1d21
+}
+html[data-theme="dark"] .hi summary .dt {
+    color: #e3b65c
+}
+html[data-theme="dark"] .exs {
+    background: #373320;
+    border-radius: 9px;
+    border: 1px solid #5a5030
+}
+html[data-theme="dark"] .exs .tag {
+    color: #efa56c;
+    background: #493f27;
+    border-radius: 6px
+}
+html[data-theme="dark"] .exs .se {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .exs .sk {
+    color: #d1be8a
+}
+html[data-theme="dark"] .exprs .chk {
+    color: #efa56c
+}
+html[data-theme="dark"] .exprs .ex.used .chk {
+    color: #fff
+}
+html[data-theme="dark"] #qzProg {
+    color: #9da0a5
+}
+html[data-theme="dark"] .qz-q {
+    color: #9da0a5
+}
+html[data-theme="dark"] .qz-s {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .qz-hint {
+    color: #8a93a6
+}
+html[data-theme="dark"] .qz-ox button {
+    border-radius: 14px !important
+}
+html[data-theme="dark"] .qz-o {
+    color: #7dde9f !important;
+    background: #203727 !important;
+    border: 1px solid #33563e !important
+}
+html[data-theme="dark"] .qz-x {
+    color: #e1837a !important;
+    background: #372020 !important;
+    border: 1px solid #5a3330 !important
+}
+html[data-theme="dark"] .qz-in input {
+    border-radius: 12px;
+    border: 1px solid var(--line)
+}
+html[data-theme="dark"] .qz-mic {
+    border-radius: 50% !important;
+    background: var(--coral,#e8513f) !important;
+    color: #fff !important;
+    border: 0 !important
+}
+html[data-theme="dark"] .qz-mic.recording {
+    box-shadow: 0 0 0 4px rgba(232,81,63,.3)
+}
+html[data-theme="dark"] .qz-res .mk,html[data-theme="dark"] .qz-row .mk {
+    border-radius: 50%;
+    color: #fff
+}
+html[data-theme="dark"] .qz-res.o .mk,html[data-theme="dark"] .qz-row .mk.o {
+    background: #2ad573
+}
+html[data-theme="dark"] .qz-res.x .mk,html[data-theme="dark"] .qz-row .mk.x {
+    background: #d64535
+}
+html[data-theme="dark"] .qz-res.o {
+    color: #7dde9f
+}
+html[data-theme="dark"] .qz-res.x {
+    color: #e1837a
+}
+html[data-theme="dark"] .qz-ans {
+    background: #252931;
+    border-radius: 12px
+}
+html[data-theme="dark"] .qz-ans .lb {
+    color: #9da0a5
+}
+html[data-theme="dark"] .qz-ans .se {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .qz-ans .sk {
+    color: #8a93a6
+}
+html[data-theme="dark"] .qz-score {
+    color: #9da0a5
+}
+html[data-theme="dark"] .qz-score b {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .studybar .sb-btn {
+    border-radius: 14px !important;
+    border: 1px solid #2e3036 !important;
+    background: #1c1d21 !important;
+    color: #e8ebf3 !important;
+    box-shadow: 0 1px 2px rgba(16,24,40,.05)
+}
+html[data-theme="dark"] .studybar .sb-btn:hover {
+    background: #252b32 !important
+}
+html[data-theme="dark"] .sb-ic {
+    border-radius: 9px
+}
+html[data-theme="dark"] .sb-ex .sb-ic {
+    background: #494227;
+    color: #efa56c
+}
+html[data-theme="dark"] .sb-qz .sb-ic {
+    background: #372420;
+    color: #e8513f
+}
+html[data-theme="dark"] .sb-n {
+    border-radius: 999px;
+    background: #242932;
+    color: #b5b9be
+}
+html[data-theme="dark"] .sb-qz .sb-n {
+    background: #e8513f;
+    color: #fff
+}
+html[data-theme="dark"] .ex-sub {
+    color: #9da0a5
+}
+html[data-theme="dark"] .ex-item {
+    border: 1px solid #3c414e;
+    border-radius: 14px;
+    background: #1c1d21
+}
+html[data-theme="dark"] .ex-item.used {
+    border-color: #36543e;
+    background: #213525
+}
+html[data-theme="dark"] .ex-num {
+    border-radius: 50%;
+    background: #494227;
+    color: #efa56c
+}
+html[data-theme="dark"] .ex-item.used .ex-num {
+    background: #2bd45c;
+    color: #fff
+}
+html[data-theme="dark"] .ex-en {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .ex-ko {
+    color: #9da0a5
+}
+html[data-theme="dark"] .ex-eg {
+    background: #252931;
+    border-radius: 10px
+}
+html[data-theme="dark"] .ex-eg .se {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .ex-eg .sk {
+    color: #8a93a6
+}
+html[data-theme="dark"] .ex-eg .tag {
+    color: #efa56c;
+    background: #494227;
+    border-radius: 6px
+}
+html[data-theme="dark"] .ex-play {
+    border-radius: 50% !important;
+    background: #1c1d21 !important;
+    border: 1px solid #2e3036 !important;
+    color: #c3c7ce !important
+}
+html[data-theme="dark"] .ex-used {
+    color: #78e396
+}
+html[data-theme="dark"] .qz-empty b {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .qz-empty p {
+    color: #9da0a5
+}
+html[data-theme="dark"] .qz-eic {
+    border-radius: 16px;
+    background: #372420;
+    color: #e8513f
+}
+html[data-theme="dark"] .qz-load {
+    color: #9da0a5
+}
+html[data-theme="dark"] .qz-dots i {
+    border-radius: 50%;
+    background: #494c52
+}
+html[data-theme="dark"] .qz-s .qz-blank {
+    border-radius: 8px;
+    border: 2px dashed #5a3630;
+    background: #372520;
+    color: #e8513f
+}
+html[data-theme="dark"] .qz-ans .se ins {
+    text-decoration: none;
+    color: #e8513f;
+    border-bottom: 2px solid #e8513f
+}
+html[data-theme="dark"] .qz-mine {
+    color: #9da0a5
+}
+html[data-theme="dark"] .qz-note {
+    color: #efa56c
+}
+html[data-theme="dark"] .qz-row .ko {
+    color: #8a93a6
+}
+html[data-theme="dark"] #settings.modal {
+    background: rgba(15,23,42,.42)
+}
+html[data-theme="dark"] #settings .setsheet {
+    border-radius: 22px 22px 0 0;
+    background: #252832;
+    box-shadow: 0 -12px 40px rgba(15,23,42,.18)
+}
+@media (min-width:901px) {
+    html[data-theme="dark"] #settings .setsheet {
+        border-radius: 22px
+    }
+}
+html[data-theme="dark"] #settings .set-head {
+    border-bottom: 1px solid rgba(15,23,42,.07);
+    background: #252531
+}
+html[data-theme="dark"] #settings .set-head::before {
+    border-radius: 3px;
+    background: #2d2e34
+}
+html[data-theme="dark"] #settings .set-head h2 {
+    color: #e8ebf3
+}
+html[data-theme="dark"] #settings .set-done {
+    border: 0 !important;
+    background: transparent !important;
+    color: #e8513f !important;
+    box-shadow: none !important
+}
+html[data-theme="dark"] #settings .set-gt {
+    color: #9da0a5
+}
+html[data-theme="dark"] #settings .set-card {
+    background: #1c1d21;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(15,23,42,.04)
+}
+html[data-theme="dark"] #settings .set-card>*+*::before {
+    background: #252931
+}
+html[data-theme="dark"] #settings .set-ic {
+    border-radius: 8px
+}
+html[data-theme="dark"] #settings .set-lab {
+    color: #e8ebf3
+}
+html[data-theme="dark"] #settings .set-lab small {
+    color: #8a93a6
+}
+html[data-theme="dark"] #settings .set-row select {
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M2 2l6 6-6 6' fill='none' stroke='%23a3a9b6' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 2px center/7px 12px !important;
+    color: #9da0a5 !important;
+    box-shadow: none !important
+}
+html[data-theme="dark"] #settings .set-row select:focus-visible {
+    outline: 2px solid #e8513f;
+    outline-offset: 0
+}
+html[data-theme="dark"] #settings .sr-sel {
+    border: 0 !important
+}
+html[data-theme="dark"] #settings .seg {
+    background: #262931;
+    border-radius: 10px
+}
+html[data-theme="dark"] #settings .seg button {
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #9da0a5 !important;
+    box-shadow: none
+}
+html[data-theme="dark"] #settings .seg button[aria-pressed="true"] {
+    background: #1c1d21 !important;
+    color: #e8ebf3 !important;
+    box-shadow: 0 1px 3px rgba(15,23,42,.14),0 0 0 .5px rgba(15,23,42,.05)
+}
+html[data-theme="dark"] #settings .sw {
+    border-radius: 999px !important;
+    border: 0 !important;
+    background: #26272c !important;
+    box-shadow: none !important
+}
+html[data-theme="dark"] #settings .sw::after {
+    border-radius: 50%;
+    background: #1c1d21;
+    box-shadow: 0 2px 5px rgba(0,0,0,.18),0 0 0 .5px rgba(255,255,255,0.08)
+}
+html[data-theme="dark"] #settings .sw[aria-checked="true"] {
+    background: #e8513f !important
+}
+html[data-theme="dark"] #settings .set-val {
+    color: #e8ebf3;
+    background: #252832;
+    border-radius: 999px
+}
+html[data-theme="dark"] #settings .set-range {
+    background: transparent
+}
+html[data-theme="dark"] #settings .set-range::-webkit-slider-runnable-track {
+    border-radius: 3px;
+    background: linear-gradient(to right,#e8513f var(--p,50%),#26272c var(--p,50%))
+}
+html[data-theme="dark"] #settings .set-range::-webkit-slider-thumb {
+    border-radius: 50%;
+    background: #1c1d21;
+    box-shadow: 0 1px 5px rgba(0,0,0,.22),0 0 0 .5px rgba(255,255,255,0.12)
+}
+html[data-theme="dark"] #settings .set-range::-moz-range-track {
+    border-radius: 3px;
+    background: #26272c
+}
+html[data-theme="dark"] #settings .set-range::-moz-range-progress {
+    border-radius: 3px;
+    background: #e8513f
+}
+html[data-theme="dark"] #settings .set-range::-moz-range-thumb {
+    border: 0;
+    border-radius: 50%;
+    background: #1c1d21;
+    box-shadow: 0 1px 5px rgba(0,0,0,.22)
+}
+html[data-theme="dark"] #settings .set-scale {
+    color: #a3a9b6
+}
+html[data-theme="dark"] #settings .set-btn {
+    border: 0 !important;
+    background: #252832 !important;
+    color: #e8ebf3 !important;
+    border-radius: 999px !important
+}
+html[data-theme="dark"] #settings .set-btn:hover {
+    background: #26272c !important
+}
+html[data-theme="dark"] #settings .set-badge {
+    border-radius: 999px;
+    background: #252832;
+    color: #9da0a5
+}
+html[data-theme="dark"] #settings .set-badge::before {
+    border-radius: 50%;
+    background: currentColor
+}
+html[data-theme="dark"] #settings .set-badge.on {
+    background: #213627;
+    color: #78e396
+}
+html[data-theme="dark"] #settings .set-keybox input {
+    border-radius: 12px !important;
+    border: 1px solid #2e3036 !important;
+    background: #252931 !important
+}
+html[data-theme="dark"] #settings .set-keybox input:focus {
+    border-color: #e8513f !important;
+    background: #1c1d21 !important;
+    outline: none
+}
+html[data-theme="dark"] #settings .set-keyacts button {
+    border-radius: 12px !important
+}
+html[data-theme="dark"] #settings .set-keyacts #testKey {
+    background: #252832 !important;
+    border: 0 !important;
+    color: #e8ebf3 !important
+}
+html[data-theme="dark"] #settings .set-keyacts .primary {
+    background: #3d5afe !important;
+    border: 0 !important;
+    color: #fff !important
+}
+html[data-theme="dark"] #settings .tip {
+    color: #8a93a6
+}
+html[data-theme="dark"] #settings .tip.ok {
+    color: #78e396
+}
+html[data-theme="dark"] #settings .tip.bad {
+    color: #efa56c
+}
+html[data-theme="dark"] #settings .set-foot-tip {
+    color: #8a93a6
+}
+html[data-theme="dark"] #settings details>summary {
+    color: #e8ebf3
+}
+html[data-theme="dark"] #settings details>summary .chev {
+    color: #b4b9c4
+}
+html[data-theme="dark"] #settings #errCount {
+    color: #8a93a6
+}
+html[data-theme="dark"] #settings .set-det label {
+    color: #9da0a5
+}
+html[data-theme="dark"] #settings .set-det input {
+    border-radius: 10px !important;
+    border: 1px solid #2e3036 !important;
+    background: #252931 !important
+}
+html[data-theme="dark"] #settings .errlist {
+    background: #252931;
+    border-radius: 10px
+}
+html[data-theme="dark"] #settings .set-ver {
+    color: #a3a9b6
+}
+html[data-theme="dark"] .pane.side {
+    background: #262831 !important;
+    border-color: #2e3036 !important
+}
+@media (max-width:900px) {
+    html[data-theme="dark"] .side.open {
+        border-radius: 0 !important;
+        border: 0 !important
+    }
+}
+html[data-theme="dark"] .sd-head {
+    background: #262831
+}
+html[data-theme="dark"] .sd-head h2 {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .sd-head .sd-close {
+    border: 0 !important;
+    background: transparent !important;
+    color: #e8513f !important
+}
+html[data-theme="dark"] .sd-tabs {
+    background: #26272c;
+    border-radius: 11px
+}
+html[data-theme="dark"] .sd-tabs button {
+    border: 0 !important;
+    border-radius: 9px !important;
+    background: transparent !important;
+    color: #9da0a5 !important
+}
+html[data-theme="dark"] .sd-tabs button[aria-selected="true"] {
+    background: #1c1d21 !important;
+    color: #e8ebf3 !important;
+    box-shadow: 0 1px 3px rgba(15,23,42,.14)
+}
+html[data-theme="dark"] .sd-card {
+    background: #1c1d21;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(15,23,42,.05)
+}
+html[data-theme="dark"] .sd-ct {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .sd-cs {
+    color: #8a93a6
+}
+html[data-theme="dark"] .sd-primary {
+    border: 0 !important;
+    background: #3d5afe !important;
+    color: #fff !important;
+    border-radius: 12px !important
+}
+html[data-theme="dark"] .sd-primary:hover {
+    background: #3d5afe !important
+}
+html[data-theme="dark"] .sd-danger button {
+    border: 1px solid #5a3730 !important;
+    background: #1c1d21 !important;
+    color: #e28479 !important;
+    border-radius: 12px !important
+}
+html[data-theme="dark"] .sd-note {
+    color: #a3a9b6
+}
+html[data-theme="dark"] .wk {
+    background: linear-gradient(160deg,#3d5afe 0%,#3d5afe 100%);
+    color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(27,43,75,.18)
+}
+html[data-theme="dark"] .wk-k {
+    color: #c7d2e6
+}
+html[data-theme="dark"] .wk-v {
+    border-radius: 999px;
+    background: rgba(28,29,33,0.12);
+    color: #fff
+}
+html[data-theme="dark"] .wk-v.up {
+    background: #213627;
+    color: #78e396
+}
+html[data-theme="dark"] .wk-v.down {
+    background: #372c20;
+    color: #efa56c
+}
+html[data-theme="dark"] .wk-t {
+    background: rgba(28,29,33,0.08);
+    border-radius: 12px
+}
+html[data-theme="dark"] .wk-t .k {
+    color: #c7d2e6
+}
+html[data-theme="dark"] .wk-t .v small {
+    color: #c7d2e6
+}
+html[data-theme="dark"] .wk-t .d {
+    color: #c7d2e6
+}
+html[data-theme="dark"] .wk-t .d.good {
+    color: #86efac
+}
+html[data-theme="dark"] .wk-t .d.bad {
+    color: #fcd34d
+}
+html[data-theme="dark"] .wk-ins {
+    background: #1c1d21;
+    color: #e8ebf3;
+    border-radius: 14px
+}
+html[data-theme="dark"] .wk-i+.wk-i {
+    border-top: 1px solid #3c424e
+}
+html[data-theme="dark"] .wk-i .ic {
+    border-radius: 7px
+}
+html[data-theme="dark"] .wk-i.up .ic {
+    background: #213627;
+    color: #78e396
+}
+html[data-theme="dark"] .wk-i.down .ic {
+    background: #372c20;
+    color: #efa56c
+}
+html[data-theme="dark"] .wk-i.flat .ic {
+    background: #242932;
+    color: #9da0a5
+}
+html[data-theme="dark"] .wk-i.info .ic {
+    background: #202837;
+    color: #e3b65c
+}
+html[data-theme="dark"] .wk-goal {
+    background: rgba(28,29,33,0.1);
+    border-radius: 12px
+}
+html[data-theme="dark"] .wk-goal b {
+    color: #ffd7cf
+}
+html[data-theme="dark"] .wk-empty {
+    color: #dbe3f1
+}
+html[data-theme="dark"] .tr-chips button {
+    border: 1px solid #2e3036 !important;
+    background: #1c1d21 !important;
+    color: #b5b9be !important;
+    border-radius: 999px !important
+}
+html[data-theme="dark"] .tr-chips button[aria-pressed="true"] {
+    background: #3d5afe !important;
+    border-color: #3d5afe !important;
+    color: #fff !important
+}
+html[data-theme="dark"] .ch-grid {
+    stroke: #3c414e;
+    stroke-width: 1
+}
+html[data-theme="dark"] .ch-ax {
+    fill: #8a93a6
+}
+html[data-theme="dark"] .ch-ax.on {
+    fill: #3d5afe
+}
+html[data-theme="dark"] .ch-line {
+    fill: none;
+    stroke: #2f5fae;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round
+}
+html[data-theme="dark"] .ch-area {
+    fill: #2f5fae
+}
+html[data-theme="dark"] .ch-dot {
+    fill: #2f5fae;
+    stroke: #1c1d21;
+    stroke-width: 2
+}
+html[data-theme="dark"] .ch-end {
+    fill: #e8ebf3
+}
+html[data-theme="dark"] .ch-hit {
+    fill: transparent
+}
+html[data-theme="dark"] .ch-cross {
+    stroke: #2e3036;
+    stroke-width: 1
+}
+html[data-theme="dark"] .hb {
+    fill: #2f5fae
+}
+html[data-theme="dark"] .hb.on {
+    fill: #3d5afe
+}
+html[data-theme="dark"] .hb0 {
+    fill: #26272c
+}
+html[data-theme="dark"] .ch-cap {
+    color: #b5b9be
+}
+html[data-theme="dark"] .ch-cap b {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .ch-empty {
+    color: #8a93a6
+}
+html[data-theme="dark"] .pat .p {
+    border-bottom: 1px solid #3c424e
+}
+html[data-theme="dark"] .pat .p:last-child {
+    border-bottom: 0
+}
+html[data-theme="dark"] .pat .p .lb {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .pat .p .n {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .pat .p .bar {
+    border-radius: 3px;
+    background: #242932
+}
+html[data-theme="dark"] .pat .p .bar i {
+    background: #e8513f;
+    border-radius: 3px
+}
+html[data-theme="dark"] .pat .p .wkd.good {
+    color: #78e396
+}
+html[data-theme="dark"] .pat .p .wkd.bad {
+    color: #efa56c
+}
+html[data-theme="dark"] .pat .p .wkd.flat {
+    color: #8a93a6
+}
+html[data-theme="dark"] .pat .p .ex {
+    color: #9da0a5
+}
+html[data-theme="dark"] .pat .p .tipk {
+    color: #9da0a5
+}
+html[data-theme="dark"] .nd {
+    color: #8a93a6
+}
+html[data-theme="dark"] .notes .note {
+    border: 0 !important;
+    background: #252931;
+    border-radius: 12px !important
+}
+html[data-theme="dark"] .notes .more {
+    border: 0 !important;
+    background: transparent !important;
+    color: #e3b65c !important
+}
+html[data-theme="dark"] .hist .hi {
+    border: 0 !important;
+    background: #252931 !important;
+    border-radius: 12px !important
+}
+html[data-theme="dark"] .hist .hi .dt {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .hist .hi .sm {
+    color: #9da0a5
+}
+html[data-theme="dark"] .hist .hi .ttl {
+    color: #8a93a6
+}
+html[data-theme="dark"] .hist .hi[open] {
+    background: #1c1d21 !important;
+    box-shadow: 0 0 0 1px #2e3036
+}
+html[data-theme="dark"] .empty {
+    color: #8a93a6
+}
+html[data-theme="dark"] .endbar {
+    border-top: 1px solid #2e3036;
+    background: #1c1d21
+}
+html[data-theme="dark"] .eb-tx b {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .eb-tx span {
+    color: #9da0a5
+}
+html[data-theme="dark"] .eb-btn {
+    border-radius: 14px !important;
+    border: 0 !important;
+    background: #e8513f !important;
+    color: #fff !important
+}
+html[data-theme="dark"] .eb-btn:hover {
+    background: #c43a2a !important
+}
+html[data-theme="dark"] body.ended .callbar .rec {
+    background: #5f6268 !important
+}
+html[data-theme="dark"] .endpill {
+    border-radius: 999px;
+    background: rgba(17,24,39,.62);
+    color: #fff
+}
+html[data-theme="dark"] .qz-chip {
+    color: #efa56c;
+    background: #372c20;
+    border-radius: 999px
+}
+html[data-theme="dark"] .qz-tag {
+    border-radius: 999px;
+    background: #202837;
+    color: #e3b65c
+}
+html[data-theme="dark"] .qz-tag.ok {
+    background: #213627;
+    color: #78e396
+}
+html[data-theme="dark"] .qz-tag.bad {
+    background: #372c20;
+    color: #efa56c
+}
+html[data-theme="dark"] .metatip {
+    background: #26272c;
+    border: 1px solid #3c414e;
+    border-radius: 14px
+}
+html[data-theme="dark"] .metatip .lb {
+    color: #8a93a6
+}
+html[data-theme="dark"] .metatip .en {
+    color: #e8ebf3
+}
+html[data-theme="dark"] .metatip .mt-play {
+    border-radius: 50% !important;
+    background: #1c1d21 !important;
+    border: 1px solid #2e3036 !important;
+    color: #c3c7ce !important
+}
+html[data-theme="dark"] .qz-skip {
+    border: 0 !important;
+    background: transparent !important;
+    color: #8a93a6 !important;
+    text-decoration: underline
+}
+html[data-theme="dark"] body[data-view] {
+    background: var(--v-bg) !important
+}
+html[data-theme="dark"] .pane.chat {
+    background: var(--v-bg) !important;
+    border: 0 !important
+}
+html[data-theme="dark"] .log {
+    background: transparent !important
+}
+html[data-theme="dark"] .hv-date {
+    color: var(--v-mu)
+}
+html[data-theme="dark"] .hv-title {
+    color: var(--v-ink)
+}
+html[data-theme="dark"] .hv-gear {
+    border-radius: 50% !important;
+    border: 0 !important;
+    background: #1c1d21 !important;
+    color: var(--v-ink) !important;
+    box-shadow: 0 1px 2px rgba(14,23,38,.06)
+}
+html[data-theme="dark"] .hv-sec b {
+    color: var(--v-ink)
+}
+html[data-theme="dark"] .hv-sec span {
+    color: var(--v-mu)
+}
+html[data-theme="dark"] .rc {
+    border-radius: 24px !important;
+    background: #1c1d21 !important;
+    border: 0 !important;
+    color: var(--v-ink) !important;
+    box-shadow: 0 1px 2px rgba(14,23,38,.06),0 8px 20px rgba(14,23,38,.05)
+}
+html[data-theme="dark"] .rc .vis {
+    color: #fff
+}
+html[data-theme="dark"] .rc .vis .pill {
+    background: rgba(14,23,38,.45);
+    color: #fff;
+    border-radius: 999px
+}
+html[data-theme="dark"] .rc .vis .pill i {
+    border-radius: 50%;
+    background: #4ade80
+}
+html[data-theme="dark"] .rc .vis .pill.live i {
+    background: #ff5a4a
+}
+html[data-theme="dark"] .rc .vis .go {
+    border-radius: 50%;
+    background: var(--v-coral);
+    box-shadow: 0 8px 18px rgba(232,81,63,.45)
+}
+html[data-theme="dark"] .rc .lab {
+    background: #1c1d21
+}
+html[data-theme="dark"] .rc .lab span {
+    color: var(--v-mu)
+}
+html[data-theme="dark"] .g-quiz {
+    background: linear-gradient(150deg,#ff8a73,#e8513f)
+}
+html[data-theme="dark"] .g-expr {
+    background: linear-gradient(150deg,#ffd27a,#f2a93b)
+}
+html[data-theme="dark"] .g-rec {
+    background: linear-gradient(150deg,#3d5afe,#3d5afe)
+}
+html[data-theme="dark"] .g-set {
+    background: linear-gradient(150deg,#2d2e34,#5c6068)
+}
+html[data-theme="dark"] .hs {
+    background: #1c1d21;
+    border-radius: 20px
+}
+html[data-theme="dark"] .hs .t b {
+    color: var(--v-ink)
+}
+html[data-theme="dark"] .hs .t span {
+    color: var(--v-mu)
+}
+html[data-theme="dark"] .hs.used {
+    box-shadow: inset 0 0 0 2px #36543e
+}
+html[data-theme="dark"] .hs .pl {
+    border-radius: 50% !important;
+    border: 0 !important;
+    background: var(--v-bg) !important;
+    color: var(--v-ink) !important
+}
+html[data-theme="dark"] .hv-empty {
+    background: #1c1d21;
+    border-radius: 20px;
+    color: var(--v-mu)
+}
+html[data-theme="dark"] .st {
+    background: #1c1d21;
+    border-radius: 22px
+}
+html[data-theme="dark"] .st .dot {
+    border-radius: 50%;
+    color: #fff
+}
+html[data-theme="dark"] .st .k {
+    color: var(--v-mu)
+}
+html[data-theme="dark"] .st .v {
+    color: var(--v-ink)
+}
+html[data-theme="dark"] .st .v small {
+    color: var(--v-mu)
+}
+html[data-theme="dark"] .rp-fil button {
+    border: 0 !important;
+    background: #1c1d21 !important;
+    color: var(--v-mu) !important;
+    border-radius: 999px !important
+}
+html[data-theme="dark"] .rp-fil button[aria-pressed="true"] {
+    background: var(--v-navy) !important;
+    color: #fff !important
+}
+html[data-theme="dark"] .rp-rail .rc[aria-pressed="true"] {
+    box-shadow: 0 0 0 3px var(--v-navy),0 8px 20px rgba(14,23,38,.12)
+}
+html[data-theme="dark"] .rc .vis .tag {
+    background: rgba(28,29,33,0.92);
+    color: var(--v-ink);
+    border-radius: 999px
+}
+html[data-theme="dark"] .rc .vis .done {
+    border-radius: 50%;
+    background: #1ee166;
+    color: #fff
+}
+html[data-theme="dark"] .rp-detail {
+    background: #1c1d21;
+    border-radius: 26px
+}
+html[data-theme="dark"] .rp-detail .nm {
+    color: var(--v-ink)
+}
+html[data-theme="dark"] .rp-detail .row2 {
+    color: #c3c7ce
+}
+html[data-theme="dark"] .rp-detail .row2 .k {
+    color: var(--v-mu)
+}
+html[data-theme="dark"] .rp-detail .st2 {
+    border-radius: 999px;
+    background: #213627;
+    color: #74e79d
+}
+html[data-theme="dark"] .rp-start {
+    border-radius: 18px !important;
+    border: 0 !important;
+    background: var(--v-navy) !important;
+    color: #fff !important
+}
+html[data-theme="dark"] .tabbar {
+    border-radius: 35px;
+    background: rgba(28,29,33,0.86);
+    box-shadow: 0 12px 32px rgba(14,23,38,.16),0 0 0 1px rgba(14,23,38,.05)
+}
+html[data-theme="dark"] .tabbar button {
+    border: 0 !important;
+    background: transparent !important;
+    border-radius: 28px !important;
+    color: var(--v-mu2) !important
+}
+html[data-theme="dark"] .tabbar button[aria-current="page"] {
+    background: rgba(27,43,75,.08) !important;
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] body[data-view] .julia .bubble {
+    background: #1c1d21 !important;
+    border: 0 !important
+}
+html[data-theme="dark"] body[data-view] .me .bubble,html[data-theme="dark"] body[data-view] .me.marked .bubble {
+    background: #3d5afe !important;
+    color: #fff !important;
+    border: 0 !important;
+    border-radius: 20px 20px 6px 20px !important
+}
+html[data-theme="dark"] body[data-view] .me.marked .bubble s {
+    color: #9fb0cc !important
+}
+html[data-theme="dark"] body[data-view] .me.marked .bubble ins {
+    color: #ffb4a6 !important
+}
+html[data-theme="dark"] body[data-view] .me.rep .bubble {
+    background: #222835 !important;
+    color: #e8ebf3 !important
+}
+html[data-theme="dark"] body[data-view] .sysnote {
+    background: #26272c !important
+}
+html[data-theme="dark"] body[data-view] .compose {
+    background: var(--v-bg) !important;
+    border-top: 0 !important
+}
+html[data-theme="dark"] body[data-view] .compose textarea {
+    background: #1c1d21 !important;
+    border: 0 !important
+}
+html[data-theme="dark"] .tabbar {
+    border-radius: 32px !important
+}
+html[data-theme="dark"] .rc .vis.pm {
+    background: radial-gradient(120% 85% at 15% 0%,rgba(28,29,33,0.2),rgba(28,29,33,0) 55%),linear-gradient(160deg,var(--c1),var(--c2))
+}
+html[data-theme="dark"] .rc .vis.pm::after {
+    box-shadow: inset 0 0 0 1px rgba(28,29,33,0.08);
+    border-radius: inherit
+}
+html[data-theme="dark"] .rc .vis.pm .chipi {
+    border-radius: 12px;
+    background: rgba(28,29,33,0.14);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(28,29,33,0.18)
+}
+html[data-theme="dark"] .rc .vis.pm .ghost {
+    color: #fff
+}
+html[data-theme="dark"] .rc .vis.pm .metric {
+    color: #fff
+}
+html[data-theme="dark"] .rc .vis.pm .prev {
+    color: rgba(255,255,255,.92)
+}
+html[data-theme="dark"] .hv-sec .rng {
+    color: #b5b9be;
+    background: #1c1d21;
+    border-radius: 999px
+}
+html[data-theme="dark"] .tp-lv {
+    background: #262931;
+    border-radius: 12px
+}
+html[data-theme="dark"] .tp-lv button {
+    border: 0 !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    color: #9da0a5 !important
+}
+html[data-theme="dark"] .tp-lv button[aria-pressed="true"] {
+    background: #1c1d21 !important;
+    color: #e8ebf3 !important;
+    box-shadow: 0 1px 3px rgba(15,23,42,.14)
+}
+html[data-theme="dark"] .tp-it {
+    border: 0 !important;
+    border-radius: 18px !important;
+    background: #262831 !important;
+    color: #e8ebf3 !important
+}
+html[data-theme="dark"] .tp-it span {
+    color: #9da0a5
+}
+html[data-theme="dark"] .tp-it[aria-pressed="true"] {
+    background: #3d5afe !important;
+    color: #fff !important
+}
+html[data-theme="dark"] .tp-it[aria-pressed="true"] span {
+    color: #c7d2e6
+}
+html[data-theme="dark"] .tp-note {
+    color: #8a93a6
+}
+html[data-theme="dark"] .rc .vis img.rpimg {
+    background: #26272c
+}
+html[data-theme="dark"] body[data-view] {
+    background: var(--b-parch) !important
+}
+html[data-theme="dark"] .pane.chat {
+    background: var(--b-parch) !important
+}
+html[data-theme="dark"] .hv-date {
+    color: var(--b-mu) !important
+}
+html[data-theme="dark"] .hv-gear {
+    box-shadow: 0 0 0 1px var(--b-hair) !important
+}
+html[data-theme="dark"] .rc,html[data-theme="dark"] .hs,html[data-theme="dark"] .st,html[data-theme="dark"] .rp-detail,html[data-theme="dark"] .sd-card,html[data-theme="dark"] .hv-empty,html[data-theme="dark"] .studybar .sb-btn {
+    box-shadow: 0 0 0 1px var(--b-hair) !important
+}
+html[data-theme="dark"] .rc {
+    border-radius: 18px !important
+}
+html[data-theme="dark"] .rc .vis .go {
+    background: var(--b-primary) !important;
+    box-shadow: 0 8px 18px rgba(0,102,204,.35) !important
+}
+html[data-theme="dark"] .rc .vis.pm .chipi {
+    background: rgba(28,29,33,0.1) !important
+}
+html[data-theme="dark"] .pm-quiz .chipi {
+    color: #ff6b5e !important
+}
+html[data-theme="dark"] .pm-expr .chipi {
+    color: #ffc95c !important
+}
+html[data-theme="dark"] .pm-topic .chipi {
+    color: #5ed6c8 !important
+}
+html[data-theme="dark"] .pm-review .chipi {
+    color: #b9a4ff !important
+}
+html[data-theme="dark"] .pm-notes .chipi {
+    color: var(--b-sky) !important
+}
+html[data-theme="dark"] .pm-quiz .metric,html[data-theme="dark"] .pm-review .metric,html[data-theme="dark"] .pm-notes .metric {
+    color: #fff
+}
+html[data-theme="dark"] .rp-fil button,html[data-theme="dark"] .tr-chips button {
+    border-radius: 9999px !important;
+    box-shadow: 0 0 0 1px var(--b-hair) !important;
+    background: #1c1d21 !important;
+    color: var(--b-mu) !important
+}
+html[data-theme="dark"] .rp-fil button[aria-pressed="true"],html[data-theme="dark"] .tr-chips button[aria-pressed="true"] {
+    background: var(--b-primary) !important;
+    color: #fff !important;
+    box-shadow: none !important
+}
+html[data-theme="dark"] .rp-rail .rc[aria-pressed="true"] {
+    box-shadow: 0 0 0 2px var(--b-primary),0 0 0 6px rgba(0,102,204,.12) !important
+}
+html[data-theme="dark"] .rp-start,html[data-theme="dark"] .sd-primary,html[data-theme="dark"] .qz-in .primary,html[data-theme="dark"] #qzNext,html[data-theme="dark"] #qzRetry,html[data-theme="dark"] #exAll,html[data-theme="dark"] .qz-empty .primary,html[data-theme="dark"] .eb-btn {
+    background: var(--b-primary) !important;
+    border-radius: 9999px !important
+}
+html[data-theme="dark"] .tabbar button[aria-current="page"] {
+    background: var(--b-tint) !important;
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .sd-tabs {
+    background: transparent !important;
+    border-bottom: 1px solid var(--b-hair);
+    border-radius: 0 !important
+}
+html[data-theme="dark"] .sd-tabs button {
+    border-radius: 0 !important;
+    border-bottom: 2px solid transparent !important;
+    color: var(--b-mu) !important;
+    box-shadow: none !important;
+    background: transparent !important
+}
+html[data-theme="dark"] .sd-tabs button[aria-selected="true"] {
+    color: var(--b-primaryT) !important;
+    border-bottom-color: var(--b-primary) !important;
+    background: transparent !important
+}
+html[data-theme="dark"] .wk {
+    background: var(--b-tile) !important;
+    box-shadow: none !important;
+    border-radius: 18px !important
+}
+html[data-theme="dark"] .wk-t {
+    background: rgba(28,29,33,0.06) !important;
+    border-radius: 12px !important
+}
+html[data-theme="dark"] .wk-t .d.good {
+    color: #79e193 !important
+}
+html[data-theme="dark"] .wk-t .d.bad {
+    color: #efbc6c !important
+}
+html[data-theme="dark"] .wk-goal {
+    background: rgba(41,151,255,.14) !important
+}
+html[data-theme="dark"] .wk-goal b {
+    color: var(--b-sky) !important
+}
+html[data-theme="dark"] .wk-v.up {
+    background: rgba(48,209,88,.16) !important;
+    color: #79e193 !important
+}
+html[data-theme="dark"] .wk-v.down {
+    background: rgba(255,159,10,.16) !important;
+    color: #efbc6c !important
+}
+html[data-theme="dark"] .wk-v.flat,html[data-theme="dark"] .wk-v.info {
+    background: rgba(28,29,33,0.12) !important;
+    color: #fff !important
+}
+html[data-theme="dark"] #settings .sw[aria-checked="true"] {
+    background: var(--b-primary) !important
+}
+html[data-theme="dark"] #settings .set-range::-webkit-slider-runnable-track {
+    background: linear-gradient(to right,var(--b-primary) var(--p,50%),#26272c var(--p,50%)) !important
+}
+html[data-theme="dark"] #settings .set-done {
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] #settings .seg button[aria-pressed="true"] {
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .tp-it[aria-pressed="true"] {
+    background: var(--b-primary) !important
+}
+html[data-theme="dark"] .tp-lv button[aria-pressed="true"] {
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] body[data-view] .me .bubble,html[data-theme="dark"] body[data-view] .me.marked .bubble {
+    background: var(--b-primary) !important
+}
+html[data-theme="dark"] body[data-view] .me.marked .bubble s {
+    color: #a9c8ec !important
+}
+html[data-theme="dark"] body[data-view] .me.marked .bubble ins {
+    color: #fff !important;
+    text-decoration: underline !important;
+    text-decoration-color: #ffd60a !important
+}
+html[data-theme="dark"] body[data-view] .me.rep .bubble {
+    background: var(--b-tint) !important;
+    color: var(--b-ink) !important
+}
+html[data-theme="dark"] .row.me .who-l {
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .compose .mic {
+    background: var(--b-primary) !important;
+    border: 0 !important
+}
+html[data-theme="dark"] .compose .mic.listening {
+    background: var(--b-red) !important;
+    box-shadow: 0 0 0 0 rgba(215,0,21,.45)
+}
+html[data-theme="dark"] .compose .send {
+    background: var(--b-ink-bg) !important
+}
+html[data-theme="dark"] .modeseg {
+    background: #26272c;
+    border-radius: 9999px
+}
+html[data-theme="dark"] .modeseg button {
+    border: 0 !important;
+    background: transparent !important;
+    border-radius: 9999px !important;
+    color: var(--b-mu) !important
+}
+html[data-theme="dark"] .modeseg button[aria-pressed="true"] {
+    background: #1c1d21 !important;
+    color: var(--b-primaryT) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.12)
+}
+html[data-theme="dark"] .stage.rpface img.face {
+    background: #26272c
+}
+html[data-theme="dark"] .rc .vis.ill {
+    background: #26272c
+}
+html[data-theme="dark"] .rc .vis.ill .cnt {
+    border-radius: 9999px;
+    background: #1c1d21;
+    color: #ef6c79;
+    box-shadow: 0 2px 6px rgba(0,0,0,.18)
+}
+html[data-theme="dark"] .rc .vis .go {
+    background: var(--b-primary) !important;
+    box-shadow: 0 8px 18px rgba(27,42,78,.30) !important
+}
+html[data-theme="dark"] .tabbar button[aria-current="page"] {
+    background: var(--b-tint) !important;
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .sd-tabs button[aria-selected="true"] {
+    color: var(--b-primaryT) !important;
+    border-bottom-color: var(--b-primary) !important
+}
+html[data-theme="dark"] .modeseg button[aria-pressed="true"] {
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] #settings .seg button[aria-pressed="true"],html[data-theme="dark"] .tp-lv button[aria-pressed="true"] {
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] #settings .set-done {
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .rp-rail .rc[aria-pressed="true"] {
+    box-shadow: 0 0 0 2px var(--b-primary),0 0 0 6px rgba(27,42,78,.14) !important
+}
+html[data-theme="dark"] body[data-view] .me .bubble,html[data-theme="dark"] body[data-view] .me.marked .bubble {
+    background: var(--b-primary) !important
+}
+html[data-theme="dark"] body[data-view] .me.marked .bubble s {
+    color: #a3adc4 !important
+}
+html[data-theme="dark"] body[data-view] .me.marked .bubble ins {
+    text-decoration-color: #e3b65c !important
+}
+html[data-theme="dark"] .row.me .who-l {
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .compose .mic {
+    background: var(--b-primary) !important
+}
+html[data-theme="dark"] .compose .mic.listening {
+    background: #d70015 !important
+}
+html[data-theme="dark"] .ver-h {
+    background: var(--b-tint) !important;
+    border-color: transparent !important;
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .ch-line {
+    stroke: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .ch-dot {
+    fill: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .ch-area {
+    fill: var(--b-primary) !important
+}
+html[data-theme="dark"] .hb {
+    fill: var(--b-primary) !important
+}
+html[data-theme="dark"] .hb.on {
+    fill: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .wk-goal {
+    background: rgba(227,182,92,.16) !important
+}
+html[data-theme="dark"] .wk-goal b {
+    color: #e3b65c !important
+}
+html[data-theme="dark"] .wk-i.info .ic {
+    background: var(--b-tint) !important;
+    color: var(--b-primaryT) !important
+}
+html[data-theme="dark"] .ex-play,html[data-theme="dark"] .pl,html[data-theme="dark"] .hs .pl {
+    color: #e7e7e7 !important
+}
+html[data-theme="dark"] #settings .setsheet {
+    background: #26272c
+}
+html[data-theme="dark"] #settings .set-head {
+    background: #26272c;
+    border-bottom-color: transparent
+}
+html[data-theme="dark"] #settings .set-gt {
+    color: #9d9d9d
+}
+html[data-theme="dark"] #settings .set-card {
+    border-radius: 18px;
+    box-shadow: none
+}
+html[data-theme="dark"] #settings .set-card>*+*::before {
+    background: #26272c
+}
+html[data-theme="dark"] #settings .set-ic {
+    border-radius: 0;
+    background: transparent !important;
+    color: var(--b-primaryT)
+}
+html[data-theme="dark"] #settings .set-ic svg * {
+    stroke: currentColor;
+    stroke-width: 1.7
+}
+html[data-theme="dark"] #settings details>summary .chev {
+    color: #a3a9b6
+}
+html[data-theme="dark"] #settings .set-row select {
+    color: #9d9d9d !important
+}
+html[data-theme="dark"] #settings .set-row select:focus-visible,html[data-theme="dark"] #settings .set-keybox input:focus {
+    outline-color: var(--b-primary);
+    border-color: var(--b-primary) !important
+}
+html[data-theme="dark"] #settings .set-range::-moz-range-progress {
+    background: var(--b-primary)
+}
+html[data-theme="dark"] #settings .set-keyacts .primary {
+    background: var(--b-primary) !important;
+    border-radius: 9999px !important
+}
+html[data-theme="dark"] #settings .set-keyacts #testKey {
+    border-radius: 9999px !important
+}
+html[data-theme="dark"] #settings .set-val {
+    background: #262931
+}
+html[data-theme="dark"] .tabbar button:not([aria-current="page"]) {
+    color: #80879a !important
+}
+/* hand-tuned dark tokens and fixes (tools/theme/dark-manual.css) */
+html[data-theme="dark"]{color-scheme:dark;
+  --bg:#121214;--surface:#1c1d21;--soft:#26272c;--line:#2e3036;--fg:#eceef3;--fg-bg:#3a3b42;--muted:#9aa1b0;
+  --navy:#1a2140;--navy-2:#222a4d;--navy-3:#2d3866;--navy-fg:#eef2fa;--navy-t:#e8ebf3;
+  --accent:#e3b65c;--accent-soft:#2b2718;--good:#4cc38a;--good-soft:#15291f;--warn:#f0a35a;--warn-soft:#2e2216;
+  --coach:#e3b65c;--coach-soft:#1f2333;--speak:#4ade80;
+  --coral:#ff6b5a;--coral-deep:#ff8a73;--coral-soft:#3a1f1a;--coral-line:#5a2e26;--coral-pale:#2a1a17;
+  --b-primary:#3d5afe;--b-primaryT:#e3b65c;--b-tint:#2a2c36;--b-sky:#e3b65c;--b-ink:#f2f2f4;--b-ink-bg:#3a3b42;--b-mu:#9a9aa0;--b-hair:#2e3036;--b-parch:#121214;--b-tile:#1a2140;--b-red:#ff453a;--b-gold:#e3b65c;
+  --v-bg:#121214;--v-ink:#f2f2f4;--v-ink-bg:#3a3b42;--v-mu:#9a9aa0;--v-mu2:#7d8494;--v-navy:#3d5afe;--v-amber:#f2a93b;--v-coral:#ff6b5a;
+  --bub:#26272c;--sam-bg:#2e2817;--sam-line:#5a4a22;--sam-name:#f2b24a;--n-julia:#ff7a6a;--n-jun:#e3b65c;--n-sam:#f5a524}
+html[data-theme="dark"] body,html[data-theme="dark"] body[data-view]{background:#121214!important;color:var(--fg)}
+/* gold is the symbol colour: switches, sliders, active tab text, selected segments */
+html[data-theme="dark"] #settings .sw[aria-checked="true"]{background:var(--b-gold)!important}
+html[data-theme="dark"] #settings .set-range::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--b-gold) var(--p,50%),#3a3b42 var(--p,50%))!important}
+html[data-theme="dark"] .tabbar button[aria-current="page"]{background:#2d2f36!important;color:#fff!important}
+html[data-theme="dark"] .tabbar button[aria-current="page"] svg{color:var(--b-gold)}
+/* Jun's bubble: bright navy, highlighted fixes in gold */
+html[data-theme="dark"] body[data-view] .me .bubble,html[data-theme="dark"] body[data-view] .me.marked .bubble{background:#2f45c8!important;color:#fff!important}
+html[data-theme="dark"] body[data-view] .me.marked .bubble s{color:#b7c2f5!important}
+html[data-theme="dark"] .rc .vis .go{box-shadow:0 8px 18px rgba(61,90,254,.35)!important}
+html[data-theme="dark"] .rp-rail .rc[aria-pressed="true"]{box-shadow:0 0 0 2px var(--b-gold),0 0 0 6px rgba(227,182,92,.16)!important}
+html[data-theme="dark"] .rc .vis.ill .cnt{background:#1c1d21;color:#ff6b5a}
+html[data-theme="dark"] img{color-scheme:normal}
+/* selected segment sits above its track */
+html[data-theme="dark"] #settings .seg button[aria-pressed="true"],html[data-theme="dark"] .modeseg button[aria-pressed="true"],html[data-theme="dark"] .tp-lv button[aria-pressed="true"]{background:#3a3b42!important;box-shadow:none!important}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header>
     <button class="gear ico" id="backHome" aria-label="홈으로" title="홈으로"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <h1>영어회화 코치 <span class="ver-h">v6.1</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v6.2</span></h1>
     <div class="modeseg" id="modeSeg" role="group" aria-label="대화 종류"><button id="modeFree" aria-pressed="true">기본 대화</button><button id="modeRp" aria-pressed="false">상황극</button></div>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
@@ -1181,6 +3514,10 @@ body[data-view] .me.marked .bubble ins{text-decoration-color:var(--b-primary)!im
       <div class="set-group">
         <div class="set-gt">화면</div>
         <div class="set-card">
+          <div class="set-row"><span class="set-ic"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="set-lab">화면 테마</div>
+            <div class="seg" data-for="themeSel" role="group" aria-label="화면 테마"><button data-v="light">라이트</button><button data-v="dark">다크</button><button data-v="system">자동</button></div>
+            <select id="themeSel" class="sr-sel" tabindex="-1" aria-hidden="true"><option value="light">라이트</option><option value="dark">다크</option><option value="system">자동</option></select>
+          </div>
           <div class="set-row"><span class="set-ic" style="background:#10b981"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="11" r="2" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 16l-5-5-8 8" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="set-lab">Julia 사진</div><button class="set-btn" id="juliaPhotoReset" hidden>기본으로</button><button class="set-btn" id="juliaPhotoBtn">바꾸기</button></div>
           <div class="set-row"><span class="set-ic" style="background:#64748b"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 7h12v10H3zM15 10l6-3v10l-6-3" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="set-lab">내 카메라</div><button class="set-btn" id="camBtn">켜기</button></div>
         </div>
@@ -1211,7 +3548,7 @@ body[data-view] .me.marked .bubble ins{text-decoration-color:var(--b-primary)!im
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v6.1<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
+      <div class="set-ver">영어회화 코치 v6.2<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
     </div>
   </div>
 </div>
@@ -3032,6 +5369,7 @@ function syncSettingsUI(){
   $("levelHelp").textContent=LEVEL_HELP[$("level").value]||""; $("engineHelp").textContent=ENGINE_HELP[$("engine").value]||"";
   paintRange($("rate")); paintRange($("coachRate"));
 }
+$("themeSel").value=window.ocTheme?ocTheme.pref():"system";$("themeSel").addEventListener("change",e=>{if(window.ocTheme)ocTheme.set(e.target.value)});
 document.querySelectorAll(".seg[data-for]").forEach(g=>{
   g.addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(!b)return;const sel=$(g.dataset.for);if(sel.value!==b.dataset.v){sel.value=b.dataset.v;sel.dispatchEvent(new Event("change"))}syncSettingsUI()});
   $(g.dataset.for).addEventListener("change",syncSettingsUI);
@@ -3134,7 +5472,7 @@ $("tabBar").addEventListener("click",e=>{const b=e.target.closest("[data-view]")
 $("backHome").onclick=()=>showView("home");
 $("hvSettings").onclick=openSettings; $("rpSettings").onclick=openSettings;
 setInterval(()=>{const e=$("hvLive");if(view==="home"&&e&&phase!=="idle"&&!callEnded)e.textContent="대화 중 "+$("timer").textContent},1000);   // only the clock text changes, so swiping the cards is never interrupted
-function renderHighlights(){const el=$("hlTiles");if(!el)return;const w=weekSum(0);el.innerHTML=tileHTML("#7c5cff",P_QUOTE,"말한 문장",totalTurns(),"개")+tileHTML("#16a34a",P_CLOCK,"이번 주 연습",w.min,"분")+tileHTML("#e8513f",P_FLAME,"연속 학습",streakDays(),"일")+tileHTML("#03c75a",P_TARGET,"이번 주 정확도",w.acc===null?"-":pct(w.acc),w.acc===null?"":"%")}
+function renderHighlights(){const el=$("hlTiles");if(!el)return;const w=weekSum(0);el.innerHTML=tileHTML("#7c5cff",P_QUOTE,"말한 문장",totalTurns(),"개")+tileHTML("#16a34a",P_CLOCK,"이번 주 연습",w.min,"분")+tileHTML("#e8513f",P_FLAME,"연속 학습",streakDays(),"일")+tileHTML("var(--b-primary)",P_TARGET,"이번 주 정확도",w.acc===null?"-":pct(w.acc),w.acc===null?"":"%")}
 
 /* v6.0: mode toggle in the call screen, mic auto-start on a tap */
 function syncMode(){const f=$("modeFree"),r=$("modeRp");if(!f)return;f.setAttribute("aria-pressed",String(!rp));r.setAttribute("aria-pressed",String(!!rp));r.textContent="상황극"}
