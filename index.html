@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#1b2b4b">
-<title>영어회화 코치 v5.4</title>
+<title>영어회화 코치 v5.5</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -692,12 +692,17 @@ body.ended .stage img.face{filter:saturate(.55) brightness(.8);transition:filter
 .stage .callbar{z-index:9}
 .endpill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(17,24,39,.62);color:#fff;font-size:14px;font-weight:700;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none}
 .endpill[hidden]{display:none}
+
+/* v5.5 quiz repeats */
+.qz-chip{display:inline-block;align-self:flex-start;font-size:11.5px;font-weight:700;color:#b45309;background:#fdf3e7;border-radius:999px;padding:3px 9px;margin-bottom:8px}
+.qz-tag{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;border-radius:999px;padding:1px 7px;background:#eaf0fa;color:#2f5fae;vertical-align:1px}
+.qz-tag.ok{background:#e8f5ec;color:#1a7f37}.qz-tag.bad{background:#fdf3e7;color:#b45309}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>영어회화 코치 <span class="ver-h">v5.4</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v5.5</span></h1>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -927,7 +932,7 @@ body.ended .stage img.face{filter:saturate(.55) brightness(.8);transition:filter
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v5.4<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
+      <div class="set-ver">영어회화 코치 v5.5<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
     </div>
   </div>
 </div>
@@ -1665,6 +1670,40 @@ function todayItems(){
   return out;
 }
 function koItems(){return todayItems().filter(x=>hasKo(x.said)&&!hasKo(x.model)).slice(-10)}
+/* Quiz questions are kept per question (oc_qitems) so they come back on later days:
+   right the first time -> done. Wrong -> again today until right, then tomorrow and the day after (2 right answers on different days) */
+let qItems=load("oc_qitems",{})||{}, qSyncing=null;
+const nextDay=(k,n=1)=>{const d=new Date(k+"T12:00:00");d.setDate(d.getDate()+n);return dayKey(d)};
+function saveQ(){const v=Object.values(qItems);if(v.length>300){v.filter(x=>x.done).sort((a,b)=>(a.lastDay||"").localeCompare(b.lastDay||"")).slice(0,v.length-300).forEach(x=>delete qItems[x.k])}store("oc_qitems",qItems)}
+const sentKey=it=>it.said+"|"+it.model;
+function unregistered(){const have=new Set(Object.values(qItems).map(x=>x.sk));return koItems().filter(it=>!have.has(sentKey(it)))}
+function dueItems(){const t=dayKey();return Object.values(qItems).filter(x=>!x.done&&x.due<=t&&!(x.lastDay===t&&x.lastOk))}
+function quizPending(){return dueItems().length+unregistered().length}
+function syncQuizItems(){
+  if(qSyncing)return qSyncing;
+  const fresh=unregistered(); if(!fresh.length)return Promise.resolve();
+  qSyncing=(async()=>{
+    try{
+      const qs=await buildQuiz(fresh), t=dayKey();
+      const got=new Set();
+      qs.forEach(q=>{const k=sentKey(q.it)+"|"+q.ko;got.add(sentKey(q.it));if(qItems[k])return;qItems[k]={k,sk:sentKey(q.it),said:q.it.said,model:q.it.model,type:q.type,ko:q.ko,ans:q.ans,pre:q.pre,post:q.post,added:t,due:t,need:1,streak:0,done:false}});
+      fresh.forEach(it=>{if(!got.has(sentKey(it))){const k=sentKey(it)+"|";qItems[k]={k,sk:sentKey(it),said:it.said,model:it.model,type:"full",ko:it.said,ans:it.model,pre:"",post:"",added:t,due:t,need:1,streak:0,done:false}}});
+      saveQ();
+    }catch(e){logErr("퀴즈 준비",e)}
+    finally{qSyncing=null;try{updateStudyBar()}catch(e){}}
+  })();
+  return qSyncing;
+}
+function qResult(q,ok){
+  const e=qItems[q.key]; if(!e)return; const t=dayKey();
+  if(ok){
+    const wrongToday=e.lastDay===t&&e.lastOk===false;
+    if(!wrongToday&&e.streakDay!==t){e.streak=(e.streak||0)+1;e.streakDay=t}
+    e.lastDay=t; e.lastOk=true; e.right=(e.right||0)+1;
+    if(!wrongToday&&e.streak>=e.need){e.done=true;e.doneDay=t}else e.due=nextDay(t);
+  }else{e.streak=0;e.need=2;e.lastDay=t;e.lastOk=false;e.due=t;e.wrong=(e.wrong||0)+1}
+  saveQ();
+}
 const isAllKo=t=>hasKo(t)&&!/[A-Za-z]/.test(t);
 const qzKey=it=>it.said+"|"+it.model;
 const trimP=t=>String(t).trim().replace(/^[\s"'“”.,!?;:]+|[\s"'“”.,!?;:]+$/g,"");
@@ -1738,20 +1777,28 @@ async function judgeQuiz(q,v){
     return {ok,note:ok?"":clean(String(r&&r.note_ko||""))};
   }catch(e){logErr("퀴즈 채점",e);return {ok:false}}
 }
-const QZ_EMPTY=`<div class="qz-empty"><div class="qz-eic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8.5 11.5l3 3L21 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>아직 퀴즈가 없어요</b><p>대화하다가 영어로 막혀서 한국어로 말한 부분이<br>여기 빈칸 문제로 나와요.</p><button id="qzDone" class="primary">닫기</button></div>`;
-async function openQuiz(only){
+const QZ_ICON=`<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8.5 11.5l3 3L21 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const QZ_EMPTY=`<div class="qz-empty"><div class="qz-eic">${QZ_ICON}</div><b>아직 퀴즈가 없어요</b><p>대화하다가 영어로 막혀서 한국어로 말한 부분이<br>여기 빈칸 문제로 나와요.</p><button id="qzDone" class="primary">닫기</button></div>`;
+async function openQuiz(){
   closeMore(); $("side").classList.remove("open");
   if(busy||chain){sysNote("지금 하던 말이 끝나면 다시 눌러주세요.");return}
   stopAudio();
-  const items=(only||koItems()).filter(it=>hasKo(it.said));
   $("quizSheet").hidden=false; $("qzProg").textContent="";
-  if(!items.length){quiz=null;$("qzBody").innerHTML=QZ_EMPTY;$("qzDone").onclick=closeQuiz;return}
   const my={qs:[],i:0,res:[],loading:true}; quiz=my;
-  $("qzBody").innerHTML=`<div class="qz-load"><span class="qz-dots"><i></i><i></i><i></i></span>문제를 만들고 있어요</div>`;
-  const qs=await buildQuiz(items);
-  if(quiz!==my)return;
-  if(!qs.length){quiz=null;$("qzBody").innerHTML=QZ_EMPTY;$("qzDone").onclick=closeQuiz;return}
-  my.qs=qs; my.loading=false; renderQuiz();
+  if(unregistered().length){$("qzBody").innerHTML=`<div class="qz-load"><span class="qz-dots"><i></i><i></i><i></i></span>문제를 만들고 있어요</div>`;await syncQuizItems();if(quiz!==my)return}
+  const t=dayKey(), due=dueItems();
+  if(!due.length){
+    quiz=null;
+    const later=Object.values(qItems).filter(x=>!x.done&&x.due>t).length;
+    $("qzBody").innerHTML=Object.keys(qItems).length?`<div class="qz-empty"><div class="qz-eic">${QZ_ICON}</div><b>오늘 풀 문제를 다 풀었어요</b><p>${later?`틀렸던 ${later}문제는 내일 다시 나와요.`:"새로 한국어로 말한 부분이 생기면 여기 문제로 나와요."}</p><button id="qzDone" class="primary">닫기</button></div>`:QZ_EMPTY;
+    $("qzDone").onclick=closeQuiz; return;
+  }
+  // carried-over questions first, then today's, shuffled inside each group
+  const sh=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+  const old=sh(due.filter(x=>x.added<t)), neu=sh(due.filter(x=>x.added>=t));
+  const pick=sh(old.concat(neu).slice(0,12));
+  my.qs=pick.map(x=>({key:x.k,type:x.type,it:{said:x.said,model:x.model},ko:x.ko,ans:x.ans,pre:x.pre||"",post:x.post||"",carried:x.added<t,wrongBefore:(x.wrong||0)>0}));
+  my.loading=false; renderQuiz();
 }
 function closeQuiz(){$("quizSheet").hidden=true;micTarget=null;if(recording)try{toggleMic()}catch(e){};quiz=null;clearInterval(renderQuiz.t)}
 function renderQuiz(){
@@ -1759,8 +1806,8 @@ function renderQuiz(){
   clearInterval(renderQuiz.t); renderQuiz.t=setInterval(()=>{const m=$("qzMic");if(!quiz){clearInterval(renderQuiz.t);return}if(m)m.classList.toggle("recording",recording)},200);
   $("qzProg").textContent=`${quiz.i+1} / ${quiz.qs.length}`;
   const head=q.type==="full"
-    ?`<div class="qz-q">이 말을 영어로 말하거나 입력하세요</div><div class="qz-s qz-ko">${esc(q.ko)}</div>`
-    :`<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank">${esc(q.ko)}</span>${esc(q.post)}</div><div class="qz-hint">내가 한 말: ${esc(q.it.said)}</div>`;
+    ?`${q.carried?'<div class="qz-chip">다시 나온 문제</div>':""}<div class="qz-q">이 말을 영어로 말하거나 입력하세요</div><div class="qz-s qz-ko">${esc(q.ko)}</div>`
+    :`${q.carried?'<div class="qz-chip">다시 나온 문제</div>':""}<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank">${esc(q.ko)}</span>${esc(q.post)}</div><div class="qz-hint">내가 한 말: ${esc(q.it.said)}</div>`;
   b.innerHTML=head+`<div class="qz-in"><input id="qzInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${q.type==="full"?"영어 문장":"빈칸에 들어갈 영어"}"><button id="qzMic" class="qz-mic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button id="qzOk" class="primary">확인</button></div><div id="qzFb"></div>`;
   const inp=$("qzInput"); inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();$("qzOk").click()}});
   $("qzOk").onclick=async()=>{
@@ -1778,7 +1825,7 @@ function renderQuiz(){
   };
 }
 function answerQuiz(ok,given,note){
-  const q=quiz.qs[quiz.i]; if(q.done)return; q.done=true; q.checking=false; quiz.res.push(ok);
+  const q=quiz.qs[quiz.i]; if(q.done)return; q.done=true; q.checking=false; quiz.res.push(ok); qResult(q,ok); updateStudyBar();
   const n=notes.find(x=>x.model===q.it.model);
   if(n){if(!ok){n.reviewFail=(n.reviewFail||0)+1;n.reviewOk=0}store("oc_notes",notes)}
   $("qzBody").querySelectorAll(".qz-in button,.qz-in input").forEach(x=>x.disabled=true);
@@ -1794,7 +1841,7 @@ function quizResult(){
   callStats.quiz={ok:n,total:tot}; saveCallSoon(); dAdd("qo",n); dAdd("qt",tot); saveDaily(); renderHistory();
   const wrong=quiz.qs.filter((q,i)=>!quiz.res[i]);
   $("qzProg").textContent="";
-  $("qzBody").innerHTML=`<div class="qz-score"><b>${n}</b> / ${tot}</div><div class="qz-q">${tot}문제 중 ${n}개 맞았어요.</div><div class="qz-list">${quiz.qs.map((q,i)=>`<div class="qz-row"><span class="mk ${quiz.res[i]?"o":"x"}">${quiz.res[i]?"O":"X"}</span><span>${esc(q.type==="blank"?q.ans:q.it.model)} <span class="ko">${esc(q.ko)}</span></span></div>`).join("")}</div><div class="acts">${wrong.length?'<button id="qzRetry" class="primary">틀린 것만 다시</button>':""}<button id="qzDone">닫기</button></div>`;
+  $("qzBody").innerHTML=`<div class="qz-score"><b>${n}</b> / ${tot}</div><div class="qz-q">${tot}문제 중 ${n}개 맞았어요.${wrong.length?` 틀린 ${wrong.length}문제는 다시 맞힐 때까지 남고, 내일과 모레 다시 나와요.`:""}</div><div class="qz-list">${quiz.qs.map((q,i)=>`<div class="qz-row"><span class="mk ${quiz.res[i]?"o":"x"}">${quiz.res[i]?"O":"X"}</span><span>${esc(q.type==="blank"?q.ans:q.it.model)} <span class="ko">${esc(q.ko)}</span>${quiz.res[i]?(qItems[q.key]&&qItems[q.key].done?'<span class="qz-tag ok">완료</span>':'<span class="qz-tag">내일 한 번 더</span>'):'<span class="qz-tag bad">다시 나와요</span>'}</span></div>`).join("")}</div><div class="acts">${wrong.length?'<button id="qzRetry" class="primary">틀린 것만 다시</button>':""}<button id="qzDone">닫기</button></div>`;
   if(wrong.length)$("qzRetry").onclick=()=>{quiz={qs:wrong.map(q=>Object.assign({},q,{done:false,checking:false})),i:0,res:[]};renderQuiz()};
   $("qzDone").onclick=closeQuiz;
 }
@@ -1804,7 +1851,7 @@ function updateStudyBar(){
   const e=$("exprCount"),q=$("quizCount"); if(!e||!q)return;
   const u=todayExpr.filter(x=>x.used).length;
   e.textContent=todayExpr.length?`${u}/${todayExpr.length}`:""; e.hidden=!todayExpr.length;
-  const n=koItems().length; q.textContent=n?String(n):""; q.hidden=!n;
+  const n=quizPending(); q.textContent=n?String(n):""; q.hidden=!n; if(unregistered().length&&cfg.key)setTimeout(()=>syncQuizItems(),1200);
 }
 const PLAY_SVG='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 let exprLoading=false;
@@ -1889,7 +1936,7 @@ async function endCall(){
   const say=`오늘 ${sum.turns}번 말했고, 새 표현 ${sum.learned.length}개를 배웠어요.`;
   const parts=[{text:say,who:"coach"}];
   await holdUntilReady(say,"coach");
-  addCoach({kind:"report",label:"Coach Sam / 오늘의 리포트",say,listen:parts,html:reportHTML(sum)+`<div class="acts">${koItems().length?'<button data-act="quiz">오늘의 퀴즈 풀기</button>':""}</div>`,noTurn:true});
+  addCoach({kind:"report",label:"Coach Sam / 오늘의 리포트",say,listen:parts,html:reportHTML(sum)+`<div class="acts">${quizPending()?'<button data-act="quiz">오늘의 퀴즈 풀기</button>':""}</div>`,noTurn:true});
   try{localStorage.removeItem(CALL_KEY)}catch(e){}
   await chained(parts);
   try{localStorage.removeItem(CALL_KEY)}catch(e){}
@@ -2679,8 +2726,8 @@ try{const t=localStorage.getItem("oc_sidetab");if(t&&document.querySelector(`.sd
 $("clearAll").onclick=()=>{
   if(!confirm("주간 리포트, 자주 하는 실수, 표현 노트, 발음 점수, 지난 기록과 지금 대화를 모두 지울까요?"))return;
   stopAudio(); if(auto.on)stopAuto();
-  patterns={}; notes=[]; pronHist=[]; callHistory=[]; turnCount=0; lastReviewAt=0; daily={};
-  ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_qz","oc_daily"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  patterns={}; notes=[]; pronHist=[]; callHistory=[]; turnCount=0; lastReviewAt=0; daily={}; qItems={};
+  ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_qz","oc_daily","oc_qitems"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
   callStats=newStats(); callStats.archived=true; rp=null; review=null; pending=null;
   $("side").classList.remove("open");
   renderSide(); renderHistory();
