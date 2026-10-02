@@ -6,10 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
-<meta name="theme-color" content="#f5f5f7">
-<title>영어회화 코치 v6.3</title>
+<meta name="theme-color" content="#121214">
+<title>영어회화 코치 v6.4</title>
 <script>(function(){var K="oc_theme";var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
-function pref(){try{var v=localStorage.getItem(K);return v==="light"||v==="dark"||v==="system"?v:"system"}catch(e){return "system"}}
+function pref(){try{var v=localStorage.getItem(K);return v==="light"||v==="dark"||v==="system"?v:"dark"}catch(e){return "dark"}}
 function apply(){var p=pref(),t=p==="system"?(mq&&mq.matches?"dark":"light"):p;document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#121214":"#f5f5f7");return t}
 window.ocTheme={pref:pref,apply:apply,set:function(v){try{localStorage.setItem(K,v)}catch(e){}return apply()}};apply();
 if(mq){var f=function(){if(pref()==="system")apply()};if(mq.addEventListener)mq.addEventListener("change",f);else if(mq.addListener)mq.addListener(f)}})();</script>
@@ -1027,7 +1027,7 @@ body[data-view] .me.marked .bubble ins{text-decoration-color:#e3b65c!important}
 .wk-k2 .k{font-size:12px;font-weight:600;color:#7a7a7a}
 .wk-k2 b{font-size:22px;font-weight:700;color:#1d1d1f;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
 .wk-k2 b small{font-size:13px;font-weight:600;color:#7a7a7a;margin-left:1px}
-.wk-k2 .dl{font-size:11.5px;font-weight:600;color:#9aa1b0}
+.wk-k2 .dl{font-size:11.5px;font-weight:600;color:#80879a}
 .wk-k2 .dl.good{color:#16a34a}.wk-k2 .dl.bad{color:#d9480f}
 .r2-card.ins .wk-v{font-size:12px;font-weight:700;border-radius:9999px;padding:5px 11px;white-space:nowrap;background:#f2f3f6!important;color:#4b5563!important}
 .r2-card.ins .wk-v.up{background:#e7f6ec!important;color:#16a34a!important}.r2-card.ins .wk-v.down{background:#fff1e6!important;color:#d9480f!important}
@@ -1052,7 +1052,7 @@ body[data-view] .me.marked .bubble ins{text-decoration-color:#e3b65c!important}
 .pat .p.mi .ex{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px!important}
 .pat .p.mi .ex s{color:#80879a;text-decoration-color:#e5484d}
 .pat .p.mi .ex ins{text-decoration:none;font-weight:700;color:#1d1d1f;background:#e7f6ec;border-radius:6px;padding:1px 6px}
-.pat .p.mi .ex .ar{color:#b4b9c4}
+.pat .p.mi .ex .ar{color:#8a90a0}
 .mi-bot{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .mi-bot .tipk{flex:1;min-width:0}
 .sd-primary.wide{width:100%;justify-content:center;display:flex;border-radius:9999px!important;padding:12px 16px!important;font-size:14.5px!important}
@@ -1084,6 +1084,35 @@ body[data-view] .me.marked .bubble ins{text-decoration-color:#e3b65c!important}
 .cd.fut{color:#9aa1b0!important}
 .report .rsec b{color:var(--b-primaryT)!important}
 .report .rl ins{color:#1d1d1f!important}
+
+/* v6.4: home header, this week's learning calendar, bubbles that never look like Jun's, plain past calls */
+.hv-top{position:relative}
+.hv-top>div{flex:1;min-width:0}
+#homeView .hv-top .hv-date{padding-right:60px}
+#homeView .hv-title{font-size:clamp(23px,6.6vw,30px)!important;letter-spacing:-.8px!important}
+#homeView .hv-top .hv-gear{position:absolute;right:0;top:-4px}
+.hv-week{background:#fff;border-radius:20px;padding:14px 10px 12px;box-shadow:0 0 0 1px var(--b-hair);display:flex;flex-direction:column;gap:12px}
+.hw-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));text-align:center}
+.hw-d{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.hw-d .w{font-size:12px;font-weight:600;color:#80879a}
+.hw-d .n{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#1d1d1f;font-variant-numeric:tabular-nums}
+.hw-d i{width:8px;height:8px;border-radius:50%;background:#e3e6ec}
+.hw-d.ok i{background:#16a34a}
+.hw-d.miss i{background:#e5484d}
+.hw-d.fut .n{color:#9aa1b0}
+.hw-d.fut i{background:transparent;box-shadow:inset 0 0 0 1.5px #e3e6ec}
+.hw-d.today .n{background:var(--b-primary);color:#fff}
+.hw-d em{position:absolute;top:100%;margin-top:1px;font-style:normal;font-size:10px;font-weight:600;color:#80879a;white-space:nowrap}
+.hw-d .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hw-foot{display:flex;align-items:center;gap:10px;border-top:1px solid #eef0f4;padding:10px 6px 0;margin-top:4px}
+.hw-foot b{font-size:20px;font-weight:700;color:#1d1d1f;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hw-foot b small{font-size:13px;color:#80879a;font-weight:600;margin-left:1px}
+.hw-foot span{font-size:12.5px;color:#6b7280;line-height:1.4}
+body[data-view] .row.julia .bubble,body[data-view] .row.julia .bubble.jb{background:#fff!important;box-shadow:inset 0 0 0 1px #dfe3ea;color:#1d1d1f!important}
+body[data-view] .me.rep .bubble{background:#3a4f86!important;color:#fff!important}
+.hist .hi2{display:flex;flex-direction:column;gap:3px;background:#f5f6f8;border-radius:14px;padding:11px 14px}
+.hist .hi2 .dt{font-size:12.5px;font-weight:600;color:#6b7280;font-variant-numeric:tabular-nums}
+.hist .hi2 .sm{font-size:15px;font-weight:600;color:#1d1d1f;font-variant-numeric:tabular-nums}
 </style>
 <style id="darkTheme">
 /* generated by tools/theme/gen-dark.js from the main stylesheet; do not edit by hand */
@@ -3522,7 +3551,7 @@ html[data-theme="dark"] .wk-k2 b small {
     color: #9d9d9d
 }
 html[data-theme="dark"] .wk-k2 .dl {
-    color: #9aa1b0
+    color: #80879a
 }
 html[data-theme="dark"] .wk-k2 .dl.good {
     color: #6fec9d
@@ -3606,7 +3635,7 @@ html[data-theme="dark"] .pat .p.mi .ex ins {
     border-radius: 6px
 }
 html[data-theme="dark"] .pat .p.mi .ex .ar {
-    color: #b4b9c4
+    color: #8a90a0
 }
 html[data-theme="dark"] .sd-primary.wide {
     border-radius: 9999px !important
@@ -3681,6 +3710,73 @@ html[data-theme="dark"] .report .rsec b {
 html[data-theme="dark"] .report .rl ins {
     color: #e7e7e7 !important
 }
+html[data-theme="dark"] .hv-week {
+    background: #1c1d21;
+    border-radius: 20px;
+    box-shadow: 0 0 0 1px var(--b-hair)
+}
+html[data-theme="dark"] .hw-d .w {
+    color: #80879a
+}
+html[data-theme="dark"] .hw-d .n {
+    border-radius: 50%;
+    color: #e7e7e7
+}
+html[data-theme="dark"] .hw-d i {
+    border-radius: 50%;
+    background: #26272c
+}
+html[data-theme="dark"] .hw-d.ok i {
+    background: #1ee166
+}
+html[data-theme="dark"] .hw-d.miss i {
+    background: #e5484d
+}
+html[data-theme="dark"] .hw-d.fut .n {
+    color: #9aa1b0
+}
+html[data-theme="dark"] .hw-d.fut i {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px #2e3036
+}
+html[data-theme="dark"] .hw-d.today .n {
+    background: var(--b-primary);
+    color: #fff
+}
+html[data-theme="dark"] .hw-d em {
+    color: #80879a
+}
+html[data-theme="dark"] .hw-foot {
+    border-top: 1px solid #3c424e
+}
+html[data-theme="dark"] .hw-foot b {
+    color: #e7e7e7
+}
+html[data-theme="dark"] .hw-foot b small {
+    color: #80879a
+}
+html[data-theme="dark"] .hw-foot span {
+    color: #9da0a5
+}
+html[data-theme="dark"] body[data-view] .row.julia .bubble,html[data-theme="dark"] body[data-view] .row.julia .bubble.jb {
+    background: #1c1d21 !important;
+    box-shadow: inset 0 0 0 1px #3c434d;
+    color: #e7e7e7 !important
+}
+html[data-theme="dark"] body[data-view] .me.rep .bubble {
+    background: #3d5afe !important;
+    color: #fff !important
+}
+html[data-theme="dark"] .hist .hi2 {
+    background: #26272c;
+    border-radius: 14px
+}
+html[data-theme="dark"] .hist .hi2 .dt {
+    color: #9da0a5
+}
+html[data-theme="dark"] .hist .hi2 .sm {
+    color: #e7e7e7
+}
 /* hand-tuned dark tokens and fixes (tools/theme/dark-manual.css) */
 html[data-theme="dark"]{color-scheme:dark;
   --bg:#121214;--surface:#1c1d21;--soft:#26272c;--line:#2e3036;--fg:#eceef3;--fg-bg:#3a3b42;--muted:#9aa1b0;
@@ -3706,6 +3802,14 @@ html[data-theme="dark"] .rc .vis.ill .cnt{background:#1c1d21;color:#ff6b5a}
 html[data-theme="dark"] img{color-scheme:normal}
 /* selected segment sits above its track */
 html[data-theme="dark"] #settings .seg button[aria-pressed="true"],html[data-theme="dark"] .modeseg button[aria-pressed="true"],html[data-theme="dark"] .tp-lv button[aria-pressed="true"]{background:#3a3b42!important;box-shadow:none!important}
+/* v6.4: the record panel sits on the same black as every other screen */
+html[data-theme="dark"] #side,html[data-theme="dark"] #side .sd-head,html[data-theme="dark"] .pane.side{background:#121214!important}
+/* Julia / role bubbles: neutral grey, Jun: bright navy */
+html[data-theme="dark"] body[data-view] .row.julia .bubble,html[data-theme="dark"] body[data-view] .row.julia .bubble.jb{background:#2c2d33!important;box-shadow:inset 0 0 0 1px #3a3b42;color:#f2f2f4!important}
+html[data-theme="dark"] body[data-view] .me.rep .bubble{background:#25349a!important;color:#fff!important}
+html[data-theme="dark"] .hv-week{background:#1c1d21}
+/* learned-day dots: a brighter green on black */
+html[data-theme="dark"] .cd.ok i,html[data-theme="dark"] .hw-d.ok i,html[data-theme="dark"] .cal-lg i.ok,html[data-theme="dark"] .cal-det.ok i{background:#22c55e}
 
 </style>
 </head>
@@ -3713,21 +3817,22 @@ html[data-theme="dark"] #settings .seg button[aria-pressed="true"],html[data-the
 <div class="app">
   <header>
     <button class="gear ico" id="backHome" aria-label="홈으로" title="홈으로"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <h1>영어회화 코치 <span class="ver-h">v6.3</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v6.4</span></h1>
     <div class="modeseg" id="modeSeg" role="group" aria-label="대화 종류"><button id="modeFree" aria-pressed="true">기본 대화</button><button id="modeRp" aria-pressed="false">상황극</button></div>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
-    <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침" hidden><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="gear ico" id="openSettings" aria-haspopup="dialog" aria-label="설정" title="설정"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
   </header>
 
   <section class="view" id="homeView" aria-label="홈">
-    <div class="hv-top"><div><div class="hv-date" id="hvDate"></div><h2 class="hv-title" id="hvTitle">오늘도 10분만<br>영어로 말해봐요</h2></div><button class="hv-gear" id="hvSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
+    <div class="hv-top"><div><div class="hv-date" id="hvDate"></div><h2 class="hv-title" id="hvTitle">Julia와 오늘도 10분만<br>영어로 스몰톡 어떠세요?</h2></div><button class="hv-gear" id="hvSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
     <div class="rail" id="homeRail" role="list"></div>
     <div class="hv-sec"><b>오늘의 문장</b><span>자정에 바뀌어요</span></div>
     <div class="hv-sent" id="hvSent"></div>
-    <div class="hv-sec"><b>이번 주</b><span class="rng" id="hvRange"></span></div>
-    <div class="hv-stats" id="hvStats"></div>
+    <div class="hv-sec"><b>이번 주 학습</b><span class="rng" id="hvRange"></span></div>
+    <div class="hv-week" id="hvWeek"></div>
+    <div class="hv-stats" id="hvStats" hidden></div>
   </section>
   <section class="view" id="rpView" aria-label="상황극">
     <div class="hv-top"><h2 class="hv-title">상황극</h2><button class="hv-gear" id="rpSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
@@ -3782,7 +3887,7 @@ html[data-theme="dark"] #settings .seg button[aria-pressed="true"],html[data-the
   <aside class="pane side" id="side" aria-label="기록">
     <div class="sd-head"><h2>기록</h2><button id="closeSide" class="sd-close">닫기</button></div>
     <div class="sd-tabs" role="tablist" aria-label="기록 보기">
-      <button role="tab" data-tab="report" aria-selected="true">리포트</button><button role="tab" data-tab="mist" aria-selected="false">실수</button><button role="tab" data-tab="notes" aria-selected="false">표현 노트</button><button role="tab" data-tab="calls" aria-selected="false">지난 대화</button>
+      <button role="tab" data-tab="report" aria-selected="true">리포트</button><button role="tab" data-tab="mist" aria-selected="false">실수</button><button role="tab" data-tab="notes" aria-selected="false">오답 노트</button><button role="tab" data-tab="calls" aria-selected="false">지난 대화</button>
     </div>
     <div class="sd-body">
       <section class="sd-pane" data-pane="report">
@@ -3816,14 +3921,14 @@ html[data-theme="dark"] #settings .seg button[aria-pressed="true"],html[data-the
       </section>
       <section class="sd-pane" data-pane="notes" hidden>
         <div class="sd-card">
-          <div class="sd-ct">표현 노트<span class="sd-cs">Coach Sam이 고쳐준 문장</span></div>
-          <div class="sd-acts top"><button id="quizSide" class="sd-primary wide">오늘의 퀴즈 풀기</button></div>
+          <div class="sd-ct">오답 노트<span class="sd-cs">Coach Sam이 고쳐준 문장</span></div>
+          <div class="sd-acts top" hidden><button id="quizSide" class="sd-primary wide">오늘의 퀴즈 풀기</button></div>
           <div class="notes" id="notes"></div>
         </div>
       </section>
       <section class="sd-pane" data-pane="calls" hidden>
         <div class="sd-card">
-          <div class="sd-ct">지난 대화<span class="sd-cs">최근 20개 / 누르면 리포트</span></div>
+          <div class="sd-ct">지난 대화<span class="sd-cs">최근 20개</span></div>
           <div class="hist" id="histList"></div>
         </div>
         <div class="sd-danger"><button id="clearAll">기록과 대화 모두 지우기</button><div class="sd-note">모든 기록은 이 기기에만 저장돼요.</div></div>
@@ -3978,7 +4083,7 @@ html[data-theme="dark"] #settings .seg button[aria-pressed="true"],html[data-the
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v6.3<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
+      <div class="set-ver">영어회화 코치 v6.4<br>API 키와 학습 기록은 이 기기에만 저장돼요.</div>
     </div>
   </div>
 </div>
@@ -5042,8 +5147,8 @@ function renderHistory(){
   box.innerHTML="";
   if(!callHistory.length){box.innerHTML='<div class="empty">대화를 종료하면 리포트가 여기에 쌓여요.</div>'}
   else callHistory.slice(-20).reverse().forEach(h=>{
-    const d=new Date(h.at), el=document.createElement("details"); el.className="hi";
-    el.innerHTML=`<summary><span class="dt"><b>${d.getDate()}</b><small>${d.getMonth()+1}월</small></span><span class="sm"><span class="ttl">${esc(h.title||"대화")}</span><span class="chips"><i>${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}</i><i>${h.minutes}분</i><i>${h.turns}번 말함</i><i>교정 ${h.fixes}</i>${h.pron!==null?`<i>발음 ${h.pron}점</i>`:""}</span></span><svg class="chev" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>${reportHTML(h)}`;
+    const d=new Date(h.at), el=document.createElement("div"); el.className="hi2";
+    el.innerHTML=`<span class="dt">${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]}) ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}</span><span class="sm">${h.minutes}분 / ${h.turns}번 / 오답 ${h.fixes}회 / 발음 ${h.pron!==null&&h.pron!==undefined?h.pron+"점":"-"}</span>`;
     box.append(el);
   });
   renderCal(); renderWeekCard(); renderWeekly(); renderTrend(); renderHighlights(); if(typeof view!=="undefined"&&view==="home")renderHome();
@@ -5141,6 +5246,9 @@ if(!daily||typeof daily!=="object"){   // first run: rebuild what we can from pa
   store("oc_daily",daily);
 }
 function dayRec(k){k=k||dayKey();return daily[k]||(daily[k]={})}
+const DONE_MS=10*60000;   // a day counts as learned after 10 minutes of back-and-forth talk
+function doneDay(k){const r=daily[k];return !!(r&&(r.ms||0)>=DONE_MS)}
+function firstDay(){return Object.keys(daily).filter(k=>(daily[k]||{}).t>0).sort()[0]||null}
 function dAdd(f,n=1){const d=dayRec();d[f]=(d[f]||0)+n}
 function dLabel(k,n){const d=dayRec();d.lb=d.lb||{};d.lb[k]=Math.max(0,(d.lb[k]||0)+n);if(!d.lb[k])delete d.lb[k]}
 function saveDaily(){const ks=Object.keys(daily).sort();if(ks.length>400)ks.slice(0,ks.length-400).forEach(k=>delete daily[k]);store("oc_daily",daily);clearTimeout(saveDaily.t);saveDaily.t=setTimeout(()=>{try{renderHistory();renderSide()}catch(e){}},120)}
@@ -5157,7 +5265,7 @@ function weekSum(w){
   for(let i=7*w+6;i>=7*w;i--){
     const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i); if(i===7*w+6)s.from=new Date(d); if(i===7*w)s.to=new Date(d);
     const r=daily[dayKey(d)]; if(!r)continue;
-    if(r.t>0)s.days++;
+    if((r.ms||0)>=DONE_MS)s.days++;
     ["ms","t","p","f","en","ko","w","wn","ps","pn","qo","qt","ro","rt","eu","et"].forEach(f=>{if(typeof r[f]==="number")s[f]+=r[f]});
     if(!r.old)s.tn+=r.t||0;
     if(r.lb)Object.entries(r.lb).forEach(([k,v])=>s.lb[k]=(s.lb[k]||0)+v);
@@ -5253,20 +5361,20 @@ function renderCal(){
   const base=new Date(now.getFullYear(),now.getMonth()+off,1), y=base.getFullYear(), m=base.getMonth(), n=new Date(y,m+1,0).getDate(), lead=base.getDay(), WD="일월화수목금토";
   let pd=0, mins=0, tt=0; const cells=[];
   for(let i=0;i<lead;i++)cells.push('<span class="cd e"></span>');
-  for(let d=1;d<=n;d++){const k=dayKey(new Date(y,m,d,12)), r=daily[k]||{}, did=r.t>0;
-    if(did){pd++;mins+=Math.round((r.ms||0)/60000);tt+=r.t}
+  for(let d=1;d<=n;d++){const k=dayKey(new Date(y,m,d,12)), r=daily[k]||{}, did=doneDay(k);
+    if(did)pd++; if(r.t>0){mins+=Math.round((r.ms||0)/60000);tt+=r.t}
     const mk=did?"ok":(k<todayK&&k>=first)?"miss":"";
-    cells.push(`<button class="cd${k===todayK?" today":""}${mk?" "+mk:""}${k===renderCal.sel?" sel":""}${k>todayK?" fut":""}" data-k="${k}" aria-label="${m+1}월 ${d}일${did?" 연습함":mk?" 연습 안 함":""}"><span class="num">${d}</span><i></i></button>`)}
+    cells.push(`<button class="cd${k===todayK?" today":""}${mk?" "+mk:""}${k===renderCal.sel?" sel":""}${k>todayK?" fut":""}" data-k="${k}" aria-label="${m+1}월 ${d}일${did?" 학습 완료":mk?" 학습 안 함":""}"><span class="num">${d}</span><i></i></button>`)}
   const sel=renderCal.sel&&renderCal.sel.startsWith(`${y}-${String(m+1).padStart(2,"0")}`)?renderCal.sel:(off===0?todayK:null);
   let det="";
   if(sel){const dd=new Date(+sel.slice(0,4),+sel.slice(5,7)-1,+sel.slice(8),12), r=daily[sel]||{};
     const t=`${dd.getMonth()+1}월 ${dd.getDate()}일 ${WD[dd.getDay()]}요일${sel===todayK?" (오늘)":""}`;
-    const body=r.t>0?`${Math.max(1,Math.round((r.ms||0)/60000))}분 / ${r.t}번 말함${r.en>=1?` / 정확도 ${Math.round((r.p||0)/r.en*100)}%`:""}`:sel>todayK?"아직 오지 않은 날이에요":sel===todayK?"오늘은 아직 연습 전이에요":sel<first?"기록을 시작하기 전이에요":"연습하지 않은 날이에요";
-    det=`<div class="cal-det ${r.t>0?"ok":sel<todayK&&sel>=first?"miss":""}"><i></i><b>${t}</b><span>${body}</span></div>`}
+    const body=r.t>0?`${Math.max(1,Math.round((r.ms||0)/60000))}분 / ${r.t}번 말함${r.en>=1?` / 정확도 ${Math.round((r.p||0)/r.en*100)}%`:""}${doneDay(sel)?"":" / 10분이 안 돼서 미완료"}`:sel>todayK?"아직 오지 않은 날이에요":sel===todayK?"오늘은 아직 연습 전이에요":sel<first?"기록을 시작하기 전이에요":"연습하지 않은 날이에요";
+    det=`<div class="cal-det ${doneDay(sel)?"ok":sel<todayK&&sel>=first?"miss":""}"><i></i><b>${t}</b><span>${body}</span></div>`}
   el.innerHTML=`<div class="cal-h"><button class="cal-nav" data-d="-1" aria-label="이전 달"${off<=minOff?" disabled":""}><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><b>${y}년 ${m+1}월</b><button class="cal-nav" data-d="1" aria-label="다음 달"${off>=0?" disabled":""}><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-  <div class="cal-sum"><div><b>${pd}<small>일</small></b><span>연습한 날</span></div><div><b>${mins}<small>분</small></b><span>연습 시간</span></div>${off===0?`<div><b>${streakDays()}<small>일</small></b><span>연속 학습</span></div>`:`<div><b>${tt}<small>번</small></b><span>말한 횟수</span></div>`}</div>
+  <div class="cal-sum"><div><b>${pd}<small>일</small></b><span>학습 완료</span></div><div><b>${mins}<small>분</small></b><span>연습 시간</span></div>${off===0?`<div><b>${streakDays()}<small>일</small></b><span>연속 학습</span></div>`:`<div><b>${tt}<small>번</small></b><span>말한 횟수</span></div>`}</div>
   <div class="cal-g">${[...WD].map((w,i)=>`<span class="wd${i===0?" sun":""}">${w}</span>`).join("")}${cells.join("")}</div>
-  <div class="cal-lg"><span><i class="ok"></i>연습한 날</span><span><i class="miss"></i>연습 안 한 날</span><span><i class="today"></i>오늘</span></div>${det}`;
+  <div class="cal-lg"><span><i class="ok"></i>10분 이상 대화</span><span><i class="miss"></i>안 한 날</span><span><i class="today"></i>오늘</span></div>${det}`;
   el.querySelectorAll(".cal-nav").forEach(b=>b.onclick=()=>{renderCal.off=off+(+b.dataset.d);renderCal.sel=null;renderCal()});
   el.querySelectorAll(".cd[data-k]").forEach(b=>b.onclick=()=>{renderCal.sel=b.dataset.k;renderCal()});
 }
@@ -5285,7 +5393,7 @@ function renderWeekCard(){
   el.innerHTML=`<div class="r2-h"><b>이번 주</b><span class="rng">${rangeTxt(a.from,a.to)}</span></div>
   <div class="wk-seg" role="group" aria-label="그래프">${Object.entries(WKM).map(([kk,x])=>`<button data-m="${kk}" aria-pressed="${kk===m}">${x.n}</button>`).join("")}</div>
   <div class="wk-chart"><svg viewBox="0 0 ${W} ${H+34}" role="img" aria-label="최근 7일 ${M.n}"><line class="wgrid" x1="0" x2="${W}" y1="${H}" y2="${H}"/>${bars}</svg></div>
-  <div class="wk-kpi">${k("연습 시간",a.min,"분",dl(a.min,b.min,"분","up"))}${k("연습한 날",a.days,"/7일",dl(a.days,b.days,"일","up"))}${k("말한 횟수",a.t,"번",dl(a.t,b.t,"번","up"))}${k("정확도",a.acc===null?"-":pct(a.acc),a.acc===null?"":"%",dl(a.acc===null?null:pct(a.acc),b.acc===null?null:pct(b.acc),"%p","up"))}</div>`;
+  <div class="wk-kpi">${k("연습 시간",a.min,"분",dl(a.min,b.min,"분","up"))}${k("학습 완료",a.days,"/7일",dl(a.days,b.days,"일","up"))}${k("말한 횟수",a.t,"번",dl(a.t,b.t,"번","up"))}${k("정확도",a.acc===null?"-":pct(a.acc),a.acc===null?"":"%",dl(a.acc===null?null:pct(a.acc),b.acc===null?null:pct(b.acc),"%p","up"))}</div>`;
   el.querySelectorAll(".wk-seg button").forEach(x=>x.onclick=()=>{renderWeekCard.m=x.dataset.m;renderWeekCard()});
 }
 const TREND={acc:{n:"정확도",f:s=>s.acc===null?null:pct(s.acc),u:"%",max:100,cap:(s,v)=>`영어 문장 ${s.en}개 중 ${s.p}개를 맞게 말했어요 (${v}%)`},
@@ -5473,7 +5581,7 @@ async function sendInner(textIn,audio,onTurn){
       addCoach({model:highlightModel(text,pending.model),listen:parts,repeat:true});
       await chained(parts);
     }else{
-      addCoach({say:"표현 노트에 저장했어요."}); setPhase("answer");
+      addCoach({say:"오답 노트에 저장했어요."}); setPhase("answer");
       await continueTalk(T);
     }
     return;
@@ -5794,7 +5902,7 @@ $("camBtn").onclick=async()=>{
 };
 
 /* ---------- Settings modal ---------- */
-function openSettings(){syncSettingsUI();keyState();$("settings").hidden=false;$("closeSettings").focus()}
+function openSettings(){try{if(window.ocTheme)$("themeSel").value=ocTheme.pref()}catch(e){}syncSettingsUI();keyState();$("settings").hidden=false;$("closeSettings").focus()}
 function closeSettings(){$("settings").hidden=true}
 $("openSettings").onclick=openSettings;
 $("closeSettings").onclick=closeSettings;
@@ -5885,7 +5993,7 @@ function syncSettingsUI(){
   $("levelHelp").textContent=LEVEL_HELP[$("level").value]||""; $("engineHelp").textContent=ENGINE_HELP[$("engine").value]||"";
   paintRange($("rate")); paintRange($("coachRate"));
 }
-$("themeSel").value=window.ocTheme?ocTheme.pref():"system";$("themeSel").addEventListener("change",e=>{if(window.ocTheme)ocTheme.set(e.target.value)});
+$("themeSel").value=window.ocTheme?ocTheme.pref():"dark";$("themeSel").addEventListener("change",e=>{if(window.ocTheme)ocTheme.set(e.target.value)});
 document.querySelectorAll(".seg[data-for]").forEach(g=>{
   g.addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(!b)return;const sel=$(g.dataset.for);if(sel.value!==b.dataset.v){sel.value=b.dataset.v;sel.dispatchEvent(new Event("change"))}syncSettingsUI()});
   $(g.dataset.for).addEventListener("change",syncSettingsUI);
@@ -5930,14 +6038,14 @@ function enterCall(){
   if(phase==="idle"){rp=null;startTalk(false);if(!callHistory.length&&!log.querySelector(".coach.intro"))log.prepend(introCard())}
 }
 function introCard(){const c=addCoach({noTurn:true,say:"안녕하세요, 코치 Sam이에요. Julia랑 친구처럼 편하게 영어로 얘기하세요. 막히면 한국어로 말해도 되고, 궁금한 게 있으면 왜 이렇게 말해요? 처럼 언제든 저한테 물어보세요. 맞게 말하면 저는 조용히 있고, 더 자연스러운 표현이 있을 때만 알려드릴게요."});c.classList.add("intro");return c}
-function streakDays(){let n=0;const d=new Date();d.setHours(12,0,0,0);if(!(daily[dayKey(d)]||{}).t)d.setDate(d.getDate()-1);for(;;){const r=daily[dayKey(d)];if(!r||!r.t)break;n++;d.setDate(d.getDate()-1)}return n}
+function streakDays(){let n=0;const d=new Date();d.setHours(12,0,0,0);if(!doneDay(dayKey(d)))d.setDate(d.getDate()-1);for(;;){if(!doneDay(dayKey(d)))break;n++;d.setDate(d.getDate()-1)}return n}
 function totalTurns(){return Object.values(daily).reduce((a,r)=>a+(r.t||0),0)}
 const tileHTML=(c,p,k,v,u)=>`<div class="st"><div class="dot" style="background:${c}">${ic2(p,18)}</div><div class="k">${k}</div><div class="v">${v}<small>${u||""}</small></div></div>`;
 const P_CHAT='<path d="M4 5h16v11H9l-5 4z"/>', P_REPEAT='<path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/>', P_QUOTE='<path d="M7 7h4v4c0 3-2 5-4 6M15 7h4v4c0 3-2 5-4 6"/>', P_CLOCK='<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', P_FLAME='<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-7 2 1 3 3 3 5"/>', P_TARGET='<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/>', P_QUIZ='<path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/><path d="M8.5 11.5l3 3L21 5"/>', P_BOOK='<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/>';
 function renderHome(){
   if(!$("homeRail"))return;
   const now=new Date(), W="일월화수목금토";
-  $("hvDate").textContent=`${now.getMonth()+1}월 ${now.getDate()}일 ${W[now.getDay()]}요일`;
+  $("hvDate").textContent=`${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일(${W[now.getDay()]})`;
   const live=(!rp&&phase!=="idle"&&!callEnded)||(!!rp&&parkKind()==="free");
   const qn=quizPending(), eu=todayExpr.filter(x=>x.used).length, et=todayExpr.length;
   const wk=weekSum(0), wk8=[];for(let w=7;w>=0;w--){const x=weekSum(w);wk8.push(x.acc===null?null:x.acc)}
@@ -5947,22 +6055,28 @@ function renderHome(){
     `<button class="rc big" data-go="call" role="listitem"><span class="vis"><img src="${EMO.happy}" alt=""><span class="pill ${live?"live":""}"><i></i><em id="hvLive" style="font-style:normal">${!rp&&phase!=="idle"&&!callEnded?"대화 중 "+$("timer").textContent:live?"대화 중":!rp&&callEnded?"대화 종료":"Julia 대기 중"}</em></span><span class="go">${PHONE_SVG}</span></span><span class="lab"><b>${live?"대화 이어서 하기":"Julia와 대화하기"}</b><span>${esc((TOPIC_NAME[$("topic").value]||TOPIC_NAME.daily)+" / "+(LEVEL_NAME[$("level").value]||"초급"))}</span></span></button>`,
     `<button class="rc" data-go="rp" role="listitem"><span class="vis"><img src="${EMO.charmed}" alt=""></span><span class="lab"><b>상황극</b><span>${ROLEPLAYS.length}가지 상황</span></span></button>`,
     `<button class="rc" data-go="quiz" role="listitem"><span class="vis ill"><img src="${CAT_IMG.quiz}" alt="">${qn?`<span class="cnt">${qn}</span>`:""}</span><span class="lab"><b>오늘의 퀴즈</b><span>${qn?`${qn}문제 남았어요`:"오늘 문제 다 풀었어요"}</span></span></button>`,
-    `<button class="rc" data-go="expr" role="listitem"><span class="vis ill"><img src="${CAT_IMG.expr}" alt=""></span><span class="lab"><b>오늘의 문장</b><span>${et?`${eu} / ${et} 써봤어요`:"자정에 바뀌어요"}</span></span></button>`,
-    `<button class="rc" data-go="notes" role="listitem"><span class="vis ill"><img src="${CAT_IMG.notes}" alt=""></span><span class="lab"><b>표현 노트</b><span>고쳐준 문장 ${notes.length}개</span></span></button>`];
+    `<button class="rc" data-go="notes" role="listitem"><span class="vis ill"><img src="${CAT_IMG.notes}" alt=""></span><span class="lab"><b>오답 노트</b><span>고쳐준 문장 ${notes.length}개</span></span></button>`];
   const rail=$("homeRail"), sl=rail.scrollLeft; rail.innerHTML=cards.join(""); rail.scrollLeft=sl;
   const sent=$("hvSent");
   sent.innerHTML=et?todayExpr.map((x,i)=>`<div class="hs${x.used?" used":""}"><div class="t"><b>${esc(x.en)}</b><span>${esc(x.ko)}${x.used?" / 대화에서 썼어요":""}</span></div><button class="pl" data-i="${i}" aria-label="듣기">${PLAY_SVG}</button></div>`).join(""):`<div class="hv-empty">${cfg.exprOn===0?"설정에서 오늘의 표현을 켜면 매일 실용 문장 3개가 나와요.":!cfg.key?"API 키를 넣으면 오늘의 문장 3개가 나와요.":"오늘의 문장을 받고 있어요."}</div>`;
   sent.querySelectorAll(".pl").forEach(b=>b.onclick=()=>{const t=todayExpr[+b.dataset.i];if(t&&!chain)playSeq([{text:t.en,who:"coach"}])});
-  $("hvRange").textContent=rangeTxt(wk.from,wk.to);
+  {const st=new Date();st.setHours(12,0,0,0);st.setDate(st.getDate()-st.getDay());const en=new Date(st);en.setDate(st.getDate()+6);
+   $("hvRange").textContent=rangeTxt(st,en);
+   const tk=dayKey(), first=firstDay(); let n=0;
+   const cells=[...Array(7)].map((_,i)=>{const d=new Date(st);d.setDate(st.getDate()+i);const k=dayKey(d),ok=doneDay(k),r=daily[k]||{};if(ok)n++;
+     const mk=ok?"ok":(k<tk&&first&&k>=first)?"miss":"";const m=Math.round((r.ms||0)/60000);
+     return `<div class="hw-d${k===tk?" today":""}${mk?" "+mk:""}${k>tk?" fut":""}"><span class="w">${W[d.getDay()]}</span><span class="n">${d.getDate()}</span><i aria-hidden="true"></i><span class="sr">${ok?"학습 완료":mk?"학습 안 함":""}</span>${r.t>0&&!ok?`<em>${m}분</em>`:""}</div>`}).join("");
+   $("hvWeek").innerHTML=`<div class="hw-row">${cells}</div><div class="hw-foot"><b>${n}<small>/7일</small></b><span>10분 이상 대화한 날에 초록 표시가 돼요</span></div>`}
   $("hvStats").innerHTML=tileHTML("#16a34a",P_CLOCK,"연습 시간",wk.min,"분")+tileHTML("#7c5cff",P_QUOTE,"말한 횟수",wk.t,"번")+tileHTML("#e8513f",P_FLAME,"연속 학습",streakDays(),"일");
 }
-var rpSel=null, rpCat="전체";
+var rpSel=null, rpCat="일상";
 function rpDoneSet(){const s=new Set();callHistory.forEach(h=>{if(h.roleplay&&h.roleplay.done)s.add(h.roleplay.name)});if(callStats.roleplay&&callStats.roleplay.done)s.add(callStats.roleplay.name);return s}
 function renderRp(){
   if(!$("rpRail"))return;
-  const cats=["전체","일상","여행"], done=rpDoneSet();
+  const cats=["일상","여행"], done=rpDoneSet();
   $("rpFil").innerHTML=cats.map(c=>`<button data-cat="${c}" aria-pressed="${c===rpCat}">${c}</button>`).join("");
-  const list=ROLEPLAYS.filter(x=>rpCat==="전체"||(RP_META[x.id]||{}).cat===rpCat);
+  if(!cats.includes(rpCat))rpCat="일상";
+  const list=ROLEPLAYS.filter(x=>(RP_META[x.id]||{}).cat===rpCat);
   if(!rpSel||!list.some(x=>x.id===rpSel))rpSel=list[0]&&list[0].id;
   $("rpRail").innerHTML=list.map(x=>{const m=RP_META[x.id]||{cat:"",img:"happy"};return `<button class="rc" data-rp="${x.id}" role="listitem" aria-pressed="${x.id===rpSel}"><span class="vis"><img class="rpimg" src="${RP_IMG[x.id]||EMO[m.img]||EMO.happy}" alt=""><span class="tag">${m.cat}</span>${done.has(x.name)?'<span class="done">✓</span>':""}</span><span class="lab"><b>${esc(x.name)}</b><span>${esc(x.roleKo)}</span></span></button>`}).join("");
   const x=ROLEPLAYS.find(r=>r.id===rpSel);
@@ -5996,7 +6110,7 @@ $("modeFree").onclick=()=>{if(!rp)return;enterFree()};
 $("modeRp").onclick=()=>{if(rp)return;if(parkKind()==="rp"){swapSession("rp",()=>{});return}showView("rp")};
 function micAutoStart(){if(cfg.autoMic!==false&&cfg.key&&!auto.on)toggleAuto().catch(()=>{})}
 $("clearAll").onclick=()=>{
-  if(!confirm("주간 리포트, 자주 하는 실수, 표현 노트, 발음 점수, 지난 기록과 지금 대화를 모두 지울까요?"))return;
+  if(!confirm("주간 리포트, 자주 하는 실수, 오답 노트, 발음 점수, 지난 기록과 지금 대화를 모두 지울까요?"))return;
   stopAudio(); if(auto.on)stopAuto();
   patterns={}; notes=[]; pronHist=[]; callHistory=[]; turnCount=0; lastReviewAt=0; daily={}; qItems={};
   ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_call_park","oc_qz","oc_daily","oc_qitems"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
