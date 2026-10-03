@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#121214">
-<title>영어회화 코치 v9.6</title>
+<title>영어회화 코치 v9.7</title>
 <script>(function(){var K="oc_theme";var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
 function pref(){try{var v=localStorage.getItem(K);return v==="light"||v==="dark"||v==="system"?v:"dark"}catch(e){return "dark"}}
 function apply(){var p=pref(),t=p==="system"?(mq&&mq.matches?"dark":"light"):p;document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#121214":"#f5f5f7");return t}
@@ -4499,7 +4499,7 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
 <div class="app">
   <header>
     <button class="gear ico" id="backHome" aria-label="홈으로" title="홈으로"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <h1>영어회화 코치 <span class="ver-h">v9.6</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v9.7</span></h1>
     <div class="modeseg" id="modeSeg" role="group" aria-label="대화 종류"><button id="modeFree" aria-pressed="true">기본 대화</button><button id="modeRp" aria-pressed="false">상황극</button></div>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
@@ -4785,7 +4785,7 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v9.6<br>학습 기록은 이 기기에만 저장돼요.<div class="set-upd"><button id="updBtn" type="button">업데이트</button><span id="updState" aria-live="polite"></span></div></div>
+      <div class="set-ver">영어회화 코치 v9.7<br>학습 기록은 이 기기에만 저장돼요.<div class="set-upd"><button id="updBtn" type="button">업데이트</button><span id="updState" aria-live="polite"></span></div></div>
     </div>
   </div>
 </div>
@@ -5129,6 +5129,7 @@ const TINY_MP3="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2L
 let audioUnlocked=false, blockedWarned=false;
 function unlockAudio(){
   try{if(cap.ctx&&cap.ctx.state!=="running")cap.ctx.resume().catch(()=>{})}catch(e){}
+  try{sfxUnlock()}catch(e){}
   if(endCurrent||!player.paused)return;            // never interrupt a line that is playing
   try{player.src=TINY_MP3;const p=player.play();if(p&&p.then)p.then(()=>{audioUnlocked=true}).catch(()=>{})}catch(e){}
 }
@@ -5413,7 +5414,7 @@ async function juliaSay(en,ko,emo,T){
 }
 function startTalk(silent){
   if(!cfg.key){noKeyNote();return false}
-  stopAudio();
+  stopAudio(); sfx("start");
   if(callStats.turns>0&&!callStats.archived)archiveCall();
   callStats=newStats(); if(rp)callStats.roleplay={name:rp.name,done:false}; callId++; todayExpr=[]; updateStudyBar(); setEnded(false); applyStageFace(); syncMode();
   try{localStorage.removeItem(CALL_KEY)}catch(e){}
@@ -5434,6 +5435,7 @@ let openSeq=0;
 async function openerSay(en,ko,my){
   const s=++openSeq, fe=pickEmotion("happy",en);
   await holdUntilReady(en,"julia");
+  {const w=sfxLeft();if(w>0)await sleep(w)}   // v9.7: let the call-start sound finish first
   if(my!==callId){if(s===openSeq){chain=false;lockUI()}return}
   turns.push({role:"assistant",content:en});
   lastJulia={en,ko}; addJulia(en,ko,fe); setEmotion(fe);
@@ -5492,6 +5494,7 @@ async function continueTalk(T){
   if(!r){setPhase("answer");return}
   checkTurn(T);
   await juliaSay(r.reply,r.reply_ko,r.emotion,T);
+  checkTurn(T);   // v9.7: ended while Julia was talking
   if(rp&&!rp.done&&r.goal_done===true){rp.done=true;callStats.roleplay={name:rp.name,done:true,turns:callStats.turns};await showRpDone();return}
   if(rp&&!rp.done)return;
   await maybeReview();
@@ -5587,8 +5590,21 @@ const EXPR_AREAS=["feelings and mood","making plans","agreeing and disagreeing",
 function exprPick(){const a=EXPR_AREAS.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,3)}
 // today's 3 sentences stay the same all day and change at midnight (oc_expr_day)
 let exprBusy=null;
-function loadDayExpr(){const d=load("oc_expr_day",null);return d&&d.day===dayKey()&&Array.isArray(d.items)&&d.items.length?d:null}
-function saveDayExpr(){if(todayExpr.length)store("oc_expr_day",{day:todayExpr.day||dayKey(),tagTried:!!todayExpr.tagTried,items:todayExpr.map(x=>({en:x.en,ko:x.ko,match:x.match,tag:x.tag||"",used:!!x.used}))})}
+function lvNow(){const v=($("level")&&$("level").value)||cfg.level;return v==="intermediate"||v==="advanced"?v:"beginner"}
+/* v9.7: one set of today's expressions per level (oc_expr_lv), the current level's set is also oc_expr_day */
+function loadDayExpr(){
+  const lv=lvNow(), ok=x=>x&&x.day===dayKey()&&Array.isArray(x.items)&&x.items.length;
+  const d=load("oc_expr_day",null);
+  if(!d||!d.level||d.level===lv)return ok(d)?d:null;          // this level's set: today's or none (a new day gets a new set)
+  const m=load("oc_expr_lv",null), s=m&&m.day===dayKey()&&m.sets?m.sets[lv]:null;   // after a level switch: that level's set for today
+  return ok(s)?s:null;
+}
+function exprStore(list,lv,day){
+  const d={day:day||dayKey(),level:lv,tagTried:!!list.tagTried,items:list.map(x=>({en:x.en,ko:x.ko,match:x.match,tag:x.tag||"",used:!!x.used}))};
+  if(lv===lvNow())store("oc_expr_day",d);
+  const m=load("oc_expr_lv",null), mm=m&&m.day===d.day&&m.sets?m:{day:d.day,sets:{}}; mm.sets[lv]=d; store("oc_expr_lv",mm);
+}
+function saveDayExpr(){if(todayExpr.length)exprStore(todayExpr,todayExpr.level||lvNow(),todayExpr.day)}
 /* v8.5: sentences picked before tags existed (or without one) get a situation tag once, the sentences stay the same */
 const TAG_SYS=`For each English sentence, write a short Korean label for the situation where it is used: 2 to 6 Korean characters, natural, e.g. 의견 말하기, 주문하기, 사과하기, 부탁하기, 감사하기, 약속 잡기. Reply ONLY JSON {"tags":["..."]} with one label per sentence, in the same order. Never use the middle dot.`;
 let tagBusy=null;
@@ -5607,15 +5623,16 @@ function exprTagFill(){
 async function genExpressions(force){
   if(cfg.exprOn===0||!cfg.key)return;
   const d=loadDayExpr();
-  if(d&&!force){todayExpr=d.items.map(x=>Object.assign({},x));todayExpr.day=d.day;todayExpr.tagTried=!!d.tagTried;exprTagFill();if(phase!=="idle")renderExprCard();saveCallSoon();updateStudyBar();if(!$("exprSheet").hidden)renderExprSheet();if(view==="home")renderHome();return}
+  if(d&&!force){todayExpr=d.items.map(x=>Object.assign({},x));todayExpr.day=d.day;todayExpr.tagTried=!!d.tagTried;todayExpr.level=d.level||lvNow();exprTagFill();if(phase!=="idle")renderExprCard();saveCallSoon();updateStudyBar();if(!$("exprSheet").hidden)renderExprSheet();if(view==="home")renderHome();return}
   if(exprBusy)return exprBusy;
   exprBusy=(async()=>{
     try{
-      const seen=load("oc_expr_seen",[])||[], day=dayKey();
-      const r=await chatJSON([{role:"system",content:EXPR_SYS},{role:"user",content:JSON.stringify({level:$("level").value,areas:exprPick(),avoid:seen.slice(-60)})}]);
+      const seen=load("oc_expr_seen",[])||[], day=dayKey(), lv=lvNow();
+      const r=await chatJSON([{role:"system",content:EXPR_SYS},{role:"user",content:JSON.stringify({level:lv,areas:exprPick(),avoid:seen.slice(-60)})}]);
       const ex=(r&&Array.isArray(r.expressions)?r.expressions:[]).filter(x=>x&&x.en&&x.match).slice(0,3).map(x=>({en:String(x.en).trim(),ko:clean(String(x.ko||"")),match:norm(String(x.match).replace(/\.\.\.|…/g," ")).join(" "),tag:clean(String(x.tag||"")).replace(/[·]/g," ").trim().slice(0,10),used:false})).filter(x=>x.match);
       if(!ex.length)return;
-      todayExpr=ex; todayExpr.day=day; saveDayExpr(); exprTagFill();
+      if(lvNow()!==lv){exprStore(ex,lv,day);return}   // v9.7: the level changed while waiting: keep this set for that level
+      todayExpr=ex; todayExpr.day=day; todayExpr.level=lv; saveDayExpr(); exprTagFill();
       store("oc_expr_seen",(load("oc_expr_seen",[])||[]).concat(ex.map(x=>x.en)).slice(-90)); dAdd("et",ex.length); saveDaily();
       if(phase!=="idle")renderExprCard(); saveCallSoon(); updateStudyBar(); if(!$("exprSheet").hidden)renderExprSheet(); if(view==="home")renderHome();
     }catch(e){logErr("오늘의 표현",e)}
@@ -5779,44 +5796,51 @@ async function openQuiz(){
   const sh=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
   const old=sh(due.filter(x=>x.added<t)), neu=sh(due.filter(x=>x.added>=t));
   const pick=sh(old.concat(neu).slice(0,12));
-  my.qs=pick.map(x=>({key:x.k,type:x.type,it:{said:x.said,model:x.model},ko:x.ko,ans:x.ans,pre:x.pre||"",post:x.post||"",carried:x.added<t,wrongBefore:(x.wrong||0)>0}));
+  my.qs=pick.map(x=>levelQ({key:x.k,type:x.type,it:{said:x.said,model:x.model},ko:x.ko,ans:x.ans,pre:x.pre||"",post:x.post||"",carried:x.added<t,wrongBefore:(x.wrong||0)>0}));
   my.loading=false; renderQuiz();
 }
-function closeQuiz(){$("quizSheet").hidden=true;micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};quiz=null;clearInterval(renderQuiz.t)}
+function closeQuiz(){qaOff(true);$("quizSheet").hidden=true;micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};quiz=null;clearInterval(renderQuiz.t)}
 function renderQuiz(){
   const q=quiz.qs[quiz.i], b=$("qzBody");
-  clearInterval(renderQuiz.t); if(ql.on||ql.busy)qlStop(false);
+  clearInterval(renderQuiz.t); if(ql.on||ql.busy)qlStop(false,true);
   $("qzProg").textContent=`${quiz.i+1} / ${quiz.qs.length}`;
+  const chip=q.carried?'<div class="qz-chip">다시 나온 문제</div>':"";
   const head=q.type==="full"
-    ?`${q.carried?'<div class="qz-chip">다시 나온 문제</div>':""}<div class="qz-q">이 말을 영어로 말하거나 입력하세요</div><div class="qz-s qz-ko">${esc(smoothKo(q.ko))}</div>`
-    :`${q.carried?'<div class="qz-chip">다시 나온 문제</div>':""}<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank">${esc(q.ko)}</span>${esc(q.post)}</div><div class="qz-hint">내가 한 말: ${esc(smoothKo(q.it.said))}</div>`;
+    ?`${chip}<div class="qz-q">이 말을 영어로 말하거나 입력하세요</div><div class="qz-s qz-ko">${esc(smoothKo(q.ko))}</div>`
+    :q.cz   // v9.7 초급/중급: the English with a blank, the Korean meaning under it
+    ?`${chip}<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank ch-bl">${czGap(q.ans)}</span>${esc(q.post)}</div><div class="ch-ko">${esc(smoothKo(q.mean))}</div>${q.said?`<div class="qz-hint">내가 한 말: ${esc(smoothKo(q.said))}</div>`:""}`
+    :`${chip}<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank">${esc(q.ko)}</span>${esc(q.post)}</div><div class="qz-hint">내가 한 말: ${esc(smoothKo(q.it.said))}</div>`;
   b.innerHTML=head+`<div class="qz-in"><input id="qzInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${q.type==="full"?"영어 문장":"빈칸에 들어갈 영어"}"><button id="qzMic" class="qz-mic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button id="qzOk" class="primary">확인</button></div><div class="listen qz-ls" id="qzLs" hidden aria-live="polite"><span class="lv" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="ls-t"><b>듣고 있어요</b><small></small></span></div><div id="qzFb"></div><button class="qz-skip" id="qzDrop">이 문제는 퀴즈에서 빼기</button>`;
-  $("qzDrop").onclick=()=>{const e=qItems[q.key];if(e){e.done=true;e.removed=true;saveQ()}quiz.qs.splice(quiz.i,1);updateStudyBar();if(quiz.i<quiz.qs.length)renderQuiz();else if(quiz.res.length)quizResult();else closeQuiz()};
+  $("qzDrop").onclick=()=>{qa.tok++;const e=qItems[q.key];if(e){e.done=true;e.removed=true;saveQ()}quiz.qs.splice(quiz.i,1);updateStudyBar();if(quiz.i<quiz.qs.length)renderQuiz();else if(quiz.res.length)quizResult();else closeQuiz()};
   const inp=$("qzInput"); inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();$("qzOk").click()}});
   $("qzOk").onclick=async()=>{
     const v=inp.value.trim(); if(!v||q.done||q.checking)return;
+    if(ql.on||ql.busy)qlStop(false,true);   // typed while the mic was listening
     q.checking=true; b.querySelectorAll(".qz-in button,.qz-in input").forEach(x=>x.disabled=true);
     $("qzFb").innerHTML=`<div class="qz-load"><span class="qz-dots"><i></i><i></i><i></i></span>채점하고 있어요</div>`;
     const r=await judgeQuiz(q,v);
     if(!quiz||quiz.qs[quiz.i]!==q)return;
     answerQuiz(r.ok,v,r.note);
   };
-  $("qzMic").onclick=()=>qlStart({bar:$("qzLs"),btn:$("qzMic"),hint:q.type==="full"?`He is saying this in English: "${smoothKo(q.ko)}".`:`He is saying only the missing English word or words for this sentence: "${q.pre}___${q.post}".`,onText:t=>{if(!quiz||quiz.qs[quiz.i]!==q||q.done)return;inp.value=t;$("qzOk").click()}});
-
+  const lis={bar:$("qzLs"),btn:$("qzMic"),hint:q.type==="full"?`He is saying this in English: "${smoothKo(q.ko)}".`:`He is saying only the missing English word or words for this sentence: "${q.pre}___${q.post}".`,onText:t=>{if(!quiz||quiz.qs[quiz.i]!==q||q.done)return;inp.value=t;$("qzOk").click()}};
+  $("qzMic").onclick=()=>qaTap(lis);
+  qaSync(); if(qa.on){const tk=qa.tok;setTimeout(()=>{if(qa.on&&qa.tok===tk&&quiz&&quiz.qs[quiz.i]===q&&!q.done)qaListen(lis)},250)}
 }
 function answerQuiz(ok,given,note){
   const q=quiz.qs[quiz.i]; if(q.done)return; q.done=true; q.checking=false; quiz.res.push(ok); qResult(q,ok); updateStudyBar(); const dr=$("qzDrop"); if(dr)dr.remove();
+  sfx(ok?"right":"wrong");
   const n=notes.find(x=>x.model===q.it.model);
   if(n){if(!ok){n.reviewFail=(n.reviewFail||0)+1;n.reviewOk=0}store("oc_notes",notes)}
   $("qzBody").querySelectorAll(".qz-in button,.qz-in input").forEach(x=>x.disabled=true);
   const full=q.type==="blank"?`${esc(q.pre)}<ins>${esc(q.ans)}</ins>${esc(q.post)}`:esc(q.it.model);
   $("qzFb").innerHTML=`<div class="qz-res ${ok?"o":"x"}"><span class="mk">${ok?"O":"X"}</span>${ok?"맞았어요":"틀렸어요"}</div><div class="qz-ans"><div class="lb">${q.type==="blank"?"정답: "+esc(q.ans):"정답 문장"}</div><div class="se">${full}</div>${ok?"":`<div class="qz-mine">내 답: ${esc(given)}</div>`}${!ok&&note?`<div class="qz-note">${esc(note)}</div>`:""}</div><div class="acts"><button id="qzListen">듣기</button><button id="qzNext" class="primary">${quiz.i+1<quiz.qs.length?"다음 문제":"결과 보기"}</button></div>`;
   $("qzListen").onclick=()=>{if(!chain)playSeq([{text:q.it.model,who:"coach"}])};
-  $("qzNext").onclick=()=>{quiz.i++;if(quiz.i<quiz.qs.length)renderQuiz();else quizResult()};
-  if(!ok&&voiceOn)playSeq([{text:q.it.model,who:"coach"}]);
+  $("qzNext").onclick=()=>{qa.tok++;quiz.i++;if(quiz.i<quiz.qs.length)renderQuiz();else quizResult()};
+  const say=!ok&&voiceOn?sleep(sfxLeft()+80).then(()=>playSeq([{text:q.it.model,who:"coach"}])).catch(()=>{}):Promise.resolve();
+  if(qa.on)say.then(()=>qaNext(()=>{if(quiz&&quiz.qs[quiz.i]===q){const nx=$("qzNext");if(nx)nx.click()}},ok?1100:500));   // v9.7: hands-free goes on by itself
 }
 function quizResult(){
-  clearInterval(renderQuiz.t);
+  clearInterval(renderQuiz.t); qaOff(false);
   const n=quiz.res.filter(Boolean).length, tot=quiz.res.length;
   callStats.quiz={ok:n,total:tot}; saveCallSoon(); dAdd("qo",n); dAdd("qt",tot); saveDaily(); renderHistory();
   const wrong=quiz.qs.filter((q,i)=>!quiz.res[i]);
@@ -5876,42 +5900,78 @@ function playBtn(btn,text){
   playSeq([{text,who:"coach"}]).catch(()=>{}).finally(()=>btn.classList.remove("playing"));
 }
 let beepCtx=null;
-function micBeep(on){
-  micBeep.last={on,at:Date.now()};
-  try{
-    beepCtx=beepCtx||new (window.AudioContext||window.webkitAudioContext)();
-    if(beepCtx.state!=="running")beepCtx.resume().catch(()=>{});
-    const t=beepCtx.currentTime+0.01, notes=on?[660,990]:[880,523];
-    notes.forEach((f,i)=>{const o=beepCtx.createOscillator(),g=beepCtx.createGain();o.type="sine";o.frequency.value=f;
-      const st=t+i*0.085;g.gain.setValueAtTime(0.0001,st);g.gain.exponentialRampToValueAtTime(0.16,st+0.012);g.gain.exponentialRampToValueAtTime(0.0001,st+0.075);
-      o.connect(g);g.connect(beepCtx.destination);o.start(st);o.stop(st+0.09)});
+/* v9.7: sound effects (mic on/off, right/wrong, call start/end). They play through their own <audio>, so they are heard even with the
+   iPhone's silent switch on (Web Audio is muted then, which is why the old mic beeps were not heard). While Julia or Sam is talking
+   they go through Web Audio instead, so a line is never cut. */
+const sfxEl=new Audio(); sfxEl.preload="auto";
+const SFX_NOTES={on:[[660,.07],[990,.09]],off:[[880,.07],[523,.1]],right:[[880,.08],[1319,.2]],wrong:[[311,.12],[233,.24]],start:[[523,.09],[659,.09],[784,.18]],end:[[784,.09],[659,.09],[523,.22]]};
+const SFX_VOL={on:.32,off:.3,right:.36,wrong:.36,start:.34,end:.32}, SFX_WAVE={wrong:"triangle"};
+const sfxUrl={}; let sfxReady=false;
+function sfxLen(name){return (SFX_NOTES[name]||[]).reduce((s,n)=>s+n[1]+.012,0)*1000+40}
+function sfxWav(notes,vol,wave){
+  const rate=22050, gap=Math.round(rate*.012), lens=notes.map(n=>Math.round(rate*n[1])), N=lens.reduce((x,y)=>x+y+gap,0)+Math.round(rate*.03);
+  const pcm=new Int16Array(N); let o=0;
+  notes.forEach((n,k)=>{const f=n[0],L=lens[k];for(let i=0;i<L;i++){const t=i/rate,env=Math.min(1,i/(rate*.005))*Math.min(1,(L-i)/(rate*.03))*Math.exp(-2.2*i/L);
+    const s=wave==="triangle"?(2/Math.PI)*Math.asin(Math.sin(2*Math.PI*f*t)):Math.sin(2*Math.PI*f*t)*.85+.15*Math.sin(4*Math.PI*f*t);
+    pcm[o+i]=Math.round(Math.max(-1,Math.min(1,s*env*vol))*32767)}o+=L+gap});
+  const buf=new ArrayBuffer(44+N*2), v=new DataView(buf), w=(p,s)=>{for(let i=0;i<s.length;i++)v.setUint8(p+i,s.charCodeAt(i))};
+  w(0,"RIFF");v.setUint32(4,36+N*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,rate,true);v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,N*2,true);
+  new Int16Array(buf,44).set(pcm);
+  return URL.createObjectURL(new Blob([buf],{type:"audio/wav"}));
+}
+function sfxPrep(){if(sfxUrl.on)return;try{for(const k in SFX_NOTES)sfxUrl[k]=sfxWav(SFX_NOTES[k],SFX_VOL[k],SFX_WAVE[k]);sfxUrl.silent=sfxWav([[440,.03]],0)}catch(e){}}
+function sfxUnlock(){if(sfxReady)return;sfxPrep();if(!sfxUrl.silent)return;try{sfxEl.src=sfxUrl.silent;const p=sfxEl.play();if(p&&p.then)p.then(()=>{sfxReady=true}).catch(()=>{})}catch(e){}}
+function sfxWeb(name){
+  try{beepCtx=beepCtx||new (window.AudioContext||window.webkitAudioContext)();if(beepCtx.state!=="running")beepCtx.resume().catch(()=>{});
+    let t=beepCtx.currentTime+.01;
+    SFX_NOTES[name].forEach(([f,d])=>{const o=beepCtx.createOscillator(),g=beepCtx.createGain();o.type=SFX_WAVE[name]||"sine";o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(SFX_VOL[name]*.5,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g);g.connect(beepCtx.destination);o.start(t);o.stop(t+d+.02);t+=d+.012});
   }catch(e){}
 }
+function sfx(name){
+  if(!SFX_NOTES[name])return;
+  sfx.last={name,at:Date.now()}; (sfx.log=sfx.log||[]).push(name); if(sfx.log.length>60)sfx.log.shift();
+  if(endCurrent||!player.paused){sfxWeb(name);sfx.via="web";return}    // a line is playing: mix in, never cut it
+  sfxPrep(); if(!sfxUrl[name]){sfxWeb(name);sfx.via="web";return}
+  try{sfxEl.pause();sfxEl.src=sfxUrl[name];sfx.via="audio";const p=sfxEl.play();if(p&&p.catch)p.catch(()=>{sfxWeb(name);sfx.via="web"})}catch(e){sfxWeb(name);sfx.via="web"}
+}
+function sfxLeft(){const l=sfx.last;return l?Math.max(0,l.at+sfxLen(l.name)-Date.now()):0}
+function micBeep(on){micBeep.last={on,at:Date.now()};sfx(on?"on":"off")}
 
 /* ---------- v6.5: 오늘의 챌린지, 5 daily fill-in sentences from the topic and level ---------- */
 const CHAL_KEY="oc_chal";
 const CH_SYS=`You write a daily speaking challenge for a Korean adult learning English.
 Make exactly 5 different, natural, everyday English sentences that fit the topic and the level. Every sentence must be grammatically correct and sound natural to a native speaker; check each one before replying. Beginner: 5-8 words, very common words. Intermediate: 7-11 words. Advanced: 9-14 words with natural idioms.
-In each sentence pick ONE useful word or short phrase (1-3 words) as the blank. It must appear exactly in the sentence. Do not blank names, numbers or "a/an/the".
+In each sentence pick the blank by level: beginner = exactly ONE useful word; intermediate = a natural chunk of 2 to 4 words (like "a lot of", "get used to", "on my way"); advanced = a natural chunk of 2 to 4 words. It must appear exactly in the sentence. Do not blank names, numbers or "a/an/the".
 "ko": natural Korean translation of the whole sentence in 해요체, no middle dot.
 "hint": a short Korean hint for the blank (meaning only, no English), e.g. "~에 익숙하다".
 Do not reuse sentences or blanks from "avoid". Reply ONLY JSON {"items":[{"en":"","blank":"","ko":"","hint":""}]}`;
-function chalLoad(){const c=load(CHAL_KEY,null);return c&&c.day===dayKey()&&Array.isArray(c.items)&&c.items.length===5?c:null}
-function chalSave(c){store(CHAL_KEY,c)}
+/* v9.7: one challenge per level a day (oc_chal_lv); the current level's one is also oc_chal */
+function chalLoad(){
+  const lv=lvNow(), ok=x=>x&&x.day===dayKey()&&Array.isArray(x.items)&&x.items.length===5;
+  const c=load(CHAL_KEY,null);
+  if(!c||!c.level||c.level===lv)return ok(c)?c:null;          // this level's challenge: today's or none
+  const m=load("oc_chal_lv",null), s=m&&m.day===dayKey()&&m.sets?m.sets[lv]:null;   // after a level switch
+  if(ok(s)){store(CHAL_KEY,s);return s}
+  return null;
+}
+function chalSave(c){store(CHAL_KEY,c);if(c&&c.level){const m=load("oc_chal_lv",null),mm=m&&m.day===c.day&&m.sets?m:{day:c.day,sets:{}};mm.sets[c.level]=c;store("oc_chal_lv",mm)}}
+function chalFull(c){return (c&&c.level||lvNow())==="advanced"}   // 고급: the Korean only, say the whole sentence
 function chalStatus(){const c=chalLoad();if(!c)return {score:0,n:0,done:false};const n=c.res.filter(x=>x!==null&&x!==undefined).length;return {score:c.res.filter(x=>x===true).length,n,done:n>=5}}
 let chal=null, chalBusy=null;
 async function chalMake(){
   if(chalBusy)return chalBusy;
   chalBusy=(async()=>{
-    const seen=load("oc_chal_seen",[])||[];
-    const r=await chatJSON([{role:"system",content:CH_SYS},{role:"user",content:JSON.stringify({topic:TOPIC_NAME[$("topic").value]||TOPIC_NAME.daily,level:$("level").value,date:dayKey(),avoid:seen.slice(-40)})}]);
+    const seen=load("oc_chal_seen",[])||[], lv=lvNow();
+    const r=await chatJSON([{role:"system",content:CH_SYS},{role:"user",content:JSON.stringify({topic:TOPIC_NAME[$("topic").value]||TOPIC_NAME.daily,level:lv,date:dayKey(),avoid:seen.slice(-40)})}]);
     const items=(r&&Array.isArray(r.items)?r.items:[]).map(x=>{
       const en=String(x&&x.en||"").trim(), bl=String(x&&x.blank||"").trim(); if(!en||!bl)return null;
       const i=en.toLowerCase().indexOf(bl.toLowerCase()); if(i<0)return null;
       return {en,pre:en.slice(0,i),ans:en.slice(i,i+bl.length),post:en.slice(i+bl.length),ko:clean(String(x.ko||"")),hint:clean(String(x.hint||""))};
     }).filter(Boolean).slice(0,5);
     if(items.length<5)throw new ApiError("문장을 만들지 못했어요. 잠시 뒤 다시 열어주세요.");
-    const c={day:dayKey(),topic:$("topic").value,level:$("level").value,items,res:[null,null,null,null,null],given:["","","","",""]};
+    const c={day:dayKey(),topic:$("topic").value,level:lv,items,res:[null,null,null,null,null],given:["","","","",""]};
     chalSave(c); store("oc_chal_seen",seen.concat(items.map(x=>x.en)).slice(-80)); return c;
   })();
   try{return await chalBusy}finally{chalBusy=null}
@@ -5927,39 +5987,44 @@ async function openChal(){
   chal={c,i:c.res.findIndex(x=>x===null||x===undefined)};
   if(chal.i<0)chalResult(); else renderChal();
 }
-function closeChal(){$("chalSheet").hidden=true;micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};chal=null;clearInterval(renderChal.t);if(view==="home")renderHome();renderHistory()}
+function closeChal(){qaOff(true);$("chalSheet").hidden=true;micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};chal=null;clearInterval(renderChal.t);if(view==="home")renderHome();renderHistory()}
 function renderChal(){
-  const c=chal.c, q=c.items[chal.i], b=$("chBody");
-  clearInterval(renderChal.t); if(ql.on||ql.busy)qlStop(false);
+  const c=chal.c, q=c.items[chal.i], b=$("chBody"), full=chalFull(c);
+  clearInterval(renderChal.t); if(ql.on||ql.busy)qlStop(false,true);
   $("chProg").textContent=`${chal.i+1} / 5`;
   b.innerHTML=`<div class="ch-dots">${c.items.map((_,i)=>`<i class="${c.res[i]===true?"o":c.res[i]===false?"x":i===chal.i?"on":""}"></i>`).join("")}</div>
-    <div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank ch-bl">${"_".repeat(Math.max(3,Math.min(10,q.ans.length)))}</span>${esc(q.post)}</div>
-    <div class="ch-ko">${esc(q.ko)}</div>${q.hint?`<div class="qz-hint">힌트: ${esc(q.hint)}</div>`:""}
-    <div class="qz-in"><input id="chInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="빈칸에 들어갈 영어"><button id="chMic" class="qz-mic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button id="chOk" class="primary">확인</button></div><div class="listen qz-ls" id="chLs" hidden aria-live="polite"><span class="lv" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="ls-t"><b>듣고 있어요</b><small></small></span></div><div id="chFb"></div>`;
+    ${full?`<div class="qz-q">이 말을 영어로 말하거나 입력하세요</div><div class="qz-s qz-ko">${esc(q.ko)}</div>`
+    :`<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank ch-bl">${czGap(q.ans)}</span>${esc(q.post)}</div>
+    <div class="ch-ko">${esc(q.ko)}</div>${q.hint?`<div class="qz-hint">힌트: ${esc(q.hint)}</div>`:""}`}
+    <div class="qz-in"><input id="chInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${full?"영어 문장":"빈칸에 들어갈 영어"}"><button id="chMic" class="qz-mic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button id="chOk" class="primary">확인</button></div><div class="listen qz-ls" id="chLs" hidden aria-live="polite"><span class="lv" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="ls-t"><b>듣고 있어요</b><small></small></span></div><div id="chFb"></div>`;
   const inp=$("chInput"); inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();$("chOk").click()}});
   $("chOk").onclick=async()=>{
     const v=inp.value.trim(); if(!v||q.checking||c.res[chal.i]!==null)return;
+    if(ql.on||ql.busy)qlStop(false,true);   // typed while the mic was listening
     q.checking=true; b.querySelectorAll(".qz-in button,.qz-in input").forEach(x=>x.disabled=true);
     $("chFb").innerHTML=`<div class="qz-load"><span class="qz-dots"><i></i><i></i><i></i></span>채점하고 있어요</div>`;
-    const r=await judgeQuiz({type:"blank",pre:q.pre,post:q.post,ans:q.ans,ko:q.ko,it:{said:"",model:q.en}},v);
+    const r=await judgeQuiz(full?{type:"full",pre:"",post:"",ans:q.en,ko:q.ko,it:{said:q.ko,model:q.en}}:{type:"blank",pre:q.pre,post:q.post,ans:q.ans,ko:q.ko,it:{said:"",model:q.en}},v);
     q.checking=false; if(!chal||chal.c!==c||c.items[chal.i]!==q)return;
     chalAnswer(r.ok,v,r.note);
   };
-  $("chMic").onclick=()=>qlStart({bar:$("chLs"),btn:$("chMic"),hint:`He is saying only the missing English word or words for this sentence: "${q.pre}___${q.post}".`,onText:t=>{if(!chal||chal.c!==c||c.items[chal.i]!==q||c.res[chal.i]!==null)return;inp.value=t;$("chOk").click()}});
-
+  const lis={bar:$("chLs"),btn:$("chMic"),hint:full?`He is saying this in English: "${q.ko}".`:`He is saying only the missing English word or words for this sentence: "${q.pre}___${q.post}".`,onText:t=>{if(!chal||chal.c!==c||c.items[chal.i]!==q||c.res[chal.i]!==null)return;inp.value=t;$("chOk").click()}};
+  $("chMic").onclick=()=>qaTap(lis);
+  qaSync(); if(qa.on){const tk=qa.tok;setTimeout(()=>{if(qa.on&&qa.tok===tk&&chal&&chal.c===c&&c.items[chal.i]===q&&c.res[chal.i]===null)qaListen(lis)},250)}
 }
 function chalAnswer(ok,given,note){
-  const c=chal.c, q=c.items[chal.i]; c.res[chal.i]=!!ok; c.given[chal.i]=given; chalSave(c); chalDaily(c);
+  const c=chal.c, q=c.items[chal.i], full=chalFull(c); c.res[chal.i]=!!ok; c.given[chal.i]=given; chalSave(c); chalDaily(c);
+  sfx(ok?"right":"wrong");
   $("chBody").querySelectorAll(".qz-in button,.qz-in input").forEach(x=>x.disabled=true);
   const dots=$("chBody").querySelectorAll(".ch-dots i"); if(dots[chal.i])dots[chal.i].className=ok?"o":"x";
-  $("chFb").innerHTML=`<div class="qz-res ${ok?"o":"x"}"><span class="mk">${ok?"O":"X"}</span>${ok?"맞았어요":"틀렸어요"}</div><div class="qz-ans"><div class="lb">정답: ${esc(q.ans)}</div><div class="se">${esc(q.pre)}<ins>${esc(q.ans)}</ins>${esc(q.post)}</div>${ok?"":`<div class="qz-mine">내 답: ${esc(given)}</div>`}${!ok&&note?`<div class="qz-note">${esc(note)}</div>`:""}</div><div class="acts"><button id="chListen">듣기</button><button id="chNext" class="primary">${c.res.some(x=>x===null||x===undefined)?"다음 문제":"결과 보기"}</button></div>`;
+  $("chFb").innerHTML=`<div class="qz-res ${ok?"o":"x"}"><span class="mk">${ok?"O":"X"}</span>${ok?"맞았어요":"틀렸어요"}</div><div class="qz-ans"><div class="lb">${full?"정답 문장":"정답: "+esc(q.ans)}</div><div class="se">${esc(q.pre)}<ins>${esc(q.ans)}</ins>${esc(q.post)}</div>${ok?"":`<div class="qz-mine">내 답: ${esc(given)}</div>`}${!ok&&note?`<div class="qz-note">${esc(note)}</div>`:""}</div><div class="acts"><button id="chListen">듣기</button><button id="chNext" class="primary">${c.res.some(x=>x===null||x===undefined)?"다음 문제":"결과 보기"}</button></div>`;
   $("chListen").onclick=e=>playBtn(e.currentTarget,q.en);
-  $("chNext").onclick=()=>{const n=c.res.findIndex(x=>x===null||x===undefined);if(n<0)chalResult();else{chal.i=n;renderChal()}};
-  if(!ok&&voiceOn)playSeq([{text:q.en,who:"coach"}]).catch(()=>{});
+  $("chNext").onclick=()=>{qa.tok++;const n=c.res.findIndex(x=>x===null||x===undefined);if(n<0)chalResult();else{chal.i=n;renderChal()}};
+  const say=!ok&&voiceOn?sleep(sfxLeft()+80).then(()=>playSeq([{text:q.en,who:"coach"}])).catch(()=>{}):Promise.resolve();
+  if(qa.on)say.then(()=>qaNext(()=>{if(chal&&chal.c===c&&c.items[chal.i]===q){const nx=$("chNext");if(nx)nx.click()}},ok?1100:500));   // v9.7: hands-free goes on by itself
 }
 function chalDaily(c){const d=dayRec();d.cs=c.res.filter(x=>x===true).length;d.cn=c.res.filter(x=>x!==null&&x!==undefined).length;saveDaily()}
 function chalResult(){
-  clearInterval(renderChal.t);
+  clearInterval(renderChal.t); qaOff(false);
   const c=chal.c, n=c.res.filter(x=>x===true).length;
   $("chProg").textContent="";
   $("chBody").innerHTML=`<div class="qz-score"><b>${n}</b> / 5</div><div class="qz-q">${n===5?"오늘의 챌린지를 모두 맞혔어요.":`5문제 중 ${n}개 맞혔어요. 내일 새 문장 5개가 나와요.`}</div><div class="qz-list">${c.items.map((q,i)=>`<div class="qz-row"><span class="mk ${c.res[i]?"o":"x"}">${c.res[i]?"O":"X"}</span><span class="ch-r">${esc(q.pre)}<ins>${esc(q.ans)}</ins>${esc(q.post)} <span class="ko">${esc(q.ko)}</span>${c.res[i]?"":`<span class="qz-tag bad">내 답: ${esc(c.given[i]||"")}</span>`}</span><button class="pl ch-pl" data-i="${i}" aria-label="듣기">${PLAY_SVG}</button></div>`).join("")}</div><div class="acts"><button id="chDone" class="primary">닫기</button></div>`;
@@ -6200,13 +6265,15 @@ function reportHTML(x){
 async function endCall(){
   closeMore();
   if(phase==="idle"){sysNote("진행 중인 대화가 없어요.");return}
-  if(busy||chain){sysNote("지금 하던 말이 끝나면 눌러주세요.");return}
+  // v9.7: 대화 종료 always works, even while Sam or Julia is talking or an answer is still coming: that turn just stops (what is on screen stays)
+  if(curTurn&&curTurn.active){curTurn.rendered=true;supersedeTurn()}
+  callId++; busy=false; chain=false; lockUI();
   stopAudio(); if(auto.on)stopAuto(); review=null;
   clearInterval(timerId); try{msg.blur()}catch(e){}
   const sum=archiveCall()||summarize(callStats);
   setPhase("idle"); setEnded(true,sum); caption(null);
   try{localStorage.removeItem(CALL_KEY)}catch(e){}
-  renderHistory();
+  renderHistory(); sfx("end");
 }
 /* ended state: like a pause. The menu and the bottom bar offer 재시작하기; a refresh starts a new conversation (records stay) */
 var callEnded=false;
@@ -6553,6 +6620,7 @@ async function startReview(items){
     prep=await chatJSON([{role:"system",content:REVIEW_SYS},{role:"user",content:JSON.stringify({mistake_counts:counts,sentences:items.map(x=>({said:x.said,model:x.model}))})}]);
   }catch(e){logErr("복습",e)}
   finally{busy=false;lockUI();wait.remove()}
+  if(!review||callEnded)return;   // v9.7: the call was ended meanwhile
   const kos=prep&&Array.isArray(prep.items)?prep.items:[];
   items.forEach((it,i)=>{const k=kos[i]&&String(kos[i].ko||"").trim();it._ko=k&&hasKo(k)?clean(k):""});
   const insight=clean(String(prep&&prep.insight||"").trim()||fallbackInsight());
@@ -6560,14 +6628,17 @@ async function startReview(items){
   const list=top.map(([k,v])=>`<div class="revrow"><b>${esc(k)}</b> <span class="n">${v.n}번</span>${v.ex?`<div>${esc(v.ex.from)} → <ins>${esc(v.ex.to)}</ins></div>`:""}${v.tipKo?`<div class="tip">${esc(clean(v.tipKo))}</div>`:""}</div>`).join("");
   const parts=[{text:insight,who:"coach"}];
   await holdUntilReady(insight,"coach");
+  if(!review||callEnded)return;
   addCoach({kind:"recap",say:insight,model:list?`<div class="revlist">${list}</div>`:"",listen:parts});
   await chained(parts);
+  if(!review||callEnded)return;
   await askReviewItem();
 }
 async function askReviewItem(){
   const it=review.items[review.idx]; review.tries=0;
   const parts=it._ko?[{text:it._ko,who:"coach"}]:[];
   if(parts.length)await holdUntilReady(it._ko,"coach");
+  if(!review||callEnded)return;
   const c=addCoach({kind:"quiz",say:`${review.idx+1} / ${review.items.length}  ${it._ko?"영어로 말해보세요":"맞게 고쳐서 말해보세요"}`,model:esc(it._ko||it.said),listen:parts.length?parts:null});
   const a=document.createElement("div");a.className="acts rev-acts";const b=document.createElement("button");b.textContent="복습 그만하기";b.dataset.act="revstop";a.append(b);c.append(a);
   if(parts.length)await chained(parts);
@@ -6577,13 +6648,16 @@ async function reviewAnswer(text,audio){
   const row=addMe(text,false);
   const sim=hasKo(text)?0:similarity(text,it.model);
   if(sim>=0.8){
-    const m=document.createElement("span");m.className="okmark";m.textContent="정답";row.append(m);
+    const m=document.createElement("span");m.className="okmark";m.textContent="정답";row.append(m); sfx("right");
     it.reviewOk=(it.reviewOk||0)+1; review.ok++; store("oc_notes",notes);
     return nextReviewItem();
   }
+  sfx("wrong");
   if(++review.tries<2){
     const parts=[{text:it.model,who:"coach"}];
     await holdUntilReady(it.model,"coach");
+    {const w=sfxLeft();if(w>0)await sleep(w)}
+    if(!review||callEnded)return;
     addCoach({say:"정답은 이거예요.",model:highlightModel(text,it.model),listen:parts});
     await chained(parts); return;
   }
@@ -6846,12 +6920,69 @@ async function toggleMicLegacy(){
   $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; msg.dataset.ph=msg.dataset.phk||"reply"; setPh("rec"); $("junTile").classList.add("speaking");
 }
 
+/* v9.7: 복습하기 and 오늘의 챌린지 keep the mic on: one tap, then question after question it listens by itself
+   until it is tapped again (while talking: that answer is checked first) or the popup closes */
+const qa={on:false,tok:0};
+function qaSync(){document.querySelectorAll("#qzMic,#chMic").forEach(b=>{b.classList.toggle("recording",qa.on||(ql.on&&ql.btn===b));b.setAttribute("aria-pressed",String(qa.on));b.setAttribute("aria-label",qa.on?"마이크 끄기":"말하기")})}
+function qaOff(sound){const was=qa.on;qa.on=false;qa.tok++;if(ql.on||ql.busy)qlStop(false,true);if(sound&&was)micBeep(false);qaSync()}
+function qaListen(o){if(qa.on&&!ql.on&&!ql.busy)qlStart(Object.assign({},o,{quiet:true,hands:true}))}
+function qaTap(o){
+  if(ql.busy)return;
+  if(ql.on&&ql.speaking){qa.on=false;qa.tok++;qlStop(true);qaSync();micBeep(false);return}   // talking: check what he said now, then the mic stays off
+  if(qa.on||ql.on){qaOff(true);return}
+  qa.on=true; qa.tok++; micBeep(true); qaSync(); qlStart(Object.assign({},o,{quiet:true,hands:true}));
+}
+function qaNext(go,ms){if(!qa.on)return;const t=++qa.tok;setTimeout(()=>{if(qa.on&&qa.tok===t)go()},ms)}
+function qlRetry(msg){ql.msg=msg;qlUI("hint");if(ql.hands&&qa.on){const o=ql.opts,t=qa.tok;setTimeout(()=>{if(qa.on&&qa.tok===t&&o&&o.bar&&o.bar.isConnected&&!ql.on&&!ql.busy)qlStart(o)},1300)}}
+/* v9.7: review questions by level. 초급: one word of the English sentence is the blank, 중급: a chunk of 2 to 4 words, 고급: as before
+   (the Korean only for a Korean sentence, the Korean part in the blank for a mixed one) */
+const CZ_STOP=new Set(("a an the i you he she it we they me him her us them my your his its our their mine yours this that these those "+
+ "is am are was were be been being do does did done have has had will would can could should may might must shall "+
+ "to of in on at for with from by about as into onto than then so and or but if not no yes just very really too also "+
+ "there here what when where who whom why how which some any all both each every one ones it's i'm you're he's she's we're they're "+
+ "i'll you'll i've don't doesn't didn't can't won't isn't aren't wasn't let's let get got go going "+
+ "today tomorrow yesterday tonight now later soon again maybe please thanks thank okay ok yeah oh well sure lot lots").split(" "));
+const CZ_LEFT=new Set("a an the my your his her our their this that these those some any lot lots of much many more most few little every each another no so very really too".split(" "));
+const CZ_PART=new Set("out up down off back away over around".split(" "));
+const CZ_SUBJ=new Set("i you he she we they it".split(" "));
+function czWords(s){const out=[],re=/[A-Za-z][A-Za-z'’]*(?:-[A-Za-z]+)*/g;let m;while((m=re.exec(s)))out.push({w:m[0],lw:m[0].toLowerCase().replace(/’/g,"'"),s:m.index,e:m.index+m[0].length});return out}
+function czKey(ws,from,to,whole){
+  let best=-1,bl=-1;
+  for(let i=from;i<=to;i++){const x=ws[i];if(CZ_STOP.has(x.lw))continue;if(whole&&i>0&&/^[A-Z]/.test(x.w))continue;const L=x.w.length+(i===to?.1:0);if(L>=bl){bl=L;best=i}}
+  if(best<0)for(let i=from;i<=to;i++)if(ws[i].w.length>=bl){bl=ws[i].w.length;best=i}
+  return best;
+}
+function cloze(model,level,range){
+  const ws=czWords(model); if(!ws.length)return null;
+  let from=0,to=ws.length-1;
+  if(range){const ins=ws.map((x,i)=>i).filter(i=>ws[i].s>=range.s&&ws[i].e<=range.e);if(ins.length){from=ins[0];to=ins[ins.length-1]}}
+  const k=czKey(ws,from,to,!range); if(k<0)return null;
+  let a=k,b=k;
+  if(level==="intermediate"){
+    if(range){a=from;b=to}
+    else{
+      if(k+1<ws.length&&CZ_PART.has(ws[k+1].lw))b=k+1;                                   // hanging out
+      while(a>0&&k-a<3&&CZ_LEFT.has(ws[a-1].lw))a--;                                     // a lot of meetings
+      if(b-a+1<3&&b+1<ws.length&&!CZ_STOP.has(ws[b+1].lw)&&!/^[A-Z]/.test(ws[b+1].w))b++;   // the grocery store
+      if(a===b){if(k>0&&!CZ_SUBJ.has(ws[k-1].lw))a=k-1;else if(k+1<ws.length)b=k+1;else if(k>0)a=k-1}
+    }
+    while(b-a+1>4){if(k-a>b-k)a++;else b--}
+  }
+  return {pre:model.slice(0,ws[a].s),ans:model.slice(ws[a].s,ws[b].e),post:model.slice(ws[b].e)};
+}
+function czGap(ans){return String(ans).trim().split(/\s+/).map(w=>"_".repeat(Math.max(2,Math.min(9,w.length)))).join(" ")}
+function levelQ(q){
+  const lv=lvNow(); if(lv==="advanced")return q;
+  const range=q.type==="blank"?{s:q.pre.length,e:q.pre.length+q.ans.length}:null;
+  const c=cloze(q.it.model,lv,range); if(!c||!c.ans.trim())return q;
+  return Object.assign({},q,{type:"blank",cz:true,lv,pre:c.pre,ans:c.ans,post:c.post,mean:q.ko,said:q.type==="blank"?q.it.said:""});
+}
 /* v8.9: hands-free answer for 오늘의 챌린지 and 복습하기: tap the mic once and speak; it stops by itself when you pause, writes it down and checks it.
    Same listening status as the call (듣고 있어요 / 말하는 중 / 받아쓰는 중) with a live level meter. Tap again to finish early. */
-const ql={on:false,busy:false,stream:null,ctx:null,an:null,buf:null,rec:null,chunks:[],raf:0,speaking:false,speechMs:0,silenceMs:0,startedAt:0,floor:0.01,last:0,uiAt:0,bar:null,btn:null,onText:null,hintText:"",msg:""};
+const ql={on:false,busy:false,stream:null,ctx:null,an:null,buf:null,rec:null,chunks:[],raf:0,speaking:false,speechMs:0,silenceMs:0,startedAt:0,floor:0.01,last:0,uiAt:0,bar:null,btn:null,onText:null,hintText:"",msg:"",quiet:false,hands:false,opts:null,idleHF:25000};
 function qlUI(state,lv){
   const bar=ql.bar; if(!bar||!bar.isConnected)return; bar.hidden=false;
-  const T={listen:["듣고 있어요","말을 마치면 자동으로 확인해요"],talk:["말하는 중...","잠깐 멈추면 확인해요"],send:["받아쓰는 중...","방금 한 말을 글로 옮기고 있어요"],hint:[ql.msg,"마이크를 다시 눌러 말해 주세요"]};
+  const T={listen:["듣고 있어요","말을 마치면 자동으로 확인해요"],talk:["말하는 중...","잠깐 멈추면 확인해요"],send:["받아쓰는 중...","방금 한 말을 글로 옮기고 있어요"],hint:[ql.msg,ql.hands&&qa.on?"다시 말해 주세요":"마이크를 다시 눌러 말해 주세요"]};
   const t=T[state]||T.listen;
   if(bar.dataset.st!==state||state==="hint"){bar.dataset.st=state;bar.querySelector("b").textContent=t[0];bar.querySelector("small").textContent=t[1]}
   const r=Math.max(0,Math.min(1,lv||0));
@@ -6862,21 +6993,23 @@ function qlRelease(){
   if(ql.stream)ql.stream.getTracks().forEach(t=>t.stop()); ql.stream=null;
   if(ql.ctx)try{ql.ctx.close()}catch(e){} ql.ctx=null;
   if(ql.btn)ql.btn.classList.remove("recording");
+  qaSync();
 }
-function qlStop(keep){
+function qlStop(keep,quiet){
   const r=ql.rec;
-  if(!keep){ql.rec=null;ql.onText=null;if(r){r.onstop=null;try{r.stop()}catch(e){}}const was=ql.on;qlRelease();ql.busy=false;if(ql.bar)ql.bar.hidden=true;if(was)micBeep(false);return}
+  if(!keep){ql.rec=null;ql.onText=null;if(r){r.onstop=null;try{r.stop()}catch(e){}}const was=ql.on;qlRelease();ql.busy=false;if(ql.bar)ql.bar.hidden=true;if(was&&!quiet&&!ql.quiet)micBeep(false);return}
   if(!ql.on||!r)return;
   ql.rec=null; qlFinish(r);
 }
-async function qlStart({bar,btn,hint,onText}){
+async function qlStart(o){
+  const {bar,btn,hint,onText,quiet,hands}=o;
   if(ql.busy)return;
   if(ql.on){qlStop(true);return}       // second tap: done talking
   if(!cfg.key){noKeyNote();return}
   stopAudio(); if(auto.on)stopAuto();
-  ql.bar=bar; ql.btn=btn; ql.onText=onText; ql.hintText=hint||""; ql.msg="";
+  ql.bar=bar; ql.btn=btn; ql.onText=onText; ql.hintText=hint||""; ql.msg=""; ql.quiet=!!quiet; ql.hands=!!hands; ql.opts=o;
   let stream;
-  try{stream=await navigator.mediaDevices.getUserMedia(MIC_OPTS)}catch(e){toast("마이크를 쓸 수 없어요. 아이폰 설정 > Safari > 마이크(또는 주소창의 aA > 웹사이트 설정)에서 허용해 주세요.");return}
+  try{stream=await navigator.mediaDevices.getUserMedia(MIC_OPTS)}catch(e){if(hands){qa.on=false;qa.tok++;qaSync()}toast("마이크를 쓸 수 없어요. 아이폰 설정 > Safari > 마이크(또는 주소창의 aA > 웹사이트 설정)에서 허용해 주세요.");return}
   if(!bar.isConnected){stream.getTracks().forEach(t=>t.stop());return}
   ql.stream=stream;
   try{ql.ctx=new (window.AudioContext||window.webkitAudioContext)();await ql.ctx.resume()}catch(e){}
@@ -6885,7 +7018,7 @@ async function qlStart({bar,btn,hint,onText}){
   ql.chunks=[]; try{ql.rec=new MediaRecorder(stream,type?{mimeType:type}:undefined)}catch(e){ql.rec=new MediaRecorder(stream)}
   ql.rec.ondataavailable=e=>{if(e.data&&e.data.size)ql.chunks.push(e.data)};
   ql.rec.start(250); ql.on=true; ql.speaking=false; ql.speechMs=0; ql.silenceMs=0; ql.startedAt=performance.now(); ql.floor=0.01; ql.last=0; ql.uiAt=0;
-  btn.classList.add("recording"); micBeep(true); qlUI("listen",0);
+  btn.classList.add("recording"); if(!quiet)micBeep(true); qlUI("listen",0);
   ql.raf=requestAnimationFrame(qlLoop);
 }
 function qlLevel(){ql.an.getFloatTimeDomainData(ql.buf);let s=0;for(let i=0;i<ql.buf.length;i++)s+=ql.buf[i]*ql.buf[i];return Math.sqrt(s/ql.buf.length)}
@@ -6900,7 +7033,9 @@ function qlLoop(t){
     if(lv<base)ql.floor=ql.floor*0.97+lv*0.03;
     if(lv>base&&age>120){ql.speechMs+=dt;if(ql.speechMs>200){ql.speaking=true;ql.silenceMs=0}}
     else ql.speechMs=Math.max(0,ql.speechMs-dt);
-    if(age>9000){const r=ql.rec;ql.rec=null;if(r){r.onstop=null;try{r.stop()}catch(e){}}qlRelease();micBeep(false);ql.msg="말소리가 안 들렸어요";qlUI("hint")}
+    if(age>(ql.hands?ql.idleHF:9000)){const r=ql.rec;ql.rec=null;if(r){r.onstop=null;try{r.stop()}catch(e){}}qlRelease();
+      if(ql.hands&&qa.on){qa.on=false;qa.tok++;qaSync();micBeep(false);ql.msg="말소리가 없어서 마이크를 껐어요";qlUI("hint")}   // v9.7: hands-free turns itself off after a long silence
+      else{if(!ql.quiet)micBeep(false);ql.msg="말소리가 안 들렸어요";qlUI("hint")}}
   }else{
     if(lv<base*0.8){ql.silenceMs+=dt;if(ql.silenceMs>800)qlStop(true)}
     else ql.silenceMs=0;
@@ -6910,15 +7045,15 @@ function qlLoop(t){
 function qlFinish(r){
   cancelAnimationFrame(ql.raf); ql.busy=true; qlUI("send");
   const done=async()=>{
-    const blob=new Blob(ql.chunks,{type:r.mimeType||"audio/webm"}); const cb=ql.onText; qlRelease(); micBeep(false);
+    const blob=new Blob(ql.chunks,{type:r.mimeType||"audio/webm"}); const cb=ql.onText; qlRelease(); if(!ql.quiet)micBeep(false);
     try{
-      if(blob.size<1200){ql.msg="너무 짧았어요";qlUI("hint");return}
+      if(blob.size<1200){qlRetry("너무 짧았어요");return}
       const t=await transcribe(blob,ql.hintText);
       const text=(t.text||"").trim();
-      if(!text||HALLU.test(text)){ql.msg="잘 안 들렸어요";qlUI("hint");return}
+      if(!text||HALLU.test(text)){qlRetry("잘 안 들렸어요");return}
       if(ql.bar)ql.bar.hidden=true;
       if(cb)cb(text);
-    }catch(e){logErr("받아쓰기",e);ql.msg="받아쓰기에 실패했어요";qlUI("hint")}
+    }catch(e){logErr("받아쓰기",e);qlRetry("받아쓰기에 실패했어요")}
     finally{ql.busy=false}
   };
   r.onstop=done;
@@ -7145,7 +7280,15 @@ $("errClear").onclick=()=>{errLog=[];store("oc_errlog",errLog);renderErrLog()};
 $("level").value=cfg.level; $("topic").value=cfg.topic; $("rate").value=cfg.rate; $("rateV").textContent=Number(cfg.rate).toFixed(1)+"배";
 voiceOn=cfg.voiceOn!==false; setSw($("voiceToggle"),voiceOn);
 setTopicName();
-$("level").onchange=e=>{cfg.level=e.target.value;saveCfg();setTopicName()};
+$("level").onchange=e=>{cfg.level=e.target.value;saveCfg();setTopicName();levelChanged()};
+/* v9.7: today's expressions, the challenge and the review follow the level */
+function levelChanged(){
+  if(todayExpr.length&&todayExpr.level!==lvNow()){todayExpr=[];updateStudyBar()}
+  (async()=>{if(exprBusy){try{await exprBusy}catch(e){}}
+    if(!todayExpr.length||todayExpr.level!==lvNow()){todayExpr=[];updateStudyBar();await genExpressions()}
+    if(!$("exprSheet").hidden)renderExprSheet(); if(view==="home")renderHome()})();
+  if(view==="home")renderHome();
+}
 $("juliaVoice").onchange=e=>{if(cfg.engine==="stable")cfg.sj=e.target.value;else cfg.julia=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"julia"}])};
 $("coachVoice").onchange=e=>{cfg.coach=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"안녕하세요, 코치 Sam이에요. 같이 연습해봐요.",who:"coach"}])};
 $("userName").value=userName();
@@ -7411,7 +7554,7 @@ $("clearAll").onclick=()=>{
   if(!confirm("주간 리포트, 학습 캘린더, 자주 하는 실수, 오답 노트, 복습 문제, 오늘의 챌린지 결과, 발음 점수, 지난 대화와 지금 대화(상황극 포함)를 모두 지울까요? 지운 기록은 되돌릴 수 없어요."))return;
   stopAudio(); if(auto.on)stopAuto();
   patterns={}; notes=[]; pronHist=[]; callHistory=[]; turnCount=0; lastReviewAt=0; daily={}; qItems={};
-  ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_call_park","oc_qz","oc_daily","oc_qitems","oc_chal","oc_chal_seen"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_call_park","oc_qz","oc_daily","oc_qitems","oc_chal","oc_chal_seen","oc_chal_lv"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
   callStats=newStats(); callStats.archived=true; rp=null; review=null; pending=null; chal=null; try{$("chalSheet").hidden=true}catch(e){}
   $("side").classList.remove("open");
   renderSide(); renderHistory();
