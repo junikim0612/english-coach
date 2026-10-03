@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#121214">
-<title>영어회화 코치 v8.8</title>
+<title>영어회화 코치 v8.9</title>
 <script>(function(){var K="oc_theme";var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
 function pref(){try{var v=localStorage.getItem(K);return v==="light"||v==="dark"||v==="system"?v:"dark"}catch(e){return "dark"}}
 function apply(){var p=pref(),t=p==="system"?(mq&&mq.matches?"dark":"light"):p;document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#121214":"#f5f5f7");return t}
@@ -1246,7 +1246,8 @@ body.kbm #settings .setsheet{height:calc(var(--appH,100dvh) - 12px)!important;ma
 .listen b{font-size:14.5px;font-weight:700}
 .listen small{font-size:12px;color:#4b5a80;word-break:keep-all}
 .listen[data-st="talk"]{background:#ffe9ea;color:#8a1c21}.listen[data-st="talk"] .lv i{background:#e5484d}.listen[data-st="talk"] small{color:#a0383d}
-.listen[data-st="send"] .lv i,.listen[data-st="think"] .lv i,.listen[data-st="julia"] .lv i{animation:lvwait 1s ease-in-out infinite}
+.listen[data-st="send"] .lv i,.listen[data-st="think"] .lv i,.listen[data-st="julia"] .lv i,.listen[data-st="coach"] .lv i{animation:lvwait 1s ease-in-out infinite}
+.listen.qz-ls{margin:12px 0 0}
 .listen .lv i:nth-child(2){animation-delay:.12s}.listen .lv i:nth-child(3){animation-delay:.24s}.listen .lv i:nth-child(4){animation-delay:.36s}.listen .lv i:nth-child(5){animation-delay:.48s}
 @keyframes lvwait{0%,100%{transform:scaleY(.2)}50%{transform:scaleY(.7)}}
 .listen[data-st="hint"]{background:#fff4e0;color:#7a4b00}
@@ -4473,7 +4474,7 @@ html[data-theme="dark"] #settings .set-row .set-name::placeholder{color:#7d8494}
 <div class="app">
   <header>
     <button class="gear ico" id="backHome" aria-label="홈으로" title="홈으로"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <h1>영어회화 코치 <span class="ver-h">v8.8</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v8.9</span></h1>
     <div class="modeseg" id="modeSeg" role="group" aria-label="대화 종류"><button id="modeFree" aria-pressed="true">기본 대화</button><button id="modeRp" aria-pressed="false">상황극</button></div>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
@@ -4759,7 +4760,7 @@ html[data-theme="dark"] #settings .set-row .set-name::placeholder{color:#7d8494}
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v8.8<br>API 키와 학습 기록은 이 기기에만 저장돼요.<div class="set-upd"><button id="updBtn" type="button">업데이트</button><span id="updState" aria-live="polite"></span></div></div>
+      <div class="set-ver">영어회화 코치 v8.9<br>API 키와 학습 기록은 이 기기에만 저장돼요.<div class="set-upd"><button id="updBtn" type="button">업데이트</button><span id="updState" aria-live="polite"></span></div></div>
     </div>
   </div>
 </div>
@@ -4826,7 +4827,7 @@ beginner:`LEVEL = BEGINNER (CEFR A1-A2). This changes everything below.
 - Julia: 1 or 2 very short sentences, each under 10 words. Only very common everyday words. Present and past simple only. No idioms, no slang, no phrasal verbs (except very basic ones like get up, go out). End with ONE very easy question that can be answered in a few words: a yes/no question or an either/or question (e.g. "Coffee or tea?", "Did you sleep well?").
 - Correction (perfect / mistakes / model): set perfect=true when the meaning is clear and there is no major error. Correct ONLY major errors: wrong tense, subject-verb agreement, missing verb, a wrong word that changes the meaning, confusing word order, or Korean words. Ignore small article, preposition or plural slips and style differences.
 - model: short and simple, keep Jaden's own words as much as possible, about 10 words or fewer, no idioms.
-- coach_point: one very easy Korean sentence.`,
+- coach_point: one very easy Korean sentence, plus one more short sentence with the meaning of a hard word if the model sentence has one.`,
 intermediate:`LEVEL = INTERMEDIATE (CEFR B1-B2). This changes everything below.
 - Julia: 1 to 3 natural everyday sentences; common expressions are fine. End with ONE open question (what / why / how) that needs a full-sentence answer.
 - Correction (perfect / mistakes / model): correct grammar errors including articles (a/the), prepositions, plurals, verb forms, and clearly unnatural word choice. Small style differences are fine (perfect=true).
@@ -5039,11 +5040,11 @@ function tts(text,who){
   ttsCache.set(k,p); if(ttsCache.size>120)ttsCache.delete(ttsCache.keys().next().value);
   return p;
 }
-async function transcribe(blob){
+async function transcribe(blob,hint){
   const fd=new FormData();
   const ext=/mp4|m4a|aac/.test(blob.type)?"mp4":/ogg/.test(blob.type)?"ogg":/wav/.test(blob.type)?"wav":"webm";
   fd.append("file",blob,"speech."+ext); fd.append("model",cfg.stt);
-  const said=phase==="repeat"&&pending&&pending.model?` He is trying to repeat this sentence: "${pending.model}".`:(lastJulia&&lastJulia.en?` He is answering this: "${lastJulia.en}".`:"");
+  const said=hint?" "+hint:phase==="repeat"&&pending&&pending.model?` He is trying to repeat this sentence: "${pending.model}".`:(lastJulia&&lastJulia.en?` He is answering this: "${lastJulia.en}".`:"");
   fd.append("prompt","A Korean adult practicing spoken English. He mostly speaks English with a Korean accent: always write English speech in English letters, even when the pronunciation is accented or unclear. Use Hangul only when he clearly speaks Korean sentences. Keep his grammar mistakes exactly as spoken."+said);
   const wantProbs=!/whisper/.test(cfg.stt);
   if(wantProbs){fd.append("response_format","json");fd.append("include[]","logprobs")}
@@ -5179,6 +5180,7 @@ function addCoach({kind="",say="",model="",point="",listen=null,repeat=false,okT
   const lbl=label||(kind==="review"?"Coach Sam / 반복 실수":kind==="teach"?"Coach Sam / 질문 답변":kind==="recap"?"Coach Sam / 복습":kind==="quiz"?"Coach Sam / 복습 문제":"Coach Sam");
   c.innerHTML=`<span class="lbl">${I_SPARK}${lbl}</span>${say?`<div class="say">${esc(clean(say))}</div>`:""}${model?`<div class="modelbox"><div class="model">${model}</div>${listen?`<button class="wave" aria-label="다시 듣기">${I_WAVE}</button>`:""}</div>`:""}${point?`<button class="more-d" aria-expanded="false">자세히 보기 <span class="chev">&#8964;</span></button><div class="detail" hidden>${esc(clean(point))}</div>`:""}`;
   if(html){const h=document.createElement("div");h.className="chtml";h.innerHTML=html;c.append(h)}
+  if(listen&&!listen.some(x=>x&&x.text&&!hasKo(x.text)))listen=null;   // v8.9: 다시 듣기 plays only English, so no button when there is none
   if(listen)c.dataset.listen=JSON.stringify(listen.filter(x=>x&&x.text).map(x=>({text:x.text,who:x.who})));
   if(repeatTag){const tg=document.createElement("div");tg.className="reptag";tg.textContent=repeatTag;c.querySelector(".lbl").after(tg)}
   const wv=c.querySelector(".wave"); if(wv)wv.dataset.act="listen";
@@ -5275,9 +5277,10 @@ ROLE-PLAY MODE: in this call the AI is NOT Julia chatting as a friend. It plays 
 COACH SAM: an experienced English teacher who explains in KOREAN 해요체. He goes straight to the point: no praise, no sympathy, no reactions, no filler such as 오, 좋아요, 거의 맞았어요, 좋은 질문이에요, 괜찮아요. He gives the better English sentence and one short grammar point. English sentences stay in English.
 SAM'S KOREAN must sound like a real Korean teacher talking, natural spoken 해요체, short and simple. Never translationese or textbook style.
 SAM'S EXPLANATION must point at the ACTUAL WORDS of this sentence: say which word is the subject (주어), which is the verb (동사) and what role the key word plays, then why it changes. Never a vague general rule.
+HARD WORDS: when the model sentence has a word or phrase that may be new or hard for Jaden's level (e.g. commute, run late, figure out, reservation), Sam also gives its meaning in one short Korean sentence, e.g. "commute는 출퇴근하다라는 뜻이에요." or "run late는 늦어지다라는 뜻이에요." Skip easy everyday words.
 Good: "주어는 I, 동사는 went예요. 어제 일이라서 go의 과거형 went를 써요." / "주어는 She라서 동사 don't가 doesn't로 바뀌어요." / "주어 I 다음에 동사 am이 오고, 상태를 말하는 tired가 붙어요." / "office 앞에 the를 붙여요. 서로 아는 그 회사라서 the예요."
 Bad (too vague): "영어는 주어 다음에 바로 동사가 와요." / "주어에 동사가 붙어야 해요." Bad (textbook): "이것은 과거의 행동을 나타내기 때문에 과거형이 사용됩니다."
-When Jaden speaks Korean (mode ko): just give the natural English sentence for what he meant, and coach_point says ONLY how that English sentence is built, naming its subject and verb (e.g. "주어 I, 동사 am, 그다음 tired가 와요."). Never explain or repeat the Korean meaning.
+When Jaden speaks Korean (mode ko): just give the natural English sentence for what he meant, and coach_point says how that English sentence is built, naming its subject and verb, plus the meaning of any hard word (HARD WORDS rule) (e.g. "주어 I, 동사 am, 그다음 tired가 와요."). Never explain or repeat the Korean meaning.
 First decide who Jaden's LATEST message is for. Use ONLY the latest message; earlier messages are just background.
 - "question" = to the TEACHER about English itself: what a word or sentence means, grammar, why something is said a certain way, how to say something, whether his sentence is OK. e.g. "왜 how is it going을 써?", "take a photo랑 take photos 차이가 뭐야?", "이렇게 말해도 돼?", "what does 'hang out' mean?".
 - "answer" = to JULIA. Everything else, including talk ABOUT the conversation itself: asking her to slow down, repeat, say it again more easily, or saying he did not understand ("말이 너무 빨라 천천히 말해봐", "다시 말해줘", "못 알아들었어", "Can you say that again?"). A reply that asks Julia something back ("And you?") is also an answer.
@@ -5294,7 +5297,7 @@ Reply with ONLY this JSON object, keys in exactly this order (always include "em
 "slow_down":true only if Jaden asks Julia to speak more slowly, else false,
 "facts":["NEW short English facts about Jaden from his LATEST message only, e.g. 'only drinks iced americano', 'drinks coffee 3 times a day'. Empty if none."],
 "goal_done":true only in ROLE-PLAY mode when Jaden has now completed the whole goal, else false,
-"coach_point":"answer and not perfect: 1 or 2 short natural spoken Korean sentences (about 60 Korean characters or fewer) like the Good examples: name the subject and the verb of THIS sentence and the exact word that changed and why. mode ko: only how the English sentence is built (subject, verb, word order), never the Korean meaning. No praise or sympathy. Empty if perfect.",
+"coach_point":"answer and not perfect: 1 to 3 short natural spoken Korean sentences (about 110 Korean characters or fewer) like the Good examples: name the subject and the verb of THIS sentence and the exact word that changed and why, then the meaning of any hard word in the model sentence (HARD WORDS rule). mode ko: how the English sentence is built (subject, verb, word order) plus the meaning of any hard word, never the Korean meaning of the whole sentence. No praise or sympathy. Empty if perfect.",
 "mistakes":[{"label":"short Korean category","from":"wrong part","to":"fixed part","tip_ko":"one short spoken Korean sentence with the general rule"}],
 "practice":"mode ko, or a question asking how to say a Korean sentence in English: {\"said\":\"only the real content of his LATEST message he wanted to say, as ONE smooth natural Korean sentence (his wording and any English words he used), without requests to Julia, reactions, fillers, self-corrections or asking-how phrases\",\"en\":\"natural English for just that part, following the LEVEL model rules\"}. null when his Korean is only a request to Julia, a reaction or fillers. null when mode is en.",
 "teach":"question only: Sam's direct answer in natural spoken Korean 해요체 like the Good examples, 2 to 4 short sentences, starting with the answer itself (no 좋은 질문이에요 or similar). English words or example sentences may appear inside. Empty string for answer.",
@@ -5489,7 +5492,7 @@ log.addEventListener("click",e=>{
   const b=e.target.closest("button[data-act]"); if(!b||!log.contains(b))return;
   const act=b.dataset.act;
   if(act==="spk"){const row=b.closest(".row.julia");if(chain||!row)return;setEmotion(row.dataset.emo||"happy");playSeq([{text:row.dataset.en||row.querySelector(".jt").textContent,ko:row.dataset.ko||"",who:"julia"}]).then(()=>restEmotion(1800));return}
-  if(act==="listen"){const c=b.closest("[data-listen]");if(!c||chain)return;try{playSeq(JSON.parse(c.dataset.listen))}catch(x){}return}
+  if(act==="listen"){const c=b.closest("[data-listen]");if(!c||chain)return;try{const all=JSON.parse(c.dataset.listen),en=all.filter(x=>x&&x.text&&!hasKo(x.text));if(en.length)playSeq(en)}catch(x){}return}   // v8.9: replay only the English
   if(act==="more"){const c=b.closest(".coach"),d=c&&c.querySelector(".detail");if(!d)return;d.hidden=!d.hidden;b.setAttribute("aria-expanded",!d.hidden);b.firstChild.textContent=d.hidden?"자세히 보기 ":"간단히 보기 ";if(pinned)scroll();return}
   if(act==="skip"){if(phase==="repeat")$("skipBtn").click();return}
   if(act==="ok"){if(pending&&pending._tid===b.dataset.tid)markCorrect(pending,pending._said,log.querySelector(`.row.me[data-tid="${b.dataset.tid}"]`));return}
@@ -5708,15 +5711,15 @@ async function openQuiz(){
   my.qs=pick.map(x=>({key:x.k,type:x.type,it:{said:x.said,model:x.model},ko:x.ko,ans:x.ans,pre:x.pre||"",post:x.post||"",carried:x.added<t,wrongBefore:(x.wrong||0)>0}));
   my.loading=false; renderQuiz();
 }
-function closeQuiz(){$("quizSheet").hidden=true;micTarget=null;if(recording)try{toggleMic()}catch(e){};quiz=null;clearInterval(renderQuiz.t)}
+function closeQuiz(){$("quizSheet").hidden=true;micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};quiz=null;clearInterval(renderQuiz.t)}
 function renderQuiz(){
   const q=quiz.qs[quiz.i], b=$("qzBody");
-  clearInterval(renderQuiz.t); renderQuiz.t=setInterval(()=>{const m=$("qzMic");if(!quiz){clearInterval(renderQuiz.t);return}if(m)m.classList.toggle("recording",recording)},200);
+  clearInterval(renderQuiz.t); if(ql.on||ql.busy)qlStop(false);
   $("qzProg").textContent=`${quiz.i+1} / ${quiz.qs.length}`;
   const head=q.type==="full"
     ?`${q.carried?'<div class="qz-chip">다시 나온 문제</div>':""}<div class="qz-q">이 말을 영어로 말하거나 입력하세요</div><div class="qz-s qz-ko">${esc(smoothKo(q.ko))}</div>`
     :`${q.carried?'<div class="qz-chip">다시 나온 문제</div>':""}<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank">${esc(q.ko)}</span>${esc(q.post)}</div><div class="qz-hint">내가 한 말: ${esc(smoothKo(q.it.said))}</div>`;
-  b.innerHTML=head+`<div class="qz-in"><input id="qzInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${q.type==="full"?"영어 문장":"빈칸에 들어갈 영어"}"><button id="qzMic" class="qz-mic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button id="qzOk" class="primary">확인</button></div><div id="qzFb"></div><button class="qz-skip" id="qzDrop">이 문제는 퀴즈에서 빼기</button>`;
+  b.innerHTML=head+`<div class="qz-in"><input id="qzInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${q.type==="full"?"영어 문장":"빈칸에 들어갈 영어"}"><button id="qzMic" class="qz-mic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button id="qzOk" class="primary">확인</button></div><div class="listen qz-ls" id="qzLs" hidden aria-live="polite"><span class="lv" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="ls-t"><b>듣고 있어요</b><small></small></span></div><div id="qzFb"></div><button class="qz-skip" id="qzDrop">이 문제는 퀴즈에서 빼기</button>`;
   $("qzDrop").onclick=()=>{const e=qItems[q.key];if(e){e.done=true;e.removed=true;saveQ()}quiz.qs.splice(quiz.i,1);updateStudyBar();if(quiz.i<quiz.qs.length)renderQuiz();else if(quiz.res.length)quizResult();else closeQuiz()};
   const inp=$("qzInput"); inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();$("qzOk").click()}});
   $("qzOk").onclick=async()=>{
@@ -5727,12 +5730,8 @@ function renderQuiz(){
     if(!quiz||quiz.qs[quiz.i]!==q)return;
     answerQuiz(r.ok,v,r.note);
   };
-  $("qzMic").onclick=async()=>{
-    if(recording){micBeep(false);toggleMic();return}
-    micBeep(true);
-    micTarget=t=>{micTarget=null;const m=$("qzMic");if(m)m.classList.remove("recording");if(!quiz||quiz.qs[quiz.i]!==q)return;inp.value=t;$("qzOk").click()};
-    await toggleMic(); if(recording)$("qzMic").classList.add("recording");
-  };
+  $("qzMic").onclick=()=>qlStart({bar:$("qzLs"),btn:$("qzMic"),hint:q.type==="full"?`He is saying this in English: "${smoothKo(q.ko)}".`:`He is saying only the missing English word or words for this sentence: "${q.pre}___${q.post}".`,onText:t=>{if(!quiz||quiz.qs[quiz.i]!==q||q.done)return;inp.value=t;$("qzOk").click()}});
+
 }
 function answerQuiz(ok,given,note){
   const q=quiz.qs[quiz.i]; if(q.done)return; q.done=true; q.checking=false; quiz.res.push(ok); qResult(q,ok); updateStudyBar(); const dr=$("qzDrop"); if(dr)dr.remove();
@@ -5857,15 +5856,15 @@ async function openChal(){
   chal={c,i:c.res.findIndex(x=>x===null||x===undefined)};
   if(chal.i<0)chalResult(); else renderChal();
 }
-function closeChal(){$("chalSheet").hidden=true;micTarget=null;if(recording)try{toggleMic()}catch(e){};chal=null;clearInterval(renderChal.t);if(view==="home")renderHome();renderHistory()}
+function closeChal(){$("chalSheet").hidden=true;micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};chal=null;clearInterval(renderChal.t);if(view==="home")renderHome();renderHistory()}
 function renderChal(){
   const c=chal.c, q=c.items[chal.i], b=$("chBody");
-  clearInterval(renderChal.t); renderChal.t=setInterval(()=>{const m=$("chMic");if(!chal){clearInterval(renderChal.t);return}if(m)m.classList.toggle("recording",recording)},200);
+  clearInterval(renderChal.t); if(ql.on||ql.busy)qlStop(false);
   $("chProg").textContent=`${chal.i+1} / 5`;
   b.innerHTML=`<div class="ch-dots">${c.items.map((_,i)=>`<i class="${c.res[i]===true?"o":c.res[i]===false?"x":i===chal.i?"on":""}"></i>`).join("")}</div>
     <div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank ch-bl">${"_".repeat(Math.max(3,Math.min(10,q.ans.length)))}</span>${esc(q.post)}</div>
     <div class="ch-ko">${esc(q.ko)}</div>${q.hint?`<div class="qz-hint">힌트: ${esc(q.hint)}</div>`:""}
-    <div class="qz-in"><input id="chInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="빈칸에 들어갈 영어"><button id="chMic" class="qz-mic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button id="chOk" class="primary">확인</button></div><div id="chFb"></div>`;
+    <div class="qz-in"><input id="chInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="빈칸에 들어갈 영어"><button id="chMic" class="qz-mic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button id="chOk" class="primary">확인</button></div><div class="listen qz-ls" id="chLs" hidden aria-live="polite"><span class="lv" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="ls-t"><b>듣고 있어요</b><small></small></span></div><div id="chFb"></div>`;
   const inp=$("chInput"); inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();$("chOk").click()}});
   $("chOk").onclick=async()=>{
     const v=inp.value.trim(); if(!v||q.checking||c.res[chal.i]!==null)return;
@@ -5875,12 +5874,8 @@ function renderChal(){
     q.checking=false; if(!chal||chal.c!==c||c.items[chal.i]!==q)return;
     chalAnswer(r.ok,v,r.note);
   };
-  $("chMic").onclick=async()=>{
-    if(recording){micBeep(false);toggleMic();return}
-    micBeep(true);
-    micTarget=t=>{micTarget=null;const m=$("chMic");if(m)m.classList.remove("recording");if(!chal||chal.c.items[chal.i]!==q)return;inp.value=t;$("chOk").click()};
-    await toggleMic(); if(recording)$("chMic").classList.add("recording");
-  };
+  $("chMic").onclick=()=>qlStart({bar:$("chLs"),btn:$("chMic"),hint:`He is saying only the missing English word or words for this sentence: "${q.pre}___${q.post}".`,onText:t=>{if(!chal||chal.c!==c||c.items[chal.i]!==q||c.res[chal.i]!==null)return;inp.value=t;$("chOk").click()}});
+
 }
 function chalAnswer(ok,given,note){
   const c=chal.c, q=c.items[chal.i]; c.res[chal.i]=!!ok; c.given[chal.i]=given; chalSave(c); chalDaily(c);
@@ -6633,6 +6628,85 @@ async function toggleMicLegacy(){
   $("micBtn").classList.add("recording"); $("micLabel").textContent="다 말했어요"; msg.dataset.ph=msg.dataset.phk||"reply"; setPh("rec"); $("junTile").classList.add("speaking");
 }
 
+/* v8.9: hands-free answer for 오늘의 챌린지 and 복습하기: tap the mic once and speak; it stops by itself when you pause, writes it down and checks it.
+   Same listening status as the call (듣고 있어요 / 말하는 중 / 받아쓰는 중) with a live level meter. Tap again to finish early. */
+const ql={on:false,busy:false,stream:null,ctx:null,an:null,buf:null,rec:null,chunks:[],raf:0,speaking:false,speechMs:0,silenceMs:0,startedAt:0,floor:0.01,last:0,uiAt:0,bar:null,btn:null,onText:null,hintText:"",msg:""};
+function qlUI(state,lv){
+  const bar=ql.bar; if(!bar||!bar.isConnected)return; bar.hidden=false;
+  const T={listen:["듣고 있어요","말을 마치면 자동으로 확인해요"],talk:["말하는 중...","잠깐 멈추면 확인해요"],send:["받아쓰는 중...","방금 한 말을 글로 옮기고 있어요"],hint:[ql.msg,"마이크를 다시 눌러 말해 주세요"]};
+  const t=T[state]||T.listen;
+  if(bar.dataset.st!==state||state==="hint"){bar.dataset.st=state;bar.querySelector("b").textContent=t[0];bar.querySelector("small").textContent=t[1]}
+  const r=Math.max(0,Math.min(1,lv||0));
+  bar.querySelectorAll(".lv i").forEach((b,i)=>{const w=[.55,.8,1,.8,.55][i];b.style.transform=`scaleY(${(state==="talk"||state==="listen")?Math.max(.18,Math.min(1,r*w*1.6+.12)):.18})`});
+}
+function qlRelease(){
+  cancelAnimationFrame(ql.raf); ql.on=false;
+  if(ql.stream)ql.stream.getTracks().forEach(t=>t.stop()); ql.stream=null;
+  if(ql.ctx)try{ql.ctx.close()}catch(e){} ql.ctx=null;
+  if(ql.btn)ql.btn.classList.remove("recording");
+}
+function qlStop(keep){
+  const r=ql.rec;
+  if(!keep){ql.rec=null;ql.onText=null;if(r){r.onstop=null;try{r.stop()}catch(e){}}const was=ql.on;qlRelease();ql.busy=false;if(ql.bar)ql.bar.hidden=true;if(was)micBeep(false);return}
+  if(!ql.on||!r)return;
+  ql.rec=null; qlFinish(r);
+}
+async function qlStart({bar,btn,hint,onText}){
+  if(ql.busy)return;
+  if(ql.on){qlStop(true);return}       // second tap: done talking
+  if(!cfg.key){openSettings();return}
+  stopAudio(); if(auto.on)stopAuto();
+  ql.bar=bar; ql.btn=btn; ql.onText=onText; ql.hintText=hint||""; ql.msg="";
+  let stream;
+  try{stream=await navigator.mediaDevices.getUserMedia(MIC_OPTS)}catch(e){toast("마이크를 쓸 수 없어요. 아이폰 설정 > Safari > 마이크(또는 주소창의 aA > 웹사이트 설정)에서 허용해 주세요.");return}
+  if(!bar.isConnected){stream.getTracks().forEach(t=>t.stop());return}
+  ql.stream=stream;
+  try{ql.ctx=new (window.AudioContext||window.webkitAudioContext)();await ql.ctx.resume()}catch(e){}
+  const src=ql.ctx.createMediaStreamSource(stream); ql.an=ql.ctx.createAnalyser(); ql.an.fftSize=1024; src.connect(ql.an); ql.buf=new Float32Array(ql.an.fftSize);
+  const type=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
+  ql.chunks=[]; try{ql.rec=new MediaRecorder(stream,type?{mimeType:type}:undefined)}catch(e){ql.rec=new MediaRecorder(stream)}
+  ql.rec.ondataavailable=e=>{if(e.data&&e.data.size)ql.chunks.push(e.data)};
+  ql.rec.start(250); ql.on=true; ql.speaking=false; ql.speechMs=0; ql.silenceMs=0; ql.startedAt=performance.now(); ql.floor=0.01; ql.last=0; ql.uiAt=0;
+  btn.classList.add("recording"); micBeep(true); qlUI("listen",0);
+  ql.raf=requestAnimationFrame(qlLoop);
+}
+function qlLevel(){ql.an.getFloatTimeDomainData(ql.buf);let s=0;for(let i=0;i<ql.buf.length;i++)s+=ql.buf[i]*ql.buf[i];return Math.sqrt(s/ql.buf.length)}
+function qlLoop(t){
+  if(!ql.on||!ql.rec)return;
+  if(!ql.bar||!ql.bar.isConnected){qlStop(false);return}
+  ql.raf=requestAnimationFrame(qlLoop);
+  const now=performance.now(), dt=ql.last?Math.min(100,t-ql.last):16; ql.last=t;
+  const lv=qlLevel(), base=Math.max(0.012,ql.floor*2.6), age=now-ql.startedAt;
+  if(!ql.uiAt||now-ql.uiAt>90){ql.uiAt=now;qlUI(ql.speaking?"talk":"listen",lv/(base*4))}
+  if(!ql.speaking){
+    if(lv<base)ql.floor=ql.floor*0.97+lv*0.03;
+    if(lv>base&&age>120){ql.speechMs+=dt;if(ql.speechMs>200){ql.speaking=true;ql.silenceMs=0}}
+    else ql.speechMs=Math.max(0,ql.speechMs-dt);
+    if(age>9000){const r=ql.rec;ql.rec=null;if(r){r.onstop=null;try{r.stop()}catch(e){}}qlRelease();micBeep(false);ql.msg="말소리가 안 들렸어요";qlUI("hint")}
+  }else{
+    if(lv<base*0.8){ql.silenceMs+=dt;if(ql.silenceMs>800)qlStop(true)}
+    else ql.silenceMs=0;
+    if(age>20000)qlStop(true);
+  }
+}
+function qlFinish(r){
+  cancelAnimationFrame(ql.raf); ql.busy=true; qlUI("send");
+  const done=async()=>{
+    const blob=new Blob(ql.chunks,{type:r.mimeType||"audio/webm"}); const cb=ql.onText; qlRelease(); micBeep(false);
+    try{
+      if(blob.size<1200){ql.msg="너무 짧았어요";qlUI("hint");return}
+      const t=await transcribe(blob,ql.hintText);
+      const text=(t.text||"").trim();
+      if(!text||HALLU.test(text)){ql.msg="잘 안 들렸어요";qlUI("hint");return}
+      if(ql.bar)ql.bar.hidden=true;
+      if(cb)cb(text);
+    }catch(e){logErr("받아쓰기",e);ql.msg="받아쓰기에 실패했어요";qlUI("hint")}
+    finally{ql.busy=false}
+  };
+  r.onstop=done;
+  try{r.stop()}catch(e){done()}
+}
+
 /* ---------- Auto listen: mic stays on, only speech is sent ---------- */
 const auto={on:false,stream:null,ctx:null,an:null,buf:null,rec:null,chunks:[],speaking:false,speechMs:0,silenceMs:0,startedAt:0,raf:0,floor:0.01,type:"",last:0};
 let autoSending=false;
@@ -6647,7 +6721,7 @@ function listenUI(state,lvRatio){
   bar.hidden=!show; document.body.classList.toggle("listening-on",show); if(!show)return;
   const now=performance.now();
   if(listenUI.hint&&now<listenUI.hintUntil)state="hint";
-  const T={listen:["듣고 있어요","편하게 말해보세요. 말을 마치면 자동으로 Julia에게 보내져요"],talk:["말하는 중...","잠깐 멈추면 보내져요"],send:["보내는 중...","방금 한 말을 글로 옮기고 있어요"],julia:["Julia가 말하는 중","끝나면 바로 다시 들어요. 중간에 말하면 끊고 들어요"],think:["Julia가 답을 준비하고 있어요","잠시만 기다려 주세요"],hint:[listenUI.hint||"",""]};
+  const T={coach:["Coach Sam이 말하는 중","끝까지 들려드리고, 끝나면 바로 다시 들어요"],listen:["듣고 있어요","편하게 말해보세요. 말을 마치면 자동으로 Julia에게 보내져요"],talk:["말하는 중...","잠깐 멈추면 보내져요"],send:["보내는 중...","방금 한 말을 글로 옮기고 있어요"],julia:["Julia가 말하는 중","끝나면 바로 다시 들어요. 중간에 말하면 끊고 들어요"],think:["Julia가 답을 준비하고 있어요","잠시만 기다려 주세요"],hint:[listenUI.hint||"",""]};
   const t=T[state]||T.listen;
   if(bar.dataset.st!==state){bar.dataset.st=state;$("lsTx").textContent=t[0];$("lsSub").textContent=t[1]}
   if(state==="hint")$("lsTx").textContent=listenUI.hint;
@@ -6725,8 +6799,13 @@ function autoLoop(t){
   auto.raf=requestAnimationFrame(autoLoop);
   const now=performance.now(), dt=auto.last?Math.min(100,t-auto.last):16; auto.last=t;
   if(auto.stream&&!auto.stream.getAudioTracks().some(t=>t.readyState==="live")){stopAuto();toast("마이크 연결이 끊겨서 자동 듣기를 껐어요. 다시 눌러주세요.");return}
-  if(recording||phase==="idle"||quiz||!$("quizSheet").hidden||!$("exprSheet").hidden){auto.blockedAt=now;if(auto.rec)autoDiscard();listenUI();return}
+  if(recording||phase==="idle"||quiz||!$("quizSheet").hidden||!$("exprSheet").hidden||!$("chalSheet").hidden||ql.on||ql.busy){auto.blockedAt=now;if(auto.rec)autoDiscard();listenUI();return}
   const playing=!!endCurrent&&!player.paused;
+  if(playing&&curWho==="coach"){   // v8.9: Sam is never interrupted, his own voice from the speaker used to cut him off
+    auto.blockedAt=now; if(auto.rec)autoDiscard();
+    if(!auto.uiAt||now-auto.uiAt>90){auto.uiAt=now;listenUI("coach",0)}
+    return;
+  }
   if(playing)auto.blockedAt=now;
   const processing=!playing&&(busy||chain||autoSending);
   if(!auto.speaking&&!playing&&!processing&&now-(auto.blockedAt||0)<400){
@@ -6815,7 +6894,7 @@ $("camBtn").onclick=async()=>{
 };
 
 /* ---------- Settings modal ---------- */
-function openSettings(){if(view==="call")pauseCall();keyEditing=false;$("apiKey").value="";try{if(window.ocTheme)$("themeSel").value=ocTheme.pref()}catch(e){}syncSettingsUI();keyState();$("settings").hidden=false;$("closeSettings").focus()}
+function openSettings(){if(view==="call")pauseCall();keyEditing=false;$("apiKey").value="";$("userName").value=userName();try{if(window.ocTheme)$("themeSel").value=ocTheme.pref()}catch(e){}syncSettingsUI();keyState();$("settings").hidden=false;$("closeSettings").focus()}
 function closeSettings(){$("settings").hidden=true;if(view==="call"&&pausedAt){resumeCall();if(cfg.autoMic!==false)micAutoStart()}}
 $("openSettings").onclick=openSettings;
 $("closeSettings").onclick=closeSettings;
@@ -6849,10 +6928,11 @@ setTopicName();
 $("level").onchange=e=>{cfg.level=e.target.value;saveCfg();setTopicName()};
 $("juliaVoice").onchange=e=>{if(cfg.engine==="stable")cfg.sj=e.target.value;else cfg.julia=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"Hey! This is what I sound like now.",who:"julia"}])};
 $("coachVoice").onchange=e=>{cfg.coach=e.target.value;saveCfg();if(cfg.key&&!chain)playSeq([{text:"안녕하세요, 코치 Sam이에요. 같이 연습해봐요.",who:"coach"}])};
-$("userName").value=cfg.name||"";
+$("userName").value=userName();
 $("userName").addEventListener("input",()=>{cfg.name=$("userName").value.replace(/\s+/g," ").trim().slice(0,12);saveCfg();applyName();saveCallSoon()});
 $("userName").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();$("userName").blur()}});
-$("userName").addEventListener("blur",()=>{$("userName").value=cfg.name||""});
+$("userName").addEventListener("focus",()=>{setTimeout(()=>{try{$("userName").select()}catch(e){}},0)});
+$("userName").addEventListener("blur",()=>{$("userName").value=userName()});
 applyName();
 $("apiKey").value="";
 /* v8.2: a saved key is never shown; 키 바꾸기 opens an empty box */
