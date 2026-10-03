@@ -6,11 +6,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="텐톡">
-<meta name="theme-color" content="#121214">
-<title>텐톡 v9.9</title>
+<meta name="theme-color" content="#060a14">
+<title>텐톡 v10.0</title>
 <script>(function(){var K="oc_theme";var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
 function pref(){try{var v=localStorage.getItem(K);return v==="light"||v==="dark"||v==="system"?v:"dark"}catch(e){return "dark"}}
-function apply(){var p=pref(),t=p==="system"?(mq&&mq.matches?"dark":"light"):p;document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#121214":"#f5f5f7");return t}
+function apply(){var p=pref(),t=p==="system"?(mq&&mq.matches?"dark":"light"):p;document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#060a14":"#f2f4f9");return t}
 window.ocTheme={pref:pref,apply:apply,set:function(v){try{localStorage.setItem(K,v)}catch(e){}return apply()}};apply();
 if(mq){var f=function(){if(pref()==="system")apply()};if(mq.addEventListener)mq.addEventListener("change",f);else if(mq.addListener)mq.addListener(f)}})();</script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -43,7 +43,7 @@ h1{font-family:var(--f-display);font-size:20px;font-weight:700;letter-spacing:-.
 .sub{color:var(--muted);font-size:13px;flex:1;min-width:0}
 .pane{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0;display:flex;flex-direction:column;min-height:0;overflow:hidden}
 button{font:inherit;cursor:pointer;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:6px 13px;font-size:12.5px;white-space:nowrap}
-button:hover{border-color:var(--accent);color:var(--accent)}
+@media (hover:hover) and (pointer:fine){button:not(:where([class*="tt-"],[class*="tt-"] *)):hover{border-color:var(--accent);color:var(--accent)}}
 button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 button:disabled{opacity:.45;cursor:default}
 button.primary{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
@@ -1415,16 +1415,16 @@ html[data-theme="dark"] .pane {
     border: 1px solid var(--line);
     border-radius: 14px
 }
-html[data-theme="dark"] button {
+html[data-theme="dark"] button:not(:where([class*="tt-"],[class*="tt-"] *)) {
     border-radius: 999px;
     border: 1px solid var(--line);
     background: var(--surface);
     color: var(--fg)
 }
-html[data-theme="dark"] button:hover {
+@media (hover:hover) and (pointer:fine){html[data-theme="dark"] button:not(:where([class*="tt-"],[class*="tt-"] *)):hover {
     border-color: var(--accent);
     color: var(--accent)
-}
+}}
 html[data-theme="dark"] button:focus-visible,html[data-theme="dark"] select:focus-visible,html[data-theme="dark"] textarea:focus-visible,html[data-theme="dark"] input:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px
@@ -4509,30 +4509,292 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="2"]{--rpb:#2c1a25;--rpc:#f08cc4}
 html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
 
 </style>
+<style id="tt10">
+/* ===================== v10.0 텐톡: daily 10-minute routine, dark iOS look (light too) ===================== */
+:root{--t-bg:#f2f4f9;--t-card:#ffffff;--t-card2:#f5f7fc;--t-line:#e3e8f1;--t-line2:#d4dbea;--t-ink:#0c1324;--t-ink2:#323b52;--t-mu:#68728a;--t-mu2:#98a1b4;
+  --t-blue:#2f6bff;--t-blueD:#2259ec;--t-blueT:#e9f0ff;--t-blueI:#2f6bff;--t-yel:#c98d00;--t-yelT:#fff4d6;--t-green:#13994a;--t-greenT:#e5f6ec;--t-red:#e5484d;--t-redT:#fdecec;
+  --t-sh:0 1px 2px rgba(16,24,40,.05),0 10px 26px rgba(16,24,40,.07);--t-glow:radial-gradient(120% 50% at 50% -10%,rgba(47,107,255,.10),transparent 62%);--t-tab:rgba(255,255,255,.9)}
+html[data-theme="dark"]{--t-bg:#060a14;--t-card:#0d1426;--t-card2:#121a30;--t-line:#1a2441;--t-line2:#25304f;--t-ink:#f2f5fb;--t-ink2:#c6cee0;--t-mu:#8a95ad;--t-mu2:#5c6781;
+  --t-blue:#3a72ff;--t-blueD:#2a5ff0;--t-blueT:rgba(58,114,255,.16);--t-blueI:#7099ff;--t-yel:#ffcd4a;--t-yelT:rgba(255,205,74,.12);--t-green:#3ddc97;--t-greenT:rgba(61,220,151,.13);--t-red:#ff6b6e;--t-redT:rgba(255,107,110,.13);
+  --t-sh:0 16px 36px rgba(0,0,0,.40);--t-glow:radial-gradient(120% 52% at 50% -12%,rgba(46,92,224,.34),transparent 62%);--t-tab:rgba(12,18,34,.88)}
+html[data-theme]{background:var(--t-bg)!important}
+html[data-theme] #side,html[data-theme] #side .sd-head{background:var(--t-bg)!important}
+html[data-theme] body[data-view]{background:var(--t-bg)!important;color:var(--t-ink)}
+body[data-view="learn"] .pane.chat,body[data-view="flow"] .pane.chat{display:none!important}
+body[data-view="learn"] header,body[data-view="flow"] header{display:none!important}
+body:not([data-view="home"]) #homeView,body:not([data-view="learn"]) #learnView,body:not([data-view="flow"]) #flowView{display:none!important}
+body[data-view="home"] #homeView,body[data-view="learn"] #learnView,body[data-view="flow"] #flowView{display:block!important}
+html body[data-view="call"] nav.tabbar,html body[data-view="flow"] nav.tabbar{display:none!important}
+html body[data-view="call"] .app,html body[data-view="flow"] .app{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 4px)!important}
+.tt-view{padding:0!important;background:var(--t-glow);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.tt-wrap{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 18px) 18px 120px;box-sizing:border-box;color:var(--t-ink)}
+.tt-wrap *,.tt-flow *{box-sizing:border-box}
+#ttHome,#ttLearn,#ttFlow,#ttRec,#noteChips,#notes,#callTitle{word-break:keep-all;overflow-wrap:break-word}   /* Korean lines break between words, never 말해/요 */
+.tt-view button,.tt-flow button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+
+/* cards, titles, buttons */
+.tt-card{background:var(--t-card);border:1px solid var(--t-line);border-radius:22px;padding:18px;box-shadow:var(--t-sh);margin-bottom:14px}
+.tt-ctop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.tt-ctop b{font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--t-ink)}
+.tt-ctop span{font-size:13.5px;font-weight:700;color:var(--t-mu);white-space:nowrap}
+.tt-ctop .tt-pill{color:var(--t-blueI);background:var(--t-blueT);padding:4px 10px;border-radius:999px}
+.tt-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:56px;padding:0 18px;border:0;border-radius:16px;background:linear-gradient(180deg,#4a82ff,#2a62f2);color:#fff;font-size:17px;font-weight:800;letter-spacing:-.01em;box-shadow:0 10px 26px rgba(47,107,255,.34);cursor:pointer}
+.tt-btn:active{transform:scale(.985)}
+.tt-btn[disabled]{opacity:.45;box-shadow:none}
+.tt-btn2{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:50px;padding:0 14px;border:1px solid var(--t-line2);border-radius:14px;background:var(--t-card2);color:var(--t-ink);font-size:15.5px;font-weight:700;cursor:pointer}
+.tt-row2{display:flex;gap:10px;margin-top:10px}.tt-row2>*{flex:1 1 0;min-width:0}
+.tt-h1{font-size:clamp(26px,7.4vw,32px);font-weight:850;letter-spacing:-.035em;line-height:1.18;margin:0;color:var(--t-ink)}
+.tt-h2{font-size:24px;font-weight:850;letter-spacing:-.03em;line-height:1.25;margin:0 0 6px;color:var(--t-ink);text-align:center}
+.tt-p{font-size:15px;color:var(--t-mu);line-height:1.5;margin:0;text-align:center}
+.tt-sub{font-size:15px;color:var(--t-mu);margin:6px 0 0;line-height:1.45}
+.tt-ib{width:42px;height:42px;border-radius:50%;border:1px solid var(--t-line);background:var(--t-card);color:var(--t-ink);display:flex;align-items:center;justify-content:center;padding:0;flex:0 0 auto;cursor:pointer}
+.tt-ib0{width:42px;flex:0 0 auto}
+.tt-ib svg{width:22px;height:22px}
+.tt-tag{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:var(--t-yelT);color:var(--t-yel);font-size:12.5px;font-weight:800;letter-spacing:-.01em}
+
+/* home */
+.tt-hbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-8px 0 8px;min-height:46px}
+.tt-hbar .tt-ib{width:46px;height:46px}   /* the gear sits where it sits on 상황극, 기록 and the call */
+.tt-hbar .tt-date{margin:0}
+.tt-hhead{position:relative;display:flex;align-items:flex-start;gap:12px;margin:2px 0 18px;min-height:132px}
+.tt-htx{flex:1 1 auto;min-width:0;padding-top:4px}
+.tt-date{display:block;font-size:13.5px;font-weight:700;color:var(--t-mu);margin-bottom:10px}
+.tt-hhead .tt-h1 .nm{color:var(--t-blueI)}
+.tt-hpic{flex:0 0 auto;width:112px;height:132px;border-radius:26px;overflow:hidden;border:1px solid var(--t-line);box-shadow:0 14px 30px rgba(20,50,140,.28);background:var(--t-card2)}
+.tt-hpic img{width:100%;height:100%;object-fit:cover;object-position:56% 20%;display:block}
+.tt-gear{position:absolute;right:-4px;top:-6px;width:36px;height:36px;border-radius:50%;border:0;background:transparent;color:var(--t-mu);display:none}
+.tt-today{padding:20px}
+.tt-tline{font-size:14px;color:var(--t-mu);margin:-4px 0 12px;line-height:1.45}
+.tt-tline b{color:var(--t-yel);font-weight:800}
+.tt-tl{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:8px}
+.tt-tl li{display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:16px;background:var(--t-card2);border:1px solid var(--t-line)}
+.tt-tl .n{flex:0 0 auto;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;background:var(--t-blueT);color:var(--t-blueI)}
+.tt-tl li.ok .n{background:var(--t-blue);color:#fff}
+.tt-tl .t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.tt-tl .t b{font-size:15.5px;font-weight:750;color:var(--t-ink)}
+.tt-tl .t small{font-size:12.5px;color:var(--t-mu);margin-top:1px}
+.tt-tl .m{flex:0 0 auto;font-size:12.5px;font-weight:700;color:var(--t-mu)}
+.tt-tl li.ok .m{color:var(--t-green)}
+.tt-dots{display:flex;justify-content:space-between;gap:4px;margin:4px 0 14px}
+.tt-dots .d{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.tt-dots .d small{font-size:12px;font-weight:700;color:var(--t-mu)}
+.tt-dots .d i{width:30px;height:30px;border-radius:50%;border:2px solid var(--t-line2);display:flex;align-items:center;justify-content:center;color:#fff}
+.tt-dots .d.ok i{background:var(--t-blue);border-color:var(--t-blue)}
+.tt-dots .d.today i{border-color:var(--t-blueI)}
+.tt-dots .d.today small{color:var(--t-blueI)}
+.tt-dots .d.fut i{opacity:.55}
+.tt-time{display:flex;align-items:baseline;justify-content:space-between;font-size:14px;color:var(--t-mu);margin-bottom:8px}
+.tt-time b{font-size:16px;color:var(--t-ink);font-weight:800}
+.tt-bar{height:8px;border-radius:4px;background:var(--t-card2);border:1px solid var(--t-line);overflow:hidden}
+.tt-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#3a72ff,#6f98ff)}
+
+/* 오늘 학습 */
+.tt-ltop{margin:4px 0 16px}
+.tt-prog{display:flex;align-items:center;gap:10px;margin:12px 0 16px}
+.tt-prog .tt-bar{flex:1 1 auto}
+.tt-prog span{font-size:13.5px;font-weight:800;color:var(--t-blueI);white-space:nowrap}
+.tt-steps{display:flex;flex-direction:column;gap:10px}
+.tt-step{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 14px 14px 12px;border-radius:20px;border:1px solid var(--t-line);background:var(--t-card);color:var(--t-ink);box-shadow:var(--t-sh);cursor:pointer}
+.tt-step .n{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14.5px;font-weight:850;background:var(--t-card2);color:var(--t-mu);border:1px solid var(--t-line2)}
+.tt-step.cur .n{background:var(--t-blue);border-color:var(--t-blue);color:#fff}
+.tt-step.ok .n{background:var(--t-greenT);border-color:transparent;color:var(--t-green)}
+.tt-step .t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tt-step .t b{font-size:16.5px;font-weight:800;letter-spacing:-.02em}
+.tt-step .t span{font-size:13px;color:var(--t-mu);line-height:1.4}
+.tt-step .t em{font-style:normal;font-size:12px;font-weight:700;color:var(--t-mu2);margin-top:2px}
+.tt-step .th{flex:0 0 auto;width:58px;height:58px;border-radius:16px;overflow:hidden;background:var(--t-card2);border:1px solid var(--t-line)}
+.tt-step .th img{width:100%;height:100%;object-fit:cover;display:block}
+.tt-step .t .go{display:inline-flex;align-items:center;gap:4px;margin-top:8px;align-self:flex-start;height:32px;padding:0 12px;border-radius:10px;background:var(--t-blue);color:#fff;font-size:13.5px;font-weight:800}
+.tt-step .t .go svg{width:16px;height:16px}
+.tt-step.lock{box-shadow:none}
+[class*="tt-"] button,button[class*="tt-"]{white-space:normal}   /* the old generic button rule keeps text on one line; here it wraps */
+.tt-step.lock .t,.tt-step.lock .th{opacity:.5}
+.tt-step .lk{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:var(--t-card2);border:1px solid var(--t-line2);display:flex;align-items:center;justify-content:center;color:var(--t-mu)}
+.tt-step.lock .th{visibility:hidden}
+.tt-step.ok .t b::after{content:" 완료";font-size:12.5px;font-weight:800;color:var(--t-green);margin-left:4px}
+.tt-xsec{margin:22px 2px 10px;font-size:14px;font-weight:800;color:var(--t-mu)}
+.tt-x{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px 12px 12px;border-radius:18px;border:1px solid var(--t-line);background:var(--t-card);color:var(--t-ink);margin-bottom:10px;cursor:pointer}
+.tt-x .th{flex:0 0 auto;width:48px;height:48px;border-radius:14px;overflow:hidden}
+.tt-x .th img{width:100%;height:100%;object-fit:cover;display:block}
+.tt-x .t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
+.tt-x .t b{font-size:15.5px;font-weight:800}
+.tt-x .t span{font-size:12.5px;color:var(--t-mu)}
+.tt-x>svg{flex:0 0 auto;color:var(--t-mu2);width:20px;height:20px}
+
+/* flow screens (오늘의 표현, 결과, 다시 말해보기, 완료) */
+.tt-flowv{overflow:hidden!important}
+.tt-flow{display:flex;flex-direction:column;height:100%;max-width:560px;margin:0 auto;color:var(--t-ink)}
+.tt-fh{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 8px}
+.tt-fhT{flex:1 1 auto;min-width:0;text-align:center;display:flex;flex-direction:column}
+.tt-fhT b{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt-fhT span{font-size:12.5px;font-weight:700;color:var(--t-mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt-seg5{flex:0 0 auto;display:flex;gap:6px;padding:4px 18px 10px}
+.tt-seg5 i{flex:1 1 0;height:5px;border-radius:3px;background:var(--t-line2)}
+.tt-seg5 i.ok{background:var(--t-green)}
+.tt-seg5 i.on{background:var(--t-blue)}
+.tt-fbody{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 18px 16px}
+.tt-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.tt-kicker{font-size:14.5px;font-weight:800;color:var(--t-mu);margin:6px 2px 12px}
+.tt-kicker b{color:var(--t-blueI)}
+.tt-say{position:relative;padding:22px 20px 20px;margin-bottom:14px}
+.tt-say .tt-tag{margin-bottom:12px}
+.tt-en{font-size:clamp(22px,6.2vw,27px);font-weight:850;letter-spacing:-.025em;line-height:1.28;color:var(--t-ink);padding-right:48px;word-break:keep-all;overflow-wrap:anywhere}
+.tt-ko{font-size:15.5px;color:var(--t-mu);margin-top:10px;line-height:1.45}
+.tt-ctx{font-size:13.5px;color:var(--t-mu);margin-top:10px;padding:8px 12px;border-radius:12px;background:var(--t-card2);border:1px solid var(--t-line)}
+.tt-spk{position:absolute;right:16px;top:18px;width:42px;height:42px;border-radius:50%;border:0;background:var(--t-blueT);color:var(--t-blueI);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.tt-spk svg{width:20px;height:20px}
+.tt-spk.playing{background:var(--t-blue);color:#fff}
+.tt-coach{display:flex;flex-direction:column;gap:3px;padding:12px 16px;border-radius:18px 18px 18px 6px;background:var(--t-yelT);border:1px solid rgba(201,141,0,.18);max-width:92%}
+html[data-theme="dark"] .tt-coach{border-color:rgba(255,205,74,.20)}
+.tt-cn{font-size:11.5px;font-weight:850;letter-spacing:.06em;text-transform:uppercase;color:var(--t-yel)}
+.tt-coach p{margin:0;font-size:15.5px;font-weight:650;color:var(--t-ink);line-height:1.45}
+.tt-coach small{font-size:13px;color:var(--t-mu)}
+.tt-fb{margin-top:12px}
+.tt-fbok{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:16px;background:var(--t-greenT);color:var(--t-green);font-size:15px}
+.tt-fbok b{font-size:16px;font-weight:850}
+.tt-fbok span{color:var(--t-ink2);font-size:13.5px;margin-left:auto;text-align:right;min-width:0;overflow-wrap:anywhere}
+.tt-fbx{padding:12px 14px;border-radius:16px;background:var(--t-card);border:1px solid var(--t-line)}
+.tt-fbx p{margin:4px 0 0;font-size:15px;line-height:1.45;color:var(--t-ink)}
+.tt-hint{margin-top:8px;font-size:17px;font-weight:750;line-height:1.4;color:var(--t-ink)}
+.tt-hint ins{text-decoration:none;color:var(--t-blueI);border-bottom:2px solid var(--t-blueI)}
+.tt-mine{margin-top:6px;font-size:13px;color:var(--t-mu)}
+.tt-fbm{padding:10px 14px;border-radius:14px;background:var(--t-card2);color:var(--t-mu);font-size:14px}
+.tt-micbox{flex:0 0 auto;padding:6px 18px calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;flex-direction:column;align-items:center;gap:8px}
+.tt-mrow{display:flex;align-items:center;justify-content:center;gap:34px}
+.tt-mside{width:52px;height:52px;border-radius:50%;border:1px solid var(--t-line2);background:var(--t-card);color:var(--t-ink2);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.tt-mbig{width:86px;height:86px;border-radius:50%;border:0;color:#fff;background:linear-gradient(180deg,#4a82ff,#2a5ff0);box-shadow:0 0 0 8px rgba(58,114,255,.16),0 0 0 17px rgba(58,114,255,.07),0 14px 30px rgba(42,95,240,.45);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.tt-mbig svg{width:36px;height:36px}
+.tt-mbig.recording,.tt-mbig.listening{background:linear-gradient(180deg,#ff6a72,#e5484d);box-shadow:0 0 0 8px rgba(229,72,77,.18),0 0 0 17px rgba(229,72,77,.08),0 14px 30px rgba(229,72,77,.4);animation:ttPulse 1.4s ease-in-out infinite}
+@keyframes ttPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.tt-mbig.recording{animation:none}}
+.tt-mlab{font-size:14px;font-weight:750;color:var(--t-mu);min-height:20px}
+.tt-ls{width:100%;margin:0!important}
+.tt-type{display:flex;gap:8px;width:100%}
+.tt-type input{flex:1 1 auto;min-width:0;height:48px;border-radius:14px;border:1px solid var(--t-line2);background:var(--t-card);color:var(--t-ink);padding:0 14px;font-size:16px}
+.tt-okb{flex:0 0 auto;height:48px;padding:0 18px;border-radius:14px;border:0;background:var(--t-blue);color:#fff;font-weight:800;font-size:15.5px}
+.tt-cta{flex:0 0 auto;padding:10px 18px calc(env(safe-area-inset-bottom,0px) + 16px);display:flex;flex-direction:column;gap:10px}
+.tt-cta .tt-row2{margin-top:0}
+.tt-load{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--t-mu)}
+.tt-donebig{width:84px;height:84px;border-radius:50%;background:var(--t-greenT);color:var(--t-green);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.tt-donebig svg{width:40px;height:40px}
+
+/* result */
+.tt-res{text-align:center;padding-top:6px}
+.tt-respic{width:132px;height:132px;margin:0 auto 16px;border-radius:50%;overflow:hidden;border:3px solid rgba(58,114,255,.55);box-shadow:0 0 0 8px rgba(58,114,255,.12),0 18px 40px rgba(20,50,140,.4)}
+.tt-respic img{width:100%;height:100%;object-fit:cover;object-position:58% 22%;display:block}
+.tt-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:18px 0 16px}
+.tt-stats div{padding:14px 6px;border-radius:16px;background:var(--t-card);border:1px solid var(--t-line);display:flex;flex-direction:column;align-items:center;gap:2px}
+.tt-stats b{font-size:22px;font-weight:850;color:var(--t-ink);letter-spacing:-.02em}
+.tt-stats span{font-size:12.5px;font-weight:700;color:var(--t-mu);white-space:nowrap}
+.tt-stats small{font-size:11.5px;color:var(--t-mu2)}
+.tt-sec{text-align:left;margin-top:16px}
+.tt-sec h3{font-size:16px;font-weight:850;margin:0 2px 10px;color:var(--t-ink)}
+.tt-li{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:16px;background:var(--t-card);border:1px solid var(--t-line);margin-bottom:8px}
+.tt-li .tx{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tt-li .tx b{font-size:15.5px;font-weight:750;color:var(--t-ink);overflow-wrap:anywhere}
+.tt-li .tx span{font-size:13px;color:var(--t-mu);overflow-wrap:anywhere}
+.tt-li .tx s{color:var(--t-mu2);text-decoration-thickness:1.5px}
+.tt-li .tx ins{text-decoration:none;color:var(--t-blueI);font-weight:800}
+.tt-li .ok{font-size:11.5px;font-weight:800;color:var(--t-green);background:var(--t-greenT);padding:2px 8px;border-radius:999px;align-self:flex-start;margin-top:2px}
+.tt-li .xx{flex:0 0 auto;color:var(--t-red);font-weight:900;font-size:17px}
+.tt-pl{flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:0;background:var(--t-blue);color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.tt-pl svg{width:17px;height:17px}
+.tt-pl.playing{background:var(--t-green)}
+.tt-empty{padding:16px;border-radius:16px;background:var(--t-card2);border:1px dashed var(--t-line2);color:var(--t-mu);font-size:14px;text-align:center}
+.tt-tabs3{display:flex;gap:6px;padding:4px;border-radius:14px;background:var(--t-card2);border:1px solid var(--t-line);margin:4px 0 14px}
+.tt-tabs3 button{flex:1 1 0;min-width:0;height:38px;border:0;border-radius:10px;background:transparent;color:var(--t-mu);font-size:14px;font-weight:800;white-space:nowrap}
+.tt-tabs3 button[aria-pressed="true"]{background:var(--t-blue);color:#fff}
+.tt-tabs3 button span{opacity:.85;margin-left:3px}
+.tt-rep .report{margin:0}
+.tt-sum{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.tt-sum div{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-radius:14px;background:var(--t-card);border:1px solid var(--t-line);font-size:15px}
+.tt-sum div span{color:var(--t-mu);font-weight:650}
+.tt-sum div b{font-weight:850;color:var(--t-ink)}
+
+/* record */
+body[data-view="rec"] .side.open,body[data-view="rec"] .side{background:var(--t-bg)!important;color:var(--t-ink)}
+.tt-rec{padding:0 18px 20px;max-width:560px;margin:0 auto;width:100%}
+#side.det .tt-rec{display:none}
+#side:not(.det) .sd-tabs,#side:not(.det) .sd-body{display:none!important}
+.tt-recback{display:none}
+#side.det .tt-recback{display:inline-flex;align-items:center;gap:2px;height:36px;padding:0 10px 0 4px;border:0;border-radius:10px;background:transparent;color:var(--t-blueI);font-size:15px;font-weight:800;margin:0 0 4px 12px}
+.tt-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.tt-tile{display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px;background:var(--t-card);border:1px solid var(--t-line)}
+.tt-tile i{flex:0 0 auto;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff}
+.tt-tile i svg{width:20px;height:20px}
+.tt-tile div{display:flex;flex-direction:column;min-width:0}
+.tt-tile span{font-size:12.5px;font-weight:700;color:var(--t-mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt-tile b{font-size:21px;font-weight:850;color:var(--t-ink);letter-spacing:-.02em;white-space:nowrap}
+.tt-tile b small{font-size:13px;font-weight:750;color:var(--t-mu);margin-left:2px}
+.tt-days .tt-dr{display:flex;flex-direction:row;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--t-line)}
+.tt-days .tt-ctop+.tt-dr{border-top:0}
+.tt-days .dk{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--t-card2);color:var(--t-mu);border:1px solid var(--t-line2)}
+.tt-days .tt-dr.ok .dk{background:var(--t-blue);border-color:var(--t-blue);color:#fff}
+.tt-days .tx{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.tt-days .tx b{font-size:15px;font-weight:800}
+#settings .set-lab small{word-break:keep-all}
+.tt-days .tx span{font-size:12.5px;color:var(--t-mu);overflow-wrap:anywhere}
+
+/* notes filter chips */
+.tt-chips{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 12px}
+.tt-chips button{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--t-line2);background:var(--t-card);color:var(--t-ink2);font-size:14px;font-weight:800}
+.tt-chips button[aria-pressed="true"]{background:var(--t-blue);border-color:var(--t-blue);color:#fff}
+.tt-chips button span{opacity:.75;margin-left:4px;font-weight:700}
+.tt-pn{padding:12px 14px;border-radius:14px;background:var(--t-card);border:1px solid var(--t-line);margin-bottom:8px}
+.tt-pn b{display:block;font-size:15px;font-weight:750;overflow-wrap:anywhere}
+.tt-pn span{font-size:12.5px;color:var(--t-mu)}
+.tt-pn em{font-style:normal;color:var(--t-red);font-weight:800}
+
+/* tab bar: 홈 / 오늘 학습 / 상황극 / 기록 */
+html .tabbar{background:var(--t-tab)!important;border:1px solid var(--t-line)!important;box-shadow:0 12px 34px rgba(0,0,0,.28)!important}
+html .tabbar button{color:var(--t-mu)!important}
+html[data-theme] .tabbar button[aria-current="page"]{background:var(--t-blueT)!important;color:var(--t-blueI)!important}
+html[data-theme] .tabbar button[aria-current="page"] svg{color:currentColor}
+/* dark: the old gold symbol colour becomes the new blue (yellow stays for Coach Sam only) */
+html[data-theme="dark"]{--b-gold:#3a72ff;--b-primaryT:#7099ff}
+body[data-view="call"] header h1,body[data-view="call"] header .sub{display:none!important}
+.tabbar button svg{width:23px;height:23px}
+
+/* toast */
+.tt-toast{position:fixed;left:50%;bottom:calc(var(--tabH,64px) + 34px);transform:translateX(-50%);z-index:90;max-width:calc(100% - 40px);padding:11px 18px;border-radius:14px;background:rgba(20,28,48,.95);color:#fff;font-size:14.5px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.35);pointer-events:none;text-align:center}
+
+/* call screen header: back, title, step (no 기본 대화 / 상황극 switch) */
+body[data-view="call"] header .modeseg{display:none!important}
+.tt-ctitle{display:none}
+body[data-view="call"] .tt-ctitle{display:flex;flex-direction:column;align-items:center;min-width:0;max-width:calc(100% - 20px);margin:0 auto;text-align:center;line-height:1.25}
+.tt-ctitle b{font-size:16px;font-weight:800;color:var(--t-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tt-ctitle span{font-size:12.5px;font-weight:700;color:var(--t-mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+body[data-view="call"] #backHome{display:flex!important;position:absolute;left:14px;top:14px}
+#studyBar #quizOpen{display:none!important}
+
+/* dark call screen in the same navy */
+html[data-theme="dark"] body[data-view] .row.julia .bubble,html[data-theme="dark"] body[data-view] .row.julia .bubble.jb{background:#111a2f!important;box-shadow:inset 0 0 0 1px #1f2a47!important;color:#eef2fb!important}
+html[data-theme="dark"] body[data-view] .compose,html[data-theme="dark"] body[data-view] .pane.chat{background:var(--t-bg)!important}
+html[data-theme="dark"] body[data-view] .compose textarea{background:#111a2f!important}
+html[data-theme="dark"] body[data-view] .sysnote{background:#111a2f!important}
+html[data-theme="dark"] .pane.chat .coach{background:rgba(255,205,74,.07)!important;border-color:rgba(255,205,74,.22)!important}
+html[data-theme="dark"] .modal .sheet{background:#0d1426!important}
+html[data-theme="dark"] .modal .sheet .sheet-head{background:#0d1426!important;border-color:#1a2441!important}
+html[data-theme="dark"] .setsheet .set-card{background:#121a30!important}
+@media (min-width:901px){.tt-wrap{padding-top:28px}.tt-flow{padding-top:6px}}
+</style>
 </head>
 <body>
 <div class="app">
   <header>
-    <button class="gear ico" id="backHome" aria-label="홈으로" title="홈으로"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <h1>텐톡 <span class="ver-h">v9.9</span></h1>
+    <button class="gear ico" id="backHome" aria-label="뒤로" title="뒤로"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <h1>텐톡 <span class="ver-h">v10.0</span></h1>
     <div class="modeseg" id="modeSeg" role="group" aria-label="대화 종류"><button id="modeFree" aria-pressed="true">기본 대화</button><button id="modeRp" aria-pressed="false">상황극</button></div>
+    <div class="tt-ctitle" id="callTitle" aria-live="polite"></div>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
     <button class="gear ico" id="reloadBtn" aria-label="새로고침" title="새로고침" hidden><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="gear ico" id="openSettings" aria-haspopup="dialog" aria-label="설정" title="설정"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
   </header>
 
-  <section class="view" id="homeView" aria-label="홈">
-    <div class="hv-top"><div><div class="hv-date" id="hvDate"></div><h2 class="hv-title" id="hvTitle"><span class="hv-name">Jaden!</span><br>Julia와 10분 스몰톡 어때요?</h2></div><button class="hv-gear" id="hvSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
-    <div class="hv-hero" id="hvHero"></div>
-    <div class="hv-sec"><b>더 연습하기</b></div>
-    <div class="rail" id="homeRail" role="list" data-paged="1"></div>
-    <div class="hv-sec sent-sec"><b>오늘의 문장</b><span>매일 업데이트 돼요</span></div>
-    <div class="hv-sent" id="hvSent"></div>
-    <div class="hv-sec"><b>이번 주 학습</b><span class="rng" id="hvRange"></span></div>
-    <div class="hv-week" id="hvWeek"></div>
-    <div class="hv-stats" id="hvStats" hidden></div>
-  </section>
+  <section class="view tt-view" id="homeView" aria-label="홈"><div class="tt-wrap" id="ttHome"></div></section>
+  <section class="view tt-view" id="learnView" aria-label="오늘 학습"><div class="tt-wrap" id="ttLearn"></div></section>
+  <section class="view tt-view tt-flowv" id="flowView" aria-label="학습 단계"><div class="tt-flow" id="ttFlow"></div></section>
   <section class="view" id="rpView" aria-label="상황극">
     <div class="hv-top"><h2 class="hv-title">상황극</h2><button class="hv-gear" id="rpSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
     <div class="rp-fil" id="rpFil" role="group" aria-label="분류"></div>
@@ -4586,7 +4848,9 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
   </section>
 
   <aside class="pane side" id="side" aria-label="기록">
-    <div class="sd-head"><h2>기록</h2><button class="hv-gear sd-gear" id="sdSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button><button id="closeSide" class="sd-close">닫기</button></div>
+    <div class="sd-head"><h2>학습 기록</h2><button class="hv-gear sd-gear" id="sdSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button><button id="closeSide" class="sd-close">닫기</button></div>
+    <div class="tt-rec" id="ttRec"></div>
+    <button class="tt-recback" id="recBack" type="button"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>학습 기록</button>
     <div class="sd-tabs" role="tablist" aria-label="기록 보기">
       <button role="tab" data-tab="report" aria-selected="true">리포트</button><button role="tab" data-tab="mist" aria-selected="false">실수</button><button role="tab" data-tab="notes" aria-selected="false">오답 노트</button><button role="tab" data-tab="calls" aria-selected="false">지난 대화</button>
     </div>
@@ -4624,7 +4888,7 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
         <div class="sd-card">
           <div class="sd-ct">오답 노트<span class="sd-cs">Coach Sam이 고쳐준 문장</span></div>
           <div class="sd-acts top" hidden><button id="quizSide" class="sd-primary wide">오늘의 퀴즈 풀기</button></div>
-          <div class="notes" id="notes"></div>
+          <div class="tt-chips" id="noteChips" role="group" aria-label="오답 분류"></div><div class="notes" id="notes"></div>
         </div>
       </section>
       <section class="sd-pane" data-pane="calls" hidden>
@@ -4638,10 +4902,10 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
   </aside>
 </div>
 <nav class="tabbar" id="tabBar" aria-label="화면 이동">
-  <button data-view="home"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>홈</span></button>
-  <button data-view="call"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 10l5-3v10l-5-3z"/><rect x="3" y="6" width="12" height="12" rx="3"/></svg><span>대화</span></button>
-  <button data-view="rp"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3.2 3.2 0 0 1 0 7M18 20a6 6 0 0 0-3-5.2"/></svg><span>상황극</span></button>
-  <button data-view="rec" class="tb-rec"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span>기록</span></button>
+  <button data-view="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5L12 4l8.5 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5A1.5 1.5 0 0 1 3.5 19z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg><span>홈</span></button>
+  <button data-view="learn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M8 9.2l1.6 1.6L12.5 8M8 15.2l1.6 1.6 2.9-2.8M14.5 9.5H17M14.5 15.5H17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>오늘 학습</span></button>
+  <button data-view="rp"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.2" r="3.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="17" cy="9.2" r="2.6" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M15.6 14.4a4.6 4.6 0 0 1 5.4 4.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>상황극</span></button>
+  <button data-view="rec" class="tb-rec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.5h16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M7 17v-5M12 17V7M17 17v-8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>기록</span></button>
 </nav>
 
 <div class="modal" id="quizSheet" role="dialog" aria-modal="true" aria-labelledby="qzTitle" hidden>
@@ -4726,7 +4990,7 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
       <div class="set-group">
         <div class="set-gt">학습</div>
         <div class="set-card">
-          <div class="set-row"><span class="set-ic" style="background:#eab308"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="set-lab">오늘의 표현<small>매일 업데이트 되는 실용 문장 3개</small></div>
+          <div class="set-row" hidden><span class="set-ic" style="background:#eab308"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="set-lab">오늘의 표현<small>매일 업데이트 되는 실용 문장 3개</small></div>
             <button class="sw" id="exprSw" role="switch" aria-checked="true" aria-label="오늘의 표현"></button>
             <select id="exprOn" class="sr-sel" tabindex="-1" aria-hidden="true"><option value="1">켜기</option><option value="0">끄기</option></select>
           </div>
@@ -4736,6 +5000,13 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
           <div class="set-row" hidden><span class="set-ic" style="background:#f59e0b"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="set-lab">복습 문장 수</div>
             <div class="seg" data-for="revCount" role="group" aria-label="복습 문장 수"><button data-v="3">3개</button><button data-v="5">5개</button></div>
             <select id="revCount" class="sr-sel" tabindex="-1" aria-hidden="true"><option value="3">3개</option><option value="5">5개</option></select>
+          </div>
+          <div class="set-row"><span class="set-ic" style="background:#3a72ff"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="#fff" stroke-width="2.1" stroke-linejoin="round"/></svg></span><div class="set-lab">대화 길이<small>Julia가 대화를 마치는 시점</small></div>
+            <div class="seg" data-for="talkLen" role="group" aria-label="대화 길이"><button data-v="0.7">짧게</button><button data-v="1">보통</button><button data-v="1.3">길게</button></div>
+            <select id="talkLen" class="sr-sel" tabindex="-1" aria-hidden="true"><option value="0.7">짧게</option><option value="1" selected>보통</option><option value="1.3">길게</option></select>
+          </div>
+          <div class="set-row"><span class="set-ic" style="background:#f59e0b"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="13" r="7.5" fill="none" stroke="#fff" stroke-width="2.1"/><path d="M12 9v4.5l2.5 1.5M9.5 2.5h5" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg></span><div class="set-lab">카운트다운 소리<small>챌린지와 복습하기의 10초 소리</small></div>
+            <button class="sw" id="tickSw" role="switch" aria-checked="true" aria-label="카운트다운 소리"></button>
           </div>
         </div>
       </div>
@@ -4802,7 +5073,7 @@ html[data-theme="dark"] .rc .vis.rpv[data-c="3"]{--rpb:#15281f;--rpc:#5fd3a3}
           </details>
         </div>
       </div>
-      <div class="set-ver">텐톡 v9.9<br>학습 기록은 이 기기에만 저장돼요.<div class="set-upd"><button id="updBtn" type="button">업데이트</button><span id="updState" aria-live="polite"></span></div></div>
+      <div class="set-ver">텐톡 v10.0<br>학습 기록은 이 기기에만 저장돼요.<div class="set-upd"><button id="updBtn" type="button">업데이트</button><span id="updState" aria-live="polite"></span></div></div>
     </div>
   </div>
 </div>
@@ -5149,7 +5420,7 @@ let stableIdx=0, safeVoice=false;
 /* Coach speaks Korean: classic TTS reads Korean badly, so the coach always uses the newer speech model
    (pinned snapshot first for a steadier voice), in a female voice */
 const COACH_MODELS=["gpt-4o-mini-tts-2025-03-20","gpt-4o-mini-tts-2025-12-15"]; if(!cfg.v11){cfg.coachIdx=0;cfg.v11=1;saveCfg()} let coachIdx=cfg.coachIdx||0;
-const FIXED_LINES=new Set(["이렇게 말해보세요.","먼저 이 문장을 따라 말해 보세요.","오늘 대화는 여기까지예요. 수고했어요.","상황극은 여기까지예요. 수고했어요.","Take your time.","No rush. Take your time."]);
+const FIXED_LINES=new Set(["이렇게 말해보세요.","먼저 이 문장을 따라 말해 보세요.","오늘 대화는 여기까지예요. 수고했어요.","상황극은 여기까지예요. 수고했어요.","오늘 정말 잘 이야기했어요. 오늘 대화는 여기까지 하고, 마지막으로 오늘 표현을 한번 복습해볼게요.","오늘 정말 잘 이야기했어요. 오늘 배운 표현도 자연스럽게 사용했네요. 오늘 대화는 여기까지 하고, 마지막으로 오늘 표현을 한번 복습해볼게요.","좋았어요. 오늘 상황극은 여기까지예요.","Take your time.","No rush. Take your time."]);
 function ttsBody(text,who){
   if(who==="coach"){
     const vo=voiceOf(cfg.coach), model=COACH_MODELS[coachIdx]||cfg.tts;
@@ -5171,7 +5442,7 @@ async function ttsFetch(text,who){
     const {body}=ttsBody(text,who);
     try{
       const r=await api("audio/speech",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)},{timeout:30000,retries:2});const b=await r.blob();if(!b.size)throw new ApiError("빈 음성");
-      if(FIXED_LINES.has(text))saveFixed(text,who,b);
+      if(FIXED_LINES.has(text))saveFixed(text,who,b); else if(ttsKeep(text,who))ttspPut(text,who,b);
       return URL.createObjectURL(b)}
     catch(e){
       if(who==="coach"&&COACH_MODELS.includes(body.model)&&[400,403,404].includes(e.status)&&/does not exist|not.?found|not available|access|deprecat|retired|shut down|unsupported model|invalid model|model/i.test(e.message)){const bad=COACH_MODELS.indexOf(body.model);if(bad>=coachIdx){coachIdx=bad+1;cfg.coachIdx=coachIdx;saveCfg();logErr("tts",body.model+" 사용 불가, 다음 음성 모델로 전환")}continue}
@@ -5191,6 +5462,7 @@ function tts(text,who){
   const k=who+"|"+ttsBody(text,who).key+"|"+text;
   if(ttsCache.has(k))return ttsCache.get(k);
   if(FIXED_LINES.has(text)){try{const d=localStorage.getItem(fixedKey(text,who));if(d){const p=Promise.resolve(d);ttsCache.set(k,p);return p}}catch(e){}}
+  if(ttsKeep(text,who)){const d=ttspGet(text,who);if(d){const p=Promise.resolve(d);ttsCache.set(k,p);return p}}
   const p=ttsFetch(text,who);
   p.catch(e=>{ttsCache.delete(k);logErr("tts",e)});
   ttsCache.set(k,p); if(ttsCache.size>120)ttsCache.delete(ttsCache.keys().next().value);
@@ -5377,18 +5649,23 @@ function renderSide(){
   const pa=$("pronAvg");
   if(pa){if(pronHist.length){const last=pronHist.slice(-10);pa.innerHTML=`<span class="score">${Math.round(last.reduce((a,b)=>a+b,0)/last.length)}</span><span class="unit">점</span><span class="grade">최근 ${last.length}번 말하기 평균</span>`}else pa.innerHTML='<span class="empty">마이크로 말하면 발음 점수가 쌓여요.</span>'}
   const box=$("notes"); box.innerHTML="";
-  if(!notes.length){box.innerHTML='<div class="empty">Coach Sam이 고쳐준 문장이 여기에 모여요.</div>';return}
+  const nf=renderSide.nf||"all", pn=pronNotes(), cnt={all:notes.length+pn.length,pron:pn.length,grammar:0,expr:0}; notes.forEach(n=>{cnt[noteCat(n)]++});
+  {const ch=$("noteChips");if(ch)ch.innerHTML=[["all","전체"],["pron","발음"],["grammar","문법"],["expr","표현"]].map(([v,t])=>`<button data-nf="${v}" aria-pressed="${v===nf}">${t}<span>${cnt[v]}</span></button>`).join("")}
+  if(nf==="pron"&&!pn.length){box.innerHTML='<div class="empty">마이크로 말하다가 약하게 들린 단어가 여기에 모여요.</div>';return}
+  const pnx=pn.map(p=>Object.assign({_pn:1},p)), list=nf==="all"?notes.concat(pnx).sort((a,b)=>(a.at||0)-(b.at||0)):nf==="pron"?pnx:notes.filter(n=>noteCat(n)===nf);
+  if(!list.length){box.innerHTML=`<div class="empty">${nf==="all"?"Coach Sam이 고쳐준 문장이 여기에 모여요.":"이 분류에는 아직 문장이 없어요."}</div>`;return}
   const today=dayKey(), yest=dayKey(new Date(Date.now()-864e5)); let last="";
-  const lim=renderSide.all?notes.length:40;
-  notes.slice().reverse().slice(0,lim).forEach(n=>{
+  const lim=renderSide.all?list.length:40;
+  list.slice().reverse().slice(0,lim).forEach(n=>{
     const k=n.at?dayKey(new Date(n.at)):"";
     if(k!==last){last=k;const h=document.createElement("div");h.className="nd";h.textContent=!k?"예전":k===today?"오늘":k===yest?"어제":`${+k.slice(5,7)}월 ${+k.slice(8)}일`;box.append(h)}
+    if(n._pn){const p=document.createElement("div");p.className="tt-pn";p.innerHTML=`<b>${markWeak(n.text,n.weak)}</b><span>발음 또렷함 ${n.score}점 / 약했던 단어: ${esc(n.weak.join(", "))}</span>`;box.append(p);return}
     const d=document.createElement("div"); d.className="note";
     d.innerHTML=`<div class="nt"><span class="w">${esc(n.said)}</span><span class="r">${esc(n.model)}</span>${n.why?`<span class="why">${esc(clean(n.why))}</span>`:""}</div><button class="npl" aria-label="듣기">${PLAY_SVG}</button>`;
     d.querySelector(".npl").onclick=()=>{if(!chain)playSeq([{text:n.model,who:"coach"}])};
     box.append(d);
   });
-  if(notes.length>lim){const m=document.createElement("button");m.className="more";m.textContent=`${notes.length-lim}개 더 보기`;m.onclick=()=>{renderSide.all=true;renderSide()};box.append(m)}
+  if(list.length>lim){const m=document.createElement("button");m.className="more";m.textContent=`${list.length-lim}개 더 보기`;m.onclick=()=>{renderSide.all=true;renderSide()};box.append(m)}
 }
 
 /* ---------- Compare ---------- */
@@ -5426,8 +5703,10 @@ function liveContext(ctx,latest){
   const qLine=rp?`Questions the partner already asked in this call (never ask again what Jaden already answered; ask only for what is still missing for his goal): ${qs}`:`Questions Julia already asked in this call (never ask these or the same thing in other words; move the talk forward instead): ${qs}`;
   const thm=rp||!callStats.theme?"":`\nToday's small-talk theme for this call: ${callStats.theme.t}. Julia opened with it; let the talk grow from Jaden's answers around it.`;
   const oldQ=rp?"":`\nQuestions Julia asked Jaden in EARLIER calls (this is a new call: ask new things and never these again in any form): ${earlierQs().join(" | ")||"(none)"}`;
+  const exQ=rp||!todayExpr.length?"":`\nToday's expressions Jaden is learning (give him natural chances to use them by asking questions where one fits; Julia may use one herself once; never say the word "expression" and never quiz him): ${todayExpr.map(x=>`"${x.en}"${x.used?" (already used)":""}`).join(" | ")}`;
+  const co=rp?[]:carryOver(), coQ=co.length?`\nFrom his earlier days (bring back at most one of these in a NEW context when it fits, never word for word): ${co.map(x=>`"${x}"`).join(" | ")}`:"";
   const mem=`\nJaden's most frequent mistake types so far: ${freq||"(none yet)"}\nWhat Jaden already told Julia in this call (remember it, build on it, NEVER ask about it again in any form): ${callFacts.length?callFacts.join("; "):"(nothing yet)"}\n${qLine}\nCorrections Sam already made in this call (if Jaden now uses the right form, it is CORRECT, do not flag it again): ${callFixes.length?callFixes.join("; "):"(none)"}`;
-  return `CURRENT CONTEXT\nJaden's LATEST message (the only one to classify, correct or translate): "${latest||""}"\nJulia's last line: "${lastJulia&&lastJulia.en||""}"\nJulia's previous expression: ${lastEmo}\nExisting mistake labels: ${labels.length?labels.join(", "):"(none yet)"}${mem}${thm}${oldQ}${ctx?"\n"+ctx:""}`;
+  return `CURRENT CONTEXT\nJaden's LATEST message (the only one to classify, correct or translate): "${latest||""}"\nJulia's last line: "${lastJulia&&lastJulia.en||""}"\nJulia's previous expression: ${lastEmo}\nExisting mistake labels: ${labels.length?labels.join(", "):"(none yet)"}${mem}${thm}${oldQ}${exQ}${coQ}${ctx?"\n"+ctx:""}`;
 }
 /* v9.0: in a role-play the partner replaces Julia's friend persona: in role, one step at a time toward the goal, closes the scene when the goal is done */
 function rpRules(){
@@ -5613,6 +5892,7 @@ function recordMistakes(r,said){
     if(REVIEW_AT.includes(p.n)&&(!review||p.n>review.n))review={label:k,...p};
   });
   const L=r._learn===undefined?(!r.perfect&&r.model?{said,model:r.model}:null):r._learn;
+  if(L&&!hasKo(L.model))rememberLearned("fix",L.model,L.said);   // v10.0: comes back in a later call
   if(L&&!notes.some(n=>n.said===L.said&&n.model===L.model))notes.push({at:Date.now(),said:L.said,model:L.model,why:r.coach_point||"",label:(r.mistakes&&r.mistakes[0]&&clean(r.mistakes[0].label||"").trim())||(r.mode==="ko"?"영어로 말하기":"")});
   notes=notes.slice(-80);
   store("oc_patterns",patterns); store("oc_notes",notes); renderSide();
@@ -5639,6 +5919,7 @@ function talkTarget(){
   let w=0,ms=0; for(let i=1;i<=14;i++){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);const r=daily[dayKey(d)];if(r&&r.sw>0&&r.ms>0){w+=r.sw;ms+=r.ms}}
   let t=base; if(ms>=20*60000)t=Math.round(w/(ms/60000)*10);
   t=Math.max(Math.round(base*0.7),Math.min(Math.round(base*1.4),t));
+  t=Math.round(t*(+cfg.talkLen||1));   // v10.0: 설정 > 대화 길이 (짧게 0.7, 보통 1, 길게 1.3)
   return rp?Math.round(t/2):t;
 }
 const FILL_EN=/^(?:u+h+|u+m+|e+r+m*|h+m+|m{2,})$/i;
@@ -5654,13 +5935,13 @@ function talkCtx(){
     :`ALMOST DONE: the 10-minute small talk is nearly over. Stay on the current topic, no new topics, and keep the next question light and easy to answer.`;
   return "";
 }
-const WRAP_SAY={talk:"오늘 대화는 여기까지예요. 수고했어요.",rp:"상황극은 여기까지예요. 수고했어요."};
+const WRAP_SAY={talk:"오늘 정말 잘 이야기했어요. 오늘 대화는 여기까지 하고, 마지막으로 오늘 표현을 한번 복습해볼게요.",talkUsed:"오늘 정말 잘 이야기했어요. 오늘 배운 표현도 자연스럽게 사용했네요. 오늘 대화는 여기까지 하고, 마지막으로 오늘 표현을 한번 복습해볼게요.",rp:"좋았어요. 오늘 상황극은 여기까지예요."};
 async function wrapUpCall(T){
   checkTurn(T);
   if(rp)callStats.roleplay=Object.assign({name:rp.name},callStats.roleplay||{},{done:!!rp.done,turns:callStats.turns});
   await sleep(600);
   if(callEnded||phase==="idle")return;
-  const say=rp?WRAP_SAY.rp:WRAP_SAY.talk;
+  const say=rp?WRAP_SAY.rp:todayExpr.some(x=>x.used)?WRAP_SAY.talkUsed:WRAP_SAY.talk;
   await holdUntilReady(say,"coach");
   if(callEnded||phase==="idle")return;
   addCoach({say,label:rp?"Coach Sam / 상황극":"Coach Sam",noTurn:true});
@@ -5705,6 +5986,7 @@ function markClarity(row,words){
   const m=document.createElement("span"); m.className="clar";
   m.textContent=`발음 또렷함 ${avg}점`+(weak.length?` / 약했던 단어: ${weak.slice(0,4).map(w=>w.raw).join(", ")}`:"");
   row.append(m); savePron(avg);
+  if(avg<75&&weak.length){const b=row.querySelector(".bubble");savePronNote(b?b.textContent.trim():"",weak.map(w=>w.raw),avg)}   // v10.0: 오답노트 > 발음
 }
 let pronHist=load("oc_pron",[]);
 function savePron(v){if(typeof callStats!=="undefined")callStats.pron.push(v);try{dAdd("ps",v);dAdd("pn");saveDaily()}catch(e){}pronHist.push(v);pronHist=pronHist.slice(-50);store("oc_pron",pronHist);renderSide()}
@@ -5800,7 +6082,7 @@ async function genExpressions(force){
       const ex=(r&&Array.isArray(r.expressions)?r.expressions:[]).filter(x=>x&&x.en&&x.match).slice(0,3).map(x=>({en:String(x.en).trim(),ko:clean(String(x.ko||"")),match:norm(String(x.match).replace(/\.\.\.|…/g," ")).join(" "),tag:clean(String(x.tag||"")).replace(/[·]/g," ").trim().slice(0,10),used:false})).filter(x=>x.match);
       if(!ex.length)return;
       if(lvNow()!==lv){exprStore(ex,lv,day);return}   // v9.7: the level changed while waiting: keep this set for that level
-      todayExpr=ex; todayExpr.day=day; todayExpr.level=lv; saveDayExpr(); exprTagFill();
+      todayExpr=ex; todayExpr.day=day; todayExpr.level=lv; saveDayExpr(); exprTagFill(); ex.forEach(x=>rememberLearned("expr",x.en));
       store("oc_expr_seen",(load("oc_expr_seen",[])||[]).concat(ex.map(x=>x.en)).slice(-90)); dAdd("et",ex.length); saveDaily();
       if(phase!=="idle")renderExprCard(); saveCallSoon(); updateStudyBar(); if(!$("exprSheet").hidden)renderExprSheet(); if(view==="home")renderHome();
     }catch(e){logErr("오늘의 표현",e)}
@@ -5844,6 +6126,19 @@ const nextDay=(k,n=1)=>{const d=new Date(k+"T12:00:00");d.setDate(d.getDate()+n)
 function saveQ(){const v=Object.values(qItems);if(v.length>300){v.filter(x=>x.done).sort((a,b)=>(a.lastDay||"").localeCompare(b.lastDay||"")).slice(0,v.length-300).forEach(x=>delete qItems[x.k])}store("oc_qitems",qItems)}
 const sentKey=it=>it.said+"|"+it.model;
 function unregistered(){const have=new Set(Object.values(qItems).map(x=>x.sk));return koItems().filter(it=>!have.has(sentKey(it)))}
+/* v10.0: today's expressions and English sentences Sam fixed become review questions too (made here, no AI) */
+function localItems(){
+  const have=new Set(Object.values(qItems).map(x=>x.sk)), t=dayKey(), out=[];
+  todayItems().forEach(it=>{if(hasKo(it.said)||hasKo(it.model)||norm(it.said).join(" ")===norm(it.model).join(" "))return;const sk=sentKey(it);if(have.has(sk))return;have.add(sk);out.push({k:sk+"|fix",sk,said:it.said,model:it.model,type:"fix",ko:"",ans:it.model,pre:"",post:"",added:t,due:t,need:1,streak:0,done:false})});
+  todayExpr.forEach(x=>{if(!x.ko||!x.en)return;const it={said:x.ko,model:x.en},sk=sentKey(it);if(have.has(sk))return;have.add(sk);out.push({k:sk+"|ex",sk,said:x.ko,model:x.en,type:"full",ko:x.ko,ans:x.en,pre:"",post:"",added:t,due:t,need:1,streak:0,done:false,src:"expr"})});
+  return out;
+}
+function syncLocalItems(){const a=localItems();if(!a.length)return 0;a.forEach(x=>{qItems[x.k]=x});saveQ();return a.length}
+function qzPick(pool,room){   // recent wrong ones, ones he keeps getting wrong, today's, then a few at random
+  const t=dayKey(), A=shuffleArr(pool.filter(x=>x.lastOk===false)), B=shuffleArr(pool.filter(x=>x.lastOk!==false&&(x.wrong||0)>=2)), C=shuffleArr(pool.filter(x=>x.lastOk!==false&&(x.wrong||0)<2&&x.added===t)), D=shuffleArr(pool.filter(x=>x.lastOk!==false&&(x.wrong||0)<2&&x.added!==t));
+  return [...A.slice(0,3),...B.slice(0,2),...C.slice(0,3),...D.slice(0,2)].concat(shuffleArr([...A.slice(3),...B.slice(2),...C.slice(3),...D.slice(2)])).slice(0,room);
+}
+function fixRange(said,model){const S=new Set(norm(said)),ws=czWords(model);let a=-1,b=-1;for(let i=0;i<ws.length;i++){const w=norm(ws[i].w)[0]||ws[i].lw;if(!S.has(w)){if(a<0)a=i;b=i}else if(a>=0)break}return a<0?null:{s:ws[a].s,e:ws[b].e}}
 function dueItems(){const t=dayKey();return Object.values(qItems).filter(x=>!x.done&&x.due<=t&&!(x.lastDay===t&&x.lastOk))}
 /* v9.9: at most 10 questions a day in 복습하기, picked at random from everything that is due. Today's picks are kept (oc_qz_day):
    a wrong one stays in today's set until it is right, the rest wait for the next days */
@@ -5851,7 +6146,7 @@ const QZ_DAY_MAX=10;
 function qzDay(){const t=dayKey();let s=load("oc_qz_day",null);if(!s||s.day!==t||!Array.isArray(s.keys))s={day:t,keys:[]};return s}
 function qzToday(fill){
   const s=qzDay(), inSet=new Set(s.keys), due=dueItems();
-  if(fill&&s.keys.length<QZ_DAY_MAX){const add=shuffleArr(due.filter(x=>!inSet.has(x.k))).slice(0,QZ_DAY_MAX-s.keys.length);if(add.length){add.forEach(x=>{s.keys.push(x.k);inSet.add(x.k)});store("oc_qz_day",s)}}
+  if(fill&&s.keys.length<QZ_DAY_MAX){const add=qzPick(due.filter(x=>!inSet.has(x.k)),QZ_DAY_MAX-s.keys.length);if(add.length){add.forEach(x=>{s.keys.push(x.k);inSet.add(x.k)});store("oc_qz_day",s)}}
   return due.filter(x=>inSet.has(x.k));
 }
 function quizPending(){const s=qzDay(),inSet=new Set(s.keys),due=dueItems(),inN=due.filter(x=>inSet.has(x.k)).length,room=Math.max(0,QZ_DAY_MAX-s.keys.length);return inN+Math.min(room,due.filter(x=>!inSet.has(x.k)).length+unregistered().length)}
@@ -5934,12 +6229,13 @@ async function buildQuiz(items){
   return qs.slice(0,12);
 }
 function localCheck(q,v){
-  if(q.type==="full")return similarity(v,q.ans)>=0.8;
+  if(q.type==="full"||q.type==="fix")return similarity(v,q.ans)>=0.8;
   const strip=t=>norm(t).join(" ").replace(/^(a|an|the) /,"");
   return strip(v)===strip(q.ans)||similarity(v,q.ans)>=0.85||similarity(v,q.it.model)>=0.85||similarity(q.pre+" "+v+" "+q.post,q.it.model)>=0.92;
 }
 const QJ_SYS=`You check a Korean learner's English answer in a quiz. Reply ONLY JSON {"correct":true,"note_ko":""}.
 type "blank": he fills the ___ in "sentence" to say the Korean "ko". Correct if the sentence with his answer is natural English with the same meaning as "expected".
+type "fix": he says the English sentence "said" again, correctly. Correct if his sentence is natural, grammatical English with the same meaning as "expected".
 type "full": he says the Korean "ko" in English. Correct if his sentence is natural, grammatical English that means the same. Never mark a correct answer wrong just because it differs from "expected": any natural correct wording with the same meaning is correct.
 Ignore capital letters, punctuation and a missing final period. A small speech-recognition slip that is clearly the right word is fine. Wrong tense, wrong word, a different meaning, or Korean words are wrong.
 "note_ko": when wrong, one short natural Korean sentence in 해요체 saying what to fix (no middle dot). Empty when correct.`;
@@ -5948,7 +6244,7 @@ async function judgeQuiz(q,v){
   if(localCheck(q,v))return {ok:true};
   if(!cfg.key)return {ok:false};
   try{
-    const r=await chatJSON([{role:"system",content:QJ_SYS},{role:"user",content:JSON.stringify(q.type==="full"?{type:"full",ko:q.ko,expected:q.ans,answer:v}:{type:"blank",sentence:q.pre+"___"+q.post,ko:q.ko,expected:q.ans,answer:v})}]);
+    const r=await chatJSON([{role:"system",content:QJ_SYS},{role:"user",content:JSON.stringify(q.type==="fix"?{type:"fix",said:q.it.said,expected:q.ans,answer:v}:q.type==="full"?{type:"full",ko:q.ko,expected:q.ans,answer:v}:{type:"blank",sentence:q.pre+"___"+q.post,ko:q.ko,expected:q.ans,answer:v})}]);
     const ok=!!(r&&r.correct===true);
     return {ok,note:ok?"":clean(String(r&&r.note_ko||""))};
   }catch(e){logErr("퀴즈 채점",e);return {ok:false}}
@@ -5961,31 +6257,36 @@ async function openQuiz(){
   stopAudio();
   $("quizSheet").hidden=false; $("qzProg").textContent=""; $("qzDock").hidden=true;
   const my={qs:[],i:0,res:[],loading:true}; quiz=my;
+  syncLocalItems();
   if(unregistered().length){$("qzBody").innerHTML=`<div class="qz-load"><span class="qz-dots"><i></i><i></i><i></i></span>문제를 만들고 있어요</div>`;await syncQuizItems();if(quiz!==my)return}
   const t=dayKey(), due=qzToday(true);   // v9.9: today's 10 at most
   if(!due.length){
     quiz=null;
     const capped=dueItems().length, later=Object.values(qItems).filter(x=>!x.done&&x.due>t).length;   // waiting because of the 10 a day / wrong ones for the next days
     $("qzBody").innerHTML=Object.keys(qItems).length?`<div class="qz-empty"><div class="qz-eic">${QZ_ICON}</div><b>오늘 풀 문제를 다 풀었어요</b><p>${capped?`복습하기는 하루에 ${QZ_DAY_MAX}문제까지 나와요. 남은 ${capped+later}문제는 내일부터 이어서 나와요.`:later?`틀렸던 ${later}문제는 내일 다시 나와요.`:"새로 한국어로 말한 부분이 생기면 여기 문제로 나와요."}</p><button id="qzDone" class="primary">닫기</button></div>`:QZ_EMPTY;
-    $("qzDone").onclick=closeQuiz; return;
+    $("qzDone").onclick=closeQuiz; rtMark("review");
+    if(routine){const a=document.createElement("button");a.id="qzRt";a.className="primary";a.textContent="학습 완료 →";$("qzDone").classList.remove("primary");$("qzDone").after(a);a.onclick=()=>{closeQuiz(true);rtGo("review")}}
+    return;
   }
   const pick=shuffleArr(due.slice());   // v9.9: today's picks in random order
   my.qs=pick.map(x=>levelQ({key:x.k,type:x.type,it:{said:x.said,model:x.model},ko:x.ko,ans:x.ans,pre:x.pre||"",post:x.post||"",carried:x.added<t,wrongBefore:(x.wrong||0)>0}));
   my.loading=false; renderQuiz();
 }
-function closeQuiz(){qtStop();qaOff(true);$("quizSheet").hidden=true;$("qzDock").hidden=true;$("qzDock").innerHTML="";micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};quiz=null;clearInterval(renderQuiz.t)}
+function closeQuiz(stay){stay=stay===true;if(!stay&&routine&&view==="flow")setTimeout(()=>{if(view==="flow"&&$("chalSheet").hidden&&$("quizSheet").hidden)showView("learn")},0);rtClockStop();qtStop();qaOff(true);$("quizSheet").hidden=true;$("qzDock").hidden=true;$("qzDock").innerHTML="";micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};quiz=null;clearInterval(renderQuiz.t)}
 function renderQuiz(){
   const q=quiz.qs[quiz.i], b=$("qzBody");
   clearInterval(renderQuiz.t); if(ql.on||ql.busy)qlStop(false,true);
   $("qzProg").textContent=`${quiz.i+1} / ${quiz.qs.length}`;
   const chip=q.carried?'<div class="qz-chip">다시 나온 문제</div>':"";
-  const head=q.type==="full"
+  const head=q.type==="fix"
+    ?`${chip}<div class="qz-q">이 문장을 자연스럽게 고쳐서 말하거나 입력하세요</div><div class="qz-s qz-fix">${esc(q.it.said)}</div>`
+    :q.type==="full"
     ?`${chip}<div class="qz-q">이 말을 영어로 말하거나 입력하세요</div><div class="qz-s qz-ko">${esc(smoothKo(q.ko))}</div>`
     :q.cz   // v9.7 초급/중급: the English with a blank, the Korean meaning under it
-    ?`${chip}<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank ch-bl">${czGap(q.ans)}</span>${esc(q.post)}</div><div class="ch-ko">${esc(smoothKo(q.mean))}</div>${q.said?`<div class="qz-hint">내가 한 말: ${esc(smoothKo(q.said))}</div>`:""}`
+    ?`${chip}<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank ch-bl">${czGap(q.ans)}</span>${esc(q.post)}</div>${q.mean?`<div class="ch-ko">${esc(smoothKo(q.mean))}</div>`:""}${q.said?`<div class="qz-hint">내가 한 말: ${esc(smoothKo(q.said))}</div>`:""}`
     :`${chip}<div class="qz-q">빈칸에 들어갈 영어를 말하거나 입력하세요</div><div class="qz-s">${esc(q.pre)}<span class="qz-blank">${esc(q.ko)}</span>${esc(q.post)}</div><div class="qz-hint">내가 한 말: ${esc(smoothKo(q.it.said))}</div>`;
   b.innerHTML=qtHTML("qzTm")+head+`<div id="qzFb"></div><button class="qz-skip" id="qzDrop">이 문제는 퀴즈에서 빼기</button><div class="listen qz-ls" id="qzLs" hidden aria-live="polite"><span class="lv" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="ls-t"><b>듣고 있어요</b><small></small></span></div>`;
-  {const d=$("qzDock");d.hidden=false;d.innerHTML=`<textarea id="qzInput" rows="1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${q.type==="full"?"영어 문장":"빈칸에 들어갈 영어"}"></textarea><button class="mic" id="qzMic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button class="send" id="qzOk" aria-label="확인">${$("send").querySelector("svg").outerHTML}</button>`}   // v9.8: the chat's input bar
+  {const d=$("qzDock");d.hidden=false;d.innerHTML=`<textarea id="qzInput" rows="1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${q.type==="full"||q.type==="fix"?"영어 문장":"빈칸에 들어갈 영어"}"></textarea><button class="mic" id="qzMic" aria-label="말하기">${$("micBtn").querySelector("svg").outerHTML}</button><button class="send" id="qzOk" aria-label="확인">${$("send").querySelector("svg").outerHTML}</button>`}   // v9.8: the chat's input bar
   $("qzDrop").onclick=()=>{qa.tok++;const e=qItems[q.key];if(e){e.done=true;e.removed=true;saveQ()}quiz.qs.splice(quiz.i,1);updateStudyBar();if(quiz.i<quiz.qs.length)renderQuiz();else if(quiz.res.length)quizResult();else closeQuiz()};
   const inp=$("qzInput"); inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();$("qzOk").click()}});
   $("qzOk").onclick=async()=>{
@@ -5997,7 +6298,7 @@ function renderQuiz(){
     if(!quiz||quiz.qs[quiz.i]!==q)return;
     answerQuiz(r.ok,v,r.note);
   };
-  const lis={bar:$("qzLs"),btn:$("qzMic"),hint:q.type==="full"?`He is saying this in English: "${smoothKo(q.ko)}".`:`He is saying only the missing English word or words for this sentence: "${q.pre}___${q.post}".`,onText:t=>{if(!quiz||quiz.qs[quiz.i]!==q||q.done)return;inp.value=t;$("qzOk").click()},done:()=>!!q.done,next:()=>{const nx=$("qzNext");if(nx)nx.click()}};
+  const lis={bar:$("qzLs"),btn:$("qzMic"),hint:q.type==="fix"?`He is saying a corrected version of this English sentence: "${q.it.said}".`:q.type==="full"?`He is saying this in English: "${smoothKo(q.ko)}".`:`He is saying only the missing English word or words for this sentence: "${q.pre}___${q.post}".`,onText:t=>{if(!quiz||quiz.qs[quiz.i]!==q||q.done)return;inp.value=t;$("qzOk").click()},done:()=>!!q.done,next:()=>{const nx=$("qzNext");if(nx)nx.click()}};
   $("qzMic").onclick=()=>qaTap(lis);
   qaSync(); if(qa.on){const tk=qa.tok;setTimeout(()=>{if(qa.on&&qa.tok===tk&&quiz&&quiz.qs[quiz.i]===q&&!q.done)qaListen(lis)},250)}
   let typedAt=0; inp.addEventListener("input",()=>{typedAt=performance.now()});
@@ -6023,7 +6324,8 @@ function quizResult(){
   callStats.quiz={ok:n,total:tot}; saveCallSoon(); dAdd("qo",n); dAdd("qt",tot); saveDaily(); renderHistory();
   const wrong=quiz.qs.filter((q,i)=>!quiz.res[i]);
   $("qzProg").textContent="";
-  $("qzBody").innerHTML=`<div class="qz-score"><b>${n}</b> / ${tot}</div><div class="qz-q">${tot}문제 중 ${n}개 맞았어요.${wrong.length?` 틀린 ${wrong.length}문제는 다시 맞힐 때까지 남고, 내일과 모레 다시 나와요.`:""}</div><div class="qz-list">${quiz.qs.map((q,i)=>`<div class="qz-row"><span class="mk ${quiz.res[i]?"o":"x"}">${quiz.res[i]?"O":"X"}</span><span>${esc(q.type==="blank"?q.ans:q.it.model)} <span class="ko">${esc(q.ko)}</span>${quiz.res[i]?(qItems[q.key]&&qItems[q.key].done?'<span class="qz-tag ok">완료</span>':'<span class="qz-tag">내일 한 번 더</span>'):'<span class="qz-tag bad">다시 나와요</span>'}</span></div>`).join("")}</div><div class="acts">${wrong.length?'<button id="qzRetry" class="primary">틀린 것만 다시</button>':""}<button id="qzDone">닫기</button></div>`;
+  $("qzBody").innerHTML=`<div class="qz-score"><b>${n}</b> / ${tot}</div><div class="qz-q">${tot}문제 중 ${n}개 맞았어요.${wrong.length?` 틀린 ${wrong.length}문제는 다시 맞힐 때까지 남고, 내일과 모레 다시 나와요.`:""}</div><div class="qz-list">${quiz.qs.map((q,i)=>`<div class="qz-row"><span class="mk ${quiz.res[i]?"o":"x"}">${quiz.res[i]?"O":"X"}</span><span class="ch-r">${q.type==="blank"?`${esc(q.pre||"")}<ins>${esc(q.ans)}</ins>${esc(q.post||"")}`:esc(q.it.model)} <span class="ko">${esc(q.mean||q.ko||"")}</span>${quiz.res[i]?(qItems[q.key]&&qItems[q.key].done?'<span class="qz-tag ok">완료</span>':'<span class="qz-tag">내일 한 번 더</span>'):'<span class="qz-tag bad">다시 나와요</span>'}</span></div>`).join("")}</div><div class="acts">${wrong.length?'<button id="qzRetry" class="primary">틀린 것만 다시</button>':""}<button id="qzDone">닫기</button>${routine?`<button id="qzRt"${wrong.length?"":' class="primary"'}>학습 완료 →</button>`:""}</div>`;
+  rtMark("review"); if($("qzRt"))$("qzRt").onclick=()=>{closeQuiz(true);rtGo("review")};
   if(wrong.length)$("qzRetry").onclick=()=>{quiz={qs:wrong.map(q=>Object.assign({},q,{done:false,checking:false})),i:0,res:[]};renderQuiz()};
   $("qzDone").onclick=closeQuiz;
 }
@@ -6134,7 +6436,7 @@ function qtStart(el,o){
     const hold=!!o.busy(); el.classList.toggle("hold",hold);
     if(hold)return;
     acc+=dt;
-    while(acc>=1000&&qt.left>0){acc-=1000;qt.left--;paint();if(qt.left>0)sfx(qt.left<=3?"beep":"tick")}
+    while(acc>=1000&&qt.left>0){acc-=1000;qt.left--;paint();if(qt.left>0&&cfg.qtSound!==false)sfx(qt.left<=3?"beep":"tick")}
     if(qt.left<=0){qtStop();o.up()}
   },100);
 }
@@ -6145,7 +6447,9 @@ Make exactly 5 different, natural, everyday English sentences that fit the topic
 In each sentence pick the blank by level: beginner = exactly ONE useful word; intermediate = a natural chunk of 2 to 4 words (like "a lot of", "get used to", "on my way"); advanced = a natural chunk of 2 to 4 words. It must appear exactly in the sentence. Do not blank names, numbers or "a/an/the".
 "ko": natural Korean translation of the whole sentence in 해요체, no middle dot.
 "hint": a short Korean hint for the blank (meaning only, no English), e.g. "~에 익숙하다".
+If "use" is given (today's expressions and sentences he was corrected on today), build the items from it first: for each "use" sentence make one item that keeps its key words, the same sentence or a short natural variation in another everyday situation. If there are fewer than 5, add sentences that fit the topic.
 Do not reuse sentences or blanks from "avoid". Reply ONLY JSON {"items":[{"en":"","blank":"","ko":"","hint":""}]}`;
+function chalMaterial(){const out=[],seen=new Set(),t=dayKey();const add=s=>{s=String(s||"").trim();const k=s.toLowerCase();if(s&&!hasKo(s)&&!seen.has(k)&&out.length<5){seen.add(k);out.push(s)}};todayExpr.forEach(x=>add(x.en));notes.filter(n=>n&&n.model&&n.at&&dayKey(new Date(n.at))===t).slice().reverse().forEach(n=>add(n.model));return out}
 /* v9.7: one challenge per level a day (oc_chal_lv); the current level's one is also oc_chal */
 function chalLoad(){
   const lv=lvNow(), ok=x=>x&&x.day===dayKey()&&Array.isArray(x.items)&&x.items.length===5;
@@ -6163,7 +6467,7 @@ async function chalMake(){
   if(chalBusy)return chalBusy;
   chalBusy=(async()=>{
     const seen=load("oc_chal_seen",[])||[], lv=lvNow();
-    const r=await chatJSON([{role:"system",content:CH_SYS},{role:"user",content:JSON.stringify({topic:TOPIC_NAME[$("topic").value]||TOPIC_NAME.daily,level:lv,date:dayKey(),avoid:seen.slice(-40)})}]);
+    const r=await chatJSON([{role:"system",content:CH_SYS},{role:"user",content:JSON.stringify({topic:TOPIC_NAME[$("topic").value]||TOPIC_NAME.daily,level:lv,date:dayKey(),use:chalMaterial(),avoid:seen.slice(-40)})}]);
     const items=(r&&Array.isArray(r.items)?r.items:[]).map(x=>{
       const en=String(x&&x.en||"").trim(), bl=String(x&&x.blank||"").trim(); if(!en||!bl)return null;
       const i=en.toLowerCase().indexOf(bl.toLowerCase()); if(i<0)return null;
@@ -6186,7 +6490,7 @@ async function openChal(){
   chal={c,i:c.res.findIndex(x=>x===null||x===undefined)};
   if(chal.i<0)chalResult(); else renderChal();
 }
-function closeChal(){qtStop();qaOff(true);$("chalSheet").hidden=true;$("chDock").hidden=true;$("chDock").innerHTML="";micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};chal=null;clearInterval(renderChal.t);if(view==="home")renderHome();renderHistory()}
+function closeChal(stay){stay=stay===true;if(!stay&&routine&&view==="flow")setTimeout(()=>{if(view==="flow"&&$("chalSheet").hidden&&$("quizSheet").hidden)showView("learn")},0);rtClockStop();qtStop();qaOff(true);$("chalSheet").hidden=true;$("chDock").hidden=true;$("chDock").innerHTML="";micTarget=null;qlStop(false);if(recording)try{toggleMic()}catch(e){};chal=null;clearInterval(renderChal.t);if(view==="home")renderHome();renderHistory()}
 function renderChal(){
   const c=chal.c, q=c.items[chal.i], b=$("chBody"), full=chalFull(c);
   clearInterval(renderChal.t); if(ql.on||ql.busy)qlStop(false,true);
@@ -6230,9 +6534,11 @@ function chalResult(){
   clearInterval(renderChal.t); qtStop(); qaOff(false); $("chDock").hidden=true;
   const c=chal.c, n=c.res.filter(x=>x===true).length;
   $("chProg").textContent="";
-  $("chBody").innerHTML=`<div class="qz-score"><b>${n}</b> / 5</div><div class="qz-q">${n===5?"오늘의 챌린지를 모두 맞혔어요.":`5문제 중 ${n}개 맞혔어요. 내일 새 문장 5개가 나와요.`}</div><div class="qz-list">${c.items.map((q,i)=>`<div class="qz-row"><span class="mk ${c.res[i]?"o":"x"}">${c.res[i]?"O":"X"}</span><span class="ch-r">${esc(q.pre)}<ins>${esc(q.ans)}</ins>${esc(q.post)} <span class="ko">${esc(q.ko)}</span>${c.res[i]?"":`<span class="qz-tag bad">${c.given[i]?"내 답: "+esc(c.given[i]):"시간 초과"}</span>`}</span><button class="pl ch-pl" data-i="${i}" aria-label="듣기">${PLAY_SVG}</button></div>`).join("")}</div><div class="acts"><button id="chDone" class="primary">닫기</button></div>`;
+  $("chBody").innerHTML=`<div class="qz-score"><b>${n}</b> / 5</div><div class="qz-q">${n===5?"오늘의 챌린지를 모두 맞혔어요.":`5문제 중 ${n}개 맞혔어요. 내일 새 문장 5개가 나와요.`}</div><div class="qz-list">${c.items.map((q,i)=>`<div class="qz-row"><span class="mk ${c.res[i]?"o":"x"}">${c.res[i]?"O":"X"}</span><span class="ch-r">${esc(q.pre)}<ins>${esc(q.ans)}</ins>${esc(q.post)} <span class="ko">${esc(q.ko)}</span>${c.res[i]?"":`<span class="qz-tag bad">${c.given[i]?"내 답: "+esc(c.given[i]):"시간 초과"}</span>`}</span><button class="pl ch-pl" data-i="${i}" aria-label="듣기">${PLAY_SVG}</button></div>`).join("")}</div><div class="acts">${routine?'<button id="chDone">닫기</button><button id="chRt" class="primary">복습하기 →</button>':'<button id="chDone" class="primary">닫기</button>'}</div>`;
   $("chBody").querySelectorAll(".ch-pl").forEach(x=>x.onclick=()=>playBtn(x,c.items[+x.dataset.i].en));
   $("chDone").onclick=closeChal;
+  if(c.res.every(x=>x!==null&&x!==undefined))rtMark("chal");
+  if($("chRt"))$("chRt").onclick=()=>{closeChal(true);rtGo("chal")};
 }
 
 /* ---------- Study bar + today's expressions sheet ---------- */
@@ -6416,7 +6722,7 @@ function rpPick(x){
 }
 function rpFrom(id,ci,vi,done){const x=id&&ROLEPLAYS.find(r=>r.id===id);if(!x)return null;const r=rpMake(x,ci|0,vi|0);r.done=!!done;return r}
 function openRoleplay(){closeMore();showView("rp")}
-function startRoleplay(id){const x=ROLEPLAYS.find(r=>r.id===id);if(!x)return;$("rpSheet").hidden=true;
+function startRoleplay(id){const x=ROLEPLAYS.find(r=>r.id===id);if(!x)return;routine=false;$("rpSheet").hidden=true;
   if(rp&&rp.id===id&&phase!=="idle"&&!callEnded){showView("call");return}
   const p=parked();
   if(!rp&&p&&p.rp===id){swapSession("rp",()=>{});return}
@@ -6426,7 +6732,7 @@ function startRoleplay(id){const x=ROLEPLAYS.find(r=>r.id===id);if(!x)return;$("
   if(p&&p.rp){archiveSnap(p);try{localStorage.removeItem(PARK_KEY)}catch(e){}}
   stopAudio();rp=rpPick(x);showView("call");startTalk(false);micAutoStart()}
 async function showRpDone(){
-  const say=`목표를 마쳤어요. ${callStats.turns}번 말해서 끝냈어요.`;
+  const say=`좋았어요. 목표를 마쳤어요. ${callStats.turns}번 말해서 끝냈어요.`;
   const parts=[{text:say,who:"coach"}];
   await holdUntilReady(say,"coach");
   addCoach({kind:"role",label:"Coach Sam / 상황극",say,listen:parts,html:`<div class="acts"><button data-act="rp-again">다시 하기</button><button data-act="rp-other">다른 상황</button><button data-act="rp-free">일반 대화로</button></div>`});
@@ -6448,7 +6754,7 @@ function summarize(st){
   if(top)next=`${top[0]} 다시 연습하기${patterns[top[0]]&&patterns[top[0]].tipKo?": "+clean(patterns[top[0]].tipKo):""}`;
   else if(pron!==null&&pron<80)next="발음: 약했던 단어를 천천히 또박또박 다시 말해보기";
   else next="오늘의 표현을 대화에 더 써보기";
-  return {at:st.start,days:st.days||null,quiz:st.quiz||null,minutes,turns:st.turns,perfect:st.perfect,fixes:st.fixes,hints:st.hints||0,pron,learned:(st.learned||[]).slice(-5),top:top?top[0]:"",topN:top?top[1]:0,review:st.review,roleplay:st.roleplay,expr:todayExpr.length?{used,total:todayExpr.length}:null,next,title:callTitle()};
+  return {at:st.start,days:st.days||null,quiz:st.quiz||null,minutes,turns:st.turns,perfect:st.perfect,fixes:st.fixes,hints:st.hints||0,pron,learned:(st.learned||[]).slice(-5),top:top?top[0]:"",topN:top?top[1]:0,review:st.review,roleplay:st.roleplay,expr:todayExpr.length?{used,total:todayExpr.length}:null,next,title:callTitle(),secs:st.secs||0,words:st.words||0,target:st.target||0};
 }
 function archiveCall(){
   if(callStats.archived||callStats.turns<1)return null;
@@ -6473,10 +6779,12 @@ async function endCall(){
   callId++; busy=false; chain=false; lockUI();
   stopAudio(); if(auto.on)stopAuto(); review=null;
   clearInterval(timerId); try{msg.blur()}catch(e){}
+  callStats.secs=Math.max(0,Math.round(((pausedAt||Date.now())-t0)/1000));
   const sum=archiveCall()||summarize(callStats);
   setPhase("idle"); setEnded(true,sum); caption(null);
   try{localStorage.removeItem(CALL_KEY)}catch(e){}
   renderHistory(); sfx("end");
+  try{afterTalkEnd(sum)}catch(e){logErr("결과",e)}   // v10.0: in 오늘 학습 the result screen comes next
 }
 /* ended state: like a pause. The menu and the bottom bar offer 재시작하기; a refresh starts a new conversation (records stay) */
 var callEnded=false;
@@ -6507,7 +6815,7 @@ function renderHistory(){
     el.innerHTML=`<span class="dt">${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]}) ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}${h.title?` / ${esc(h.title)}`:""}</span><span class="sm">대화 시간 ${h.minutes}분 / 말한 횟수 ${h.turns}번 / 오답 ${h.fixes}회 / 발음 ${h.pron!==null&&h.pron!==undefined?h.pron+"점":"기록 없음"}</span>`;
     box.append(el);
   });
-  renderCal(); renderWeekCard(); renderWeekly(); renderTrend(); renderHighlights(); if(typeof view!=="undefined"&&view==="home")renderHome();
+  renderCal(); renderWeekCard(); renderWeekly(); renderTrend(); renderHighlights(); if(typeof view!=="undefined"&&view==="home")renderHome(); if(typeof view!=="undefined"&&(view==="rec"||innerWidth>900))renderRec();
 }
 
 /* ---------- Keep the call when the page is refreshed ---------- */
@@ -6614,7 +6922,7 @@ if(!daily||typeof daily!=="object"){   // first run: rebuild what we can from pa
 }
 function dayRec(k){k=k||dayKey();return daily[k]||(daily[k]={})}
 const DONE_MS=10*60000;   // a day counts as learned after 10 minutes of back-and-forth talk
-function doneDay(k){const r=daily[k];return !!(r&&(r.ms||0)>=DONE_MS)}
+function doneDay(k){const r=daily[k];return !!(r&&((r.ms||0)>=DONE_MS||r.rt))}   // v10.0: a finished routine counts too
 function firstDay(){return Object.keys(daily).filter(k=>(daily[k]||{}).t>0).sort()[0]||null}
 function dAdd(f,n=1){const d=dayRec();d[f]=(d[f]||0)+n}
 function dLabel(k,n){const d=dayRec();d.lb=d.lb||{};d.lb[k]=Math.max(0,(d.lb[k]||0)+n);if(!d.lb[k])delete d.lb[k]}
@@ -7196,9 +7504,9 @@ function cloze(model,level,range){
 function czGap(ans){return String(ans).trim().split(/\s+/).map(w=>"_".repeat(Math.max(2,Math.min(9,w.length)))).join(" ")}
 function levelQ(q){
   const lv=lvNow(); if(lv==="advanced")return q;
-  const range=q.type==="blank"?{s:q.pre.length,e:q.pre.length+q.ans.length}:null;
+  const range=q.type==="blank"?{s:q.pre.length,e:q.pre.length+q.ans.length}:q.type==="fix"?fixRange(q.it.said,q.it.model):null;
   const c=cloze(q.it.model,lv,range); if(!c||!c.ans.trim())return q;
-  return Object.assign({},q,{type:"blank",cz:true,lv,pre:c.pre,ans:c.ans,post:c.post,mean:q.ko,said:q.type==="blank"?q.it.said:""});
+  return Object.assign({},q,{type:"blank",cz:true,lv,pre:c.pre,ans:c.ans,post:c.post,mean:q.ko,said:q.type==="blank"||q.type==="fix"?q.it.said:""});
 }
 /* v8.9: hands-free answer for 오늘의 챌린지 and 복습하기: tap the mic once and speak; it stops by itself when you pause, writes it down and checks it.
    Same listening status as the call (듣고 있어요 / 말하는 중 / 받아쓰는 중) with a live level meter. Tap again to finish early. */
@@ -7260,7 +7568,7 @@ function qlLoop(t){
       if(ql.hands&&qa.on){qa.on=false;qa.tok++;qaSync();micBeep(false);ql.msg="말소리가 없어서 마이크를 껐어요";qlUI("hint")}   // v9.7: hands-free turns itself off after a long silence
       else{if(!ql.quiet)micBeep(false);ql.msg="말소리가 안 들렸어요";qlUI("hint")}}
   }else{
-    if(lv<base*0.8){ql.silenceMs+=dt;if(ql.silenceMs>800)qlStop(true)}
+    if(lv<base*0.8){ql.silenceMs+=dt;if(ql.silenceMs>(ql.opts&&ql.opts.long?1200:800))qlStop(true)}   // whole sentences get a longer pause
     else ql.silenceMs=0;
     if(age>20000)qlStop(true);
   }
@@ -7442,7 +7750,7 @@ function autoLoop(t){
     else auto.speechMs=Math.max(0,auto.speechMs-dt);
     if(age>(playing?2500:12000))autoDiscard();
   }else{
-    if(lv<base*0.8){auto.silenceMs+=dt;if(auto.silenceMs>900)autoFinish()}
+    if(lv<base*0.8){auto.silenceMs+=dt;if(auto.silenceMs>1000)autoFinish()}
     else auto.silenceMs=0;
     if(auto.rec&&age>45000)autoFinish();
   }
@@ -7623,7 +7931,7 @@ const LEVEL_HELP={beginner:"짧고 쉬운 문장으로 대화하고, 큰 실수�
 const ENGINE_HELP={stable:"목소리가 항상 같아요",expressive:"가끔 목소리가 달라져요"};
 function syncSettingsUI(){
   document.querySelectorAll(".seg[data-for]").forEach(g=>{const v=$(g.dataset.for).value;g.querySelectorAll("button[data-v]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===v)))});
-  setSw($("exprSw"),$("exprOn").value!=="0"); setSw($("voiceToggle"),voiceOn);
+  setSw($("exprSw"),$("exprOn").value!=="0"); setSw($("voiceToggle"),voiceOn); setSw($("tickSw"),cfg.qtSound!==false);
   $("levelHelp").textContent=LEVEL_HELP[$("level").value]||""; $("engineHelp").textContent=ENGINE_HELP[$("engine").value]||"";
   paintRange($("rate")); paintRange($("coachRate"));
 }
@@ -7641,7 +7949,7 @@ document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(!$("exprSh
 syncSettingsUI(); updateStudyBar();
 
 /* v5.2 record tabs */
-function sideTab(t){document.querySelectorAll(".sd-tabs [data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));document.querySelectorAll(".sd-pane").forEach(p=>p.hidden=p.dataset.pane!==t);try{localStorage.setItem("oc_sidetab",t)}catch(e){}}
+function sideTab(t){$("side").classList.add("det");document.querySelectorAll(".sd-tabs [data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));document.querySelectorAll(".sd-pane").forEach(p=>p.hidden=p.dataset.pane!==t);try{localStorage.setItem("oc_sidetab",t)}catch(e){}}
 document.querySelectorAll(".sd-tabs [data-tab]").forEach(b=>b.onclick=()=>sideTab(b.dataset.tab));
 try{const t=localStorage.getItem("oc_sidetab");if(t&&document.querySelector(`.sd-pane[data-pane="${t}"]`))sideTab(t)}catch(e){}
 
@@ -7673,14 +7981,18 @@ var pausedAt=0;
 function pauseCall(){if(pausedAt||phase==="idle"||callEnded)return;pausedAt=Date.now();clearInterval(timerId);stopAudio();if(auto.on)stopAuto();document.body.classList.add("paused")}
 function resumeCall(){if(!pausedAt)return;t0+=Date.now()-pausedAt;pausedAt=0;document.body.classList.remove("paused");if(phase!=="idle"&&!callEnded){clearInterval(timerId);timerId=setInterval(tick,1000);tick()}}
 function showView(v){
-  if(!["home","call","rp","rec"].includes(v))v="home";
+  if(!["home","learn","flow","call","rp","rec"].includes(v))v="home";
   if(v==="call")resumeCall(); else pauseCall();
+  if(view==="flow"&&v!=="flow"&&typeof ql!=="undefined"&&(ql.on||ql.busy))qlStop(false,true);
   if(v!=="rec"&&v!==view)lastView=v; if(view!=="rec"&&v==="rec")lastView=view;
   view=v; document.body.dataset.view=v; try{sessionStorage.setItem("oc_view",v)}catch(e){}
-  document.querySelectorAll("#tabBar [data-view]").forEach(b=>{if(b.dataset.view===v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  const tab=v==="call"?(rp?"rp":"learn"):v==="flow"?"learn":v;   // v10.0: the talk is a step of 오늘 학습
+  document.querySelectorAll("#tabBar [data-view]").forEach(b=>{if(b.dataset.view===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   if(innerWidth<=900)$("side").classList.toggle("open",v==="rec"); else $("side").classList.remove("open");
+  if(v==="rec")$("side").classList.remove("det");
   if(v!=="call"&&typeof auto!=="undefined"&&auto.on)stopAuto();
-  if(v==="home")renderHome(); if(v==="rp")renderRp(); if(v==="rec"){renderSide();renderHistory()}
+  if(v==="home")renderHome(); if(v==="learn")renderLearn(); if(v==="rp")renderRp(); if(v==="rec"){renderSide();renderHistory();renderRec()}
+  if(v==="call")callHeadSync();
   closeMore();
 }
 function enterCall(){
@@ -7720,43 +8032,9 @@ addEventListener("resize",()=>{try{fitHomeRail()}catch(e){}});
 try{document.fonts&&document.fonts.ready.then(()=>{try{fitHomeRail()}catch(e){}})}catch(e){}
 function applyName(){
   const n=userName(), up=nameUp();
-  const hn=document.querySelector("#hvTitle .hv-name"); if(hn)hn.textContent=n+"!";
+  const hn=document.querySelector("#ttHome .tt-h1 .nm"); if(hn)hn.textContent=n;
   if($("junInitial"))$("junInitial").textContent=n; if($("junName"))$("junName").textContent=n; if($("junPhoto"))$("junPhoto").alt=n;
   document.querySelectorAll("#log .row.me .who-l").forEach(l=>{const t=l.textContent, i=t.indexOf(" (따라 말하기)");const v=i>=0?up+" (따라 말하기)":up;if(t!==v)l.textContent=v});
-}
-function renderHome(){
-  if(!$("homeRail"))return;
-  applyName();
-  const now=new Date(), W="일월화수목금토";
-  $("hvDate").textContent=`${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일(${W[now.getDay()]})`;
-  const live=(!rp&&phase!=="idle"&&!callEnded)||(!!rp&&parkKind()==="free");
-  const qn=quizPending(), eu=todayExpr.filter(x=>x.used).length, et=todayExpr.length, ch=chalStatus();
-  const wk=weekSum(0), wk8=[];for(let w=7;w>=0;w--){const x=weekSum(w);wk8.push(x.acc===null?null:x.acc)}
-  const pts=wk8.map((v,i)=>v===null?null:[i/7*100,40-v*36]).filter(Boolean);
-  const spark=pts.length>1?`<svg class="hv-spark" viewBox="0 0 100 44" preserveAspectRatio="none"><path d="${pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`:"";
-  const callLive=!rp&&phase!=="idle"&&!callEnded;
-  const pillTx=callLive?(pausedAt?"일시정지 ":"대화 중 ")+$("timer").textContent:live?"일시정지":!rp&&callEnded?"대화 종료":"Julia 대기 중";
-  $("hvHero").innerHTML=`<button class="hero" data-go="call" aria-label="${live?"대화 이어서 하기":"대화 시작하기"}"><span class="tx"><span class="pill ${live?"live":""}${live&&(pausedAt||rp)?" paused":""}"><i></i><em id="hvLive" style="font-style:normal">${pillTx}</em></span><span class="hn">Julia와 10분 스몰톡</span><span class="hsub">${esc((LEVEL_NAME[$("level").value]||"초급")+" / "+(TOPIC_NAME[$("topic").value]||TOPIC_NAME.daily))}</span><span class="go">${PHONE_SVG}${live?"대화 이어서 하기":"대화 시작하기"}</span><span class="last">${esc(lastCallTxt())}</span></span><span class="ph"><img src="${EMO.happy}" alt=""></span></button>`;
-  const cards=[
-    `<button class="rc" data-go="rp" role="listitem"><span class="vis ill"><img src="${CAT2.rp}" alt=""></span><span class="lab"><b>상황극</b><span>20가지 상황</span></span></button>`,
-    `<button class="rc" data-go="chal" role="listitem"><span class="vis ill"><img src="${CAT2.chal}" alt=""><span class="cnt sc${ch.done?" done":""}">${ch.score}/5</span></span><span class="lab"><b>오늘의 챌린지</b><span>${ch.done?`오늘 ${ch.score} / 5 맞혔어요`:ch.n?`${ch.n} / 5 푸는 중`:"매일 새로운 5문장"}</span></span></button>`,
-    `<button class="rc" data-go="quiz" role="listitem"><span class="vis ill"><img src="${CAT2.review}" alt="">${qn?`<span class="cnt">${qn}</span>`:""}</span><span class="lab"><b>복습하기</b><span>${qn?`${qn}문제 남았어요`:"다시 말해보기"}</span></span></button>`,
-    `<button class="rc" data-go="notes" role="listitem"><span class="vis ill"><img src="${CAT2.notes}" alt=""></span><span class="lab"><b>오답노트</b><span>틀린 문장 모음</span></span></button>`];
-  const rail=$("homeRail"), sl=rail.scrollLeft; rail.innerHTML=cards.join(""); rail.scrollLeft=sl; railDots(rail); railNudge(rail,"oc_nudge_home");
-  requestAnimationFrame(()=>{try{fitHomeRail()}catch(e){}});
-  const sent=$("hvSent");
-  sent.innerHTML=et?todayExpr.map((x,i)=>`<div class="hs${x.used?" used":""}${x.tag?" tagged":""}"><div class="t">${x.tag?`<span class="tg">${esc(x.tag)}</span>`:""}<b>${markMatch(x.en,x.match)}</b><span>${esc(x.ko)}${x.used?" / 대화에서 썼어요":""}</span></div><button class="pl" data-i="${i}" aria-label="듣기">${PLAY_THIN}</button></div>`).join(""):`<div class="hv-empty">${cfg.exprOn===0?"설정에서 오늘의 표현을 켜면 매일 실용 문장 3개가 나와요.":!cfg.key?"연결되면 오늘의 문장 3개가 나와요.":"오늘의 문장을 받고 있어요."}</div>`;
-  sent.querySelectorAll(".pl").forEach(b=>b.onclick=()=>{const t=todayExpr[+b.dataset.i];if(t)playBtn(b,t.en)});
-  prefetchExpr();
-  {const st=new Date();st.setHours(12,0,0,0);st.setDate(st.getDate()-st.getDay());const en=new Date(st);en.setDate(st.getDate()+6);
-   $("hvRange").textContent=rangeTxt(st,en);
-   const tk=dayKey(), first=firstDay(); let n=0;
-   const cells=[...Array(7)].map((_,i)=>{const d=new Date(st);d.setDate(st.getDate()+i);const k=dayKey(d),ok=doneDay(k),r=daily[k]||{};if(ok)n++;
-     const mk=ok?"ok":(k<tk&&first&&k>=first)?"miss":"";const m=Math.round((r.ms||0)/60000);
-     return `<div class="hw-d${k===tk?" today":""}${mk?" "+mk:""}${k>tk?" fut":""}"><span class="w">${W[d.getDay()]}</span><span class="n">${ok?CHECK_SVG:d.getDate()}</span><i aria-hidden="true"></i><span class="sr">${ok?"학습 완료":mk?"학습 안 함":""}</span>${r.t>0&&!ok?`<em>${m}분</em>`:""}</div>`}).join("");
-   const left=Math.max(0,WEEK_GOAL-n);
-   $("hvWeek").innerHTML=`<div class="hw-hd"><div class="hw-big">${n}<small>/ 7일</small></div><div class="hw-goal${left?"":" done"}">${left?`목표 ${WEEK_GOAL}일까지 ${left}일 남았어요`:`이번 주 목표 ${WEEK_GOAL}일 달성했어요`}</div></div><div class="hw-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${WEEK_GOAL}" aria-valuenow="${Math.min(n,WEEK_GOAL)}"><i style="width:${Math.round(Math.min(n,WEEK_GOAL)/WEEK_GOAL*100)}%"></i></div><div class="hw-row">${cells}</div><div class="hw-note">10분 이상 대화한 날에 체크가 돼요</div>`}
-  $("hvStats").innerHTML=tileHTML("#16a34a",P_CLOCK,"연습 시간",wk.min,"분")+tileHTML("#7c5cff",P_QUOTE,"말한 횟수",wk.t,"번")+tileHTML("#e8513f",P_FLAME,"연속 학습",streakDays(),"일");
 }
 var rpSel=null, rpCat="여행";
 /* v9.0: 4 groups of 5 situations. No done marks: a situation can be played again and again, each time with another case */
@@ -7777,10 +8055,6 @@ function renderRp(){
 }
 $("rpFil").addEventListener("click",e=>{const b=e.target.closest("[data-cat]");if(!b)return;const ch=rpCat!==b.dataset.cat;rpCat=b.dataset.cat;rpSel=null;renderRp();if(ch)$("rpRail").scrollLeft=0});
 $("rpRail").addEventListener("click",e=>{const b=e.target.closest("[data-rp]");if(!b)return;rpSel=b.dataset.rp;renderRp()});
-$("hvHero").addEventListener("click",e=>{if(e.target.closest("[data-go=call]"))enterFree()});
-$("homeRail").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;
-  if(g==="call")enterFree(); else if(g==="rp")showView("rp"); else if(g==="chal")openChal(); else if(g==="quiz")openQuiz(); else if(g==="expr")openExpr(); else if(g==="rec")showView("rec"); else if(g==="set")openSettings();
-  else if(g==="topic")openTopic(); else if(g==="review"){if(!cfg.key){noKeyNote();return}showView("call");$("reviewNow").click()} else if(g==="notes"){sideTab("notes");showView("rec")}});
 function topicKo(){const o=$("topic").selectedOptions[0];return o?o.textContent:"일상 수다"}
 function openTopic(){renderTopic();$("topicSheet").hidden=false}
 function renderTopic(){
@@ -7792,15 +8066,15 @@ $("tpBody").addEventListener("click",e=>{const l=e.target.closest("[data-lv]"),t
   if(t){const sel=$("topic");if(sel.value!==t.dataset.tp){sel.value=t.dataset.tp;sel.dispatchEvent(new Event("change"))}$("topicSheet").hidden=true;renderHome()}});
 $("tpClose").onclick=()=>$("topicSheet").hidden=true; backdropClose($("topicSheet"),()=>{$("topicSheet").hidden=true},true);
 $("tabBar").addEventListener("click",e=>{const b=e.target.closest("[data-view]");if(!b)return;if(b.dataset.view==="call")enterCall();else showView(b.dataset.view)});
-$("backHome").onclick=()=>showView("home");
+$("backHome").onclick=()=>showView(rp?"rp":routine?"learn":"home");   // v10.0: back to where the talk was started
 $("chClose").onclick=closeChal; backdropClose($("chalSheet"),closeChal,true);
 $("updBtn").onclick=checkUpdate;
-$("hvSettings").onclick=openSettings; $("rpSettings").onclick=openSettings; $("sdSettings").onclick=openSettings;
+$("rpSettings").onclick=openSettings; $("sdSettings").onclick=openSettings;
 setInterval(()=>{const e=$("hvLive");if(view==="home"&&e&&!rp&&phase!=="idle"&&!callEnded)e.textContent=(pausedAt?"일시정지 ":"대화 중 ")+$("timer").textContent},1000);   // only the clock text changes, so swiping the cards is never interrupted
 function renderHighlights(){const el=$("hlTiles");if(!el)return;const w=weekSum(0);el.innerHTML=tileHTML("#7c5cff",P_QUOTE,"말한 문장",totalTurns(),"개")+tileHTML("#16a34a",P_CLOCK,"이번 주 연습",w.min,"분")+tileHTML("#e8513f",P_FLAME,"연속 학습",streakDays(),"일")+tileHTML("var(--b-primary)",P_TARGET,"이번 주 정확도",w.acc===null?"-":pct(w.acc),w.acc===null?"":"%")}
 
 /* v6.0: mode toggle in the call screen, mic auto-start on a tap */
-function syncMode(){const f=$("modeFree"),r=$("modeRp");if(!f)return;f.setAttribute("aria-pressed",String(!rp));r.setAttribute("aria-pressed",String(!!rp));r.textContent="상황극"}
+function syncMode(){try{callHeadSync()}catch(e){}const f=$("modeFree"),r=$("modeRp");if(!f)return;f.setAttribute("aria-pressed",String(!rp));r.setAttribute("aria-pressed",String(!!rp));r.textContent="상황극"}
 $("modeFree").onclick=()=>{if(!rp)return;enterFree()};
 $("modeRp").onclick=()=>{if(rp)return;if(parkKind()==="rp"){swapSession("rp",()=>{});return}showView("rp")};
 // v7.8: the mic is never switched on by itself the first time. Jaden taps it once (that is when the phone asks for permission);
@@ -7812,10 +8086,10 @@ async function micAutoStart(){
   micBeep(true);toggleAuto().catch(()=>{});
 }
 $("clearAll").onclick=()=>{
-  if(!confirm("주간 리포트, 학습 캘린더, 자주 하는 실수, 오답 노트, 복습 문제, 오늘의 챌린지 결과, 발음 점수, 지난 대화와 지금 대화(상황극 포함)를 모두 지울까요? 지운 기록은 되돌릴 수 없어요."))return;
+  if(!confirm("주간 리포트, 학습 캘린더, 오늘의 10분 학습 진행, 자주 하는 실수, 오답 노트, 복습 문제, 오늘의 챌린지 결과, 발음 점수, 지난 대화와 지금 대화(상황극 포함)를 모두 지울까요? 지운 기록은 되돌릴 수 없어요."))return;
   stopAudio(); if(auto.on)stopAuto();
   patterns={}; notes=[]; pronHist=[]; callHistory=[]; turnCount=0; lastReviewAt=0; daily={}; qItems={};
-  ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_call_park","oc_qz","oc_daily","oc_qitems","oc_chal","oc_chal_seen","oc_chal_lv"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  ["oc_patterns","oc_notes","oc_pron","oc_history","oc_turncount","oc_lastreview","oc_call","oc_call_park","oc_qz","oc_daily","oc_qitems","oc_chal","oc_chal_seen","oc_chal_lv","oc_routine","oc_learned","oc_last_talk","oc_pnotes","oc_qz_day"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
   callStats=newStats(); callStats.archived=true; rp=null; review=null; pending=null; chal=null; try{$("chalSheet").hidden=true}catch(e){}
   $("side").classList.remove("open");
   renderSide(); renderHistory();
@@ -7828,6 +8102,362 @@ $("reloadBtn").onclick=()=>{try{stopAudio()}catch(e){};const u=location.pathname
 $("openSide").onclick=()=>showView("rec");
 $("closeSide").onclick=()=>showView(lastView&&lastView!=="rec"?lastView:"home");
 
+/* =====================================================================================================
+   v10.0 텐톡: one daily 10-minute routine instead of separate menus.
+   홈 (one start button) -> 오늘 학습 (5 steps, unlocked in order, done steps can be done again):
+   1 오늘의 표현 -> 2 Julia와 스몰톡 (ends naturally, then 결과) -> 3 다시 말해보기 -> 4 오늘의 챌린지 -> 5 복습하기 -> 완료 -> 내일로 연결.
+   State per day: oc_routine {day, done:{step:time}, complete}. 상황극 and 기록 are their own tabs.
+   ===================================================================================================== */
+const TI={
+  back:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  arrow:'<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  check:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  checkBig:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  kb:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 10h.01M10 10h.01M13.5 10h.01M17 10h.01M8.5 14h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  skip:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l7 6-7 6zM16.5 6v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l2-1.5-2-3.4-2.3 1a7.6 7.6 0 0 0-2.6-1.5L14.2 2.6h-4l-.3 2.5a7.6 7.6 0 0 0-2.6 1.5l-2.3-1-2 3.4 2 1.5a7.7 7.7 0 0 0 0 3l-2 1.5 2 3.4 2.3-1a7.6 7.6 0 0 0 2.6 1.5l.3 2.5h4l.3-2.5a7.6 7.6 0 0 0 2.6-1.5l2.3 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>'
+};
+const RT_KEY="oc_routine";
+const RT_STEPS=[
+  {id:"expr",n:"오늘의 표현",d:"오늘 쓸 표현 3개를 듣고 따라 말해요",m:1},
+  {id:"talk",n:"Julia와 스몰톡",d:"오늘의 표현을 대화에서 직접 써봐요",m:8},
+  {id:"speak",n:"다시 말해보기",d:"고친 문장과 오늘의 표현을 다시 말해요",m:2},
+  {id:"chal",n:"오늘의 챌린지",d:"오늘 배운 표현으로 5문제, 문제마다 10초",m:1},
+  {id:"review",n:"복습하기",d:"오늘 필요한 문제만 골라 최대 10개",m:2}];
+const RT_IMG={expr:()=>CAT_IMG.expr,talk:()=>EMO.happy,speak:()=>CAT_IMG.quiz,chal:()=>CAT2.chal,review:()=>CAT2.review};
+let routine=false, flow={kind:"",i:0,items:[],tries:0,o:{}}, rtClock=null;
+function rtGet(){let r=load(RT_KEY,null);if(!r||typeof r!=="object"||r.day!==dayKey())r={day:dayKey(),done:{}};if(!r.done||typeof r.done!=="object")r.done={};return r}
+function rtSet(r){store(RT_KEY,r)}
+function rtMark(id){
+  const r=rtGet();
+  if(!r.done[id]){r.done[id]=Date.now();if(!r.complete&&RT_STEPS.every(s=>r.done[s.id])){r.complete=Date.now();dayRec().rt=1;saveDaily()}rtSet(r)}
+  try{if(view==="learn")renderLearn();if(view==="home")renderHome()}catch(e){}
+}
+function rtNext(){const r=rtGet();return RT_STEPS.find(s=>!r.done[s.id])||null}
+function rtIdx(id){return Math.max(0,RT_STEPS.findIndex(s=>s.id===id))}
+function rtCount(){const r=rtGet();return RT_STEPS.filter(s=>r.done[s.id]).length}
+function rtOpen(id){const r=rtGet();return !!r.complete||RT_STEPS.slice(0,rtIdx(id)).every(s=>r.done[s.id])}
+function rtClockStart(id){rtClockStop();rtClock={id,at:Date.now()}}
+function rtClockStop(){if(!rtClock)return;const ms=Math.min(15*60000,Date.now()-rtClock.at);rtClock=null;if(ms>2000){dAdd("st",ms);saveDaily()}}
+function rtStart(id){
+  if(!cfg.key){noKeyNote();return}
+  if(!id){const n=rtNext();if(!n){routine=true;openFlow("done");return}id=n.id}
+  if(!rtOpen(id)){ttToast("앞 단계를 먼저 마쳐 주세요");return}
+  routine=true;
+  if(id==="expr")openFlow("expr");
+  else if(id==="talk")routineTalk();
+  else if(id==="speak")openFlow("speak");
+  else if(id==="chal"){rtClockStart("chal");openChal()}
+  else if(id==="review"){rtClockStart("review");openQuiz()}
+}
+function rtGo(id){rtMark(id);const n=rtNext();if(!n){openFlow("done");return}rtStart(n.id)}   // a step is finished: on to the next one
+function ttToast(t){let d=document.querySelector(".tt-toast");if(!d){d=document.createElement("div");d.className="tt-toast";d.setAttribute("role","status");document.body.append(d)}d.textContent=t;d.hidden=false;clearTimeout(ttToast.t);ttToast.t=setTimeout(()=>{d.hidden=true},2200)}
+function learnedDay(k){const r=daily[k];return !!(r&&((r.ms||0)>=DONE_MS||r.rt))}
+function weekInfo(){
+  const st=new Date();st.setHours(12,0,0,0);st.setDate(st.getDate()-st.getDay());
+  let n=0,ms=0;const days=[],tk=dayKey();
+  for(let i=0;i<7;i++){const d=new Date(st);d.setDate(st.getDate()+i);const k=dayKey(d),r=daily[k]||{},ok=learnedDay(k);if(ok)n++;ms+=(r.ms||0)+(r.st||0);days.push({d,k,ok,today:k===tk,fut:k>tk})}
+  return {n,min:Math.round(ms/60000),days};
+}
+const WEEK_MIN_GOAL=50;
+
+/* ---------- 내일 연결: what was learned or fixed on earlier days comes back in a new context ---------- */
+const LEARN_KEY="oc_learned";
+function rememberLearned(kind,en,said){
+  en=String(en||"").trim(); if(!en||hasKo(en))return;
+  let a=load(LEARN_KEY,[]); if(!Array.isArray(a))a=[];
+  const day=dayKey(); a=a.filter(x=>x&&!(x.day===day&&x.en===en)); a.push({day,kind,en,said:said||""});
+  store(LEARN_KEY,a.slice(-80));
+}
+function carryOver(){   // up to 4 sentences from the last 3 days before today: expressions and fixed sentences, wrong ones first
+  const a=load(LEARN_KEY,[]); if(!Array.isArray(a))return [];
+  const t=dayKey(), lim=dayKey(new Date(Date.now()-3*864e5));
+  const old=a.filter(x=>x&&x.en&&x.day<t&&x.day>=lim);
+  const fx=old.filter(x=>x.kind==="fix").slice(-2), ex=old.filter(x=>x.kind==="expr").slice(-3);
+  const seen=new Set(), out=[]; [...fx,...ex].forEach(x=>{const k=x.en.toLowerCase();if(!seen.has(k)&&out.length<4){seen.add(k);out.push(x.en)}});
+  return out;
+}
+function hasYesterday(){const a=load(LEARN_KEY,[]);const t=dayKey();return Array.isArray(a)&&a.some(x=>x&&x.day<t&&x.day>=dayKey(new Date(Date.now()-3*864e5)))}
+
+/* ---------- 홈: the start point ---------- */
+function renderHome(){
+  const el=$("ttHome"); if(!el)return;
+  applyName();
+  const now=new Date(), W="일월화수목금토", r=rtGet(), n=rtCount(), nx=rtNext(), wk=weekInfo();
+  const g3=[["expr"],["talk"],["speak","chal","review"]].map(ids=>ids.every(i=>r.done[i]));
+  const started=n>0, done=!!r.complete;
+  const lead=done?"오늘의 10분 학습을 마쳤어요. 내일도 만나요!":(!started&&hasYesterday())?"어제 배운 표현을 활용해서 새로운 주제로 대화해볼까요?":"오늘도 10분 영어로 말해볼까요?";
+  const cta=done?`<button class="tt-btn" data-act="talk-again">${PHONE_SVG}Julia와 한 번 더 대화하기</button>`:`<button class="tt-btn" data-act="rt-start">${started?`이어서 하기: ${esc(nx.n)}`:"10분 학습 시작하기"} ${TI.arrow}</button>`;
+  el.innerHTML=`<div class="tt-hbar"><span class="tt-date">${now.getMonth()+1}월 ${now.getDate()}일 ${W[now.getDay()]}요일</span><button class="tt-ib" data-act="settings" aria-label="설정">${TI.gear}</button></div>
+  <div class="tt-hhead"><div class="tt-htx"><h1 class="tt-h1"><span class="nm">${esc(userName())}</span>!</h1><p class="tt-sub">${esc(lead)}</p></div><div class="tt-hpic"><img src="${EMO.happy}" alt="Julia"></div></div>
+  <div class="tt-card tt-today"><div class="tt-ctop"><b>오늘의 10분 학습</b><span class="tt-pill">${n} / ${RT_STEPS.length} 단계</span></div>
+   <ol class="tt-tl">
+    <li class="${g3[0]?"ok":""}"><span class="n">${g3[0]?TI.check:1}</span><span class="t"><b>오늘의 표현</b><small>표현 3개를 듣고 따라 말해요</small></span><span class="m">${g3[0]?"완료":"약 1분"}</span></li>
+    <li class="${g3[1]?"ok":""}"><span class="n">${g3[1]?TI.check:2}</span><span class="t"><b>Julia와 스몰톡</b><small>오늘의 표현을 대화에서 써봐요</small></span><span class="m">${g3[1]?"완료":"약 8분"}</span></li>
+    <li class="${g3[2]?"ok":""}"><span class="n">${g3[2]?TI.check:3}</span><span class="t"><b>오늘의 복습</b><small>다시 말해보기, 챌린지, 복습하기</small></span><span class="m">${g3[2]?"완료":"약 5분"}</span></li>
+   </ol>${cta}</div>
+  <div class="tt-card tt-week"><div class="tt-ctop"><b>이번 주 학습</b><span class="tt-pill">${wk.n} / 5일</span></div>
+   <div class="tt-dots">${wk.days.map(x=>`<div class="d${x.ok?" ok":""}${x.today?" today":""}${x.fut?" fut":""}"><small>${W[x.d.getDay()]}</small><i>${x.ok?TI.check:""}</i></div>`).join("")}</div>
+   <div class="tt-time"><span>총 학습 시간 <b>${wk.min}분</b></span><span>목표 ${WEEK_MIN_GOAL}분</span></div><div class="tt-bar"><i style="width:${Math.min(100,Math.round(wk.min/WEEK_MIN_GOAL*100))}%"></i></div></div>`;
+  prefetchExpr();
+}
+
+/* ---------- 오늘 학습: the 5 steps ---------- */
+function renderLearn(){
+  const el=$("ttLearn"); if(!el)return;
+  try{syncLocalItems()}catch(e){}
+  const r=rtGet(), n=rtCount(), nx=rtNext();
+  const qn=quizPending(), notesN=notes.length;
+  el.innerHTML=`<div class="tt-hbar"><span class="tt-date">${r.complete?"오늘 루틴 완료":"하루 10분, 순서대로 하면 돼요"}</span><button class="tt-ib" data-act="settings" aria-label="설정">${TI.gear}</button></div>
+  <div class="tt-ltop"><h1 class="tt-h1">오늘의 10분 루틴</h1><p class="tt-sub">하루 10분으로 완성하는 영어 말하기 습관</p></div>
+  <div class="tt-prog"><div class="tt-bar"><i style="width:${Math.round(n/RT_STEPS.length*100)}%"></i></div><span>${n} / ${RT_STEPS.length} 완료</span></div>
+  <div class="tt-steps">${RT_STEPS.map((s,i)=>{const ok=!!r.done[s.id],open=rtOpen(s.id),cur=!r.complete&&nx&&nx.id===s.id;
+    const sub=s.id==="review"&&qn?`오늘 ${Math.min(qn,10)}문제가 기다려요`:s.d;
+    return `<button class="tt-step${ok?" ok":""}${cur?" cur":""}${!open?" lock":""}" data-step="${s.id}" aria-label="${esc(s.n)}${ok?" 완료":!open?" 잠김":""}"><span class="n">${ok?TI.check:i+1}</span><span class="t"><b>${esc(s.n)}</b><span>${esc(sub)}</span><em>약 ${s.m}분</em>${cur?`<span class="go">${n?"이어서 하기":"시작하기"} ${TI.arrow}</span>`:""}</span>${open?`<span class="th"><img src="${RT_IMG[s.id]()}" alt=""></span>`:`<span class="th"></span><span class="lk">${TI.lock}</span>`}</button>`}).join("")}</div>
+  ${r.done.talk?`<button class="tt-x" data-go="result"><span class="th"><img src="${EMO.happy}" alt=""></span><span class="t"><b>오늘의 학습 결과</b><span>배운 표현, 교정, 대화 요약</span></span>${TI.chev}</button>`:""}
+  <div class="tt-xsec">더 연습하고 싶다면</div>
+  <button class="tt-x" data-go="rp"><span class="th"><img src="${CAT2.rp}" alt=""></span><span class="t"><b>상황극 (추천)</b><span>여행, 식당 카페, 쇼핑, 일상 20가지 상황</span></span>${TI.chev}</button>
+  <button class="tt-x" data-go="notes"><span class="th"><img src="${CAT2.notes}" alt=""></span><span class="t"><b>오답노트</b><span>${notesN?`고친 문장 ${notesN}개`:"틀린 문장이 여기에 모여요"}</span></span>${TI.chev}</button>`;
+}
+
+/* ---------- step screens ---------- */
+function openFlow(kind,opt){
+  qlStop(false,true);
+  flow={kind,i:0,items:[],tries:0,o:{},opt:opt||{}};
+  if(kind==="expr"||kind==="speak")rtClockStart(kind);
+  showView("flow"); renderFlow();
+}
+function closeFlow(to){if(ql.on||ql.busy)qlStop(false,true);rtClockStop();stopAudio();showView(to||(routine?"learn":"home"))}
+function flHead(step,title){
+  const r=rtGet(), i=rtIdx(step);
+  return `<div class="tt-fh"><button class="tt-ib" data-act="fl-back" aria-label="뒤로">${TI.back}</button><div class="tt-fhT"><b>${esc(title||"오늘의 10분 학습")}</b><span>${i+1} / ${RT_STEPS.length} ${esc(RT_STEPS[i].n)}</span></div><span class="tt-ib0"></span></div><div class="tt-seg5" aria-hidden="true">${RT_STEPS.map((s,k)=>`<i class="${r.done[s.id]?"ok":k===i?"on":""}"></i>`).join("")}</div>`;
+}
+function renderFlow(){
+  const k=flow.kind;
+  if(k==="expr")return renderFlowExpr();
+  if(k==="speak")return renderFlowSpeak();
+  if(k==="result")return renderFlowResult();
+  if(k==="detail")return renderFlowDetail();
+  if(k==="done")return renderFlowDone();
+}
+function renderFlowExpr(){
+  const b=$("ttFlow");
+  if(!todayExpr.length){
+    b.innerHTML=flHead("expr")+`<div class="tt-fbody tt-center"><div class="tt-load" id="flLoad"><span class="qz-dots"><i></i><i></i><i></i></span>오늘의 표현을 준비하고 있어요</div></div>`;
+    if(cfg.exprOn===0){cfg.exprOn=1;saveCfg();try{$("exprOn").value="1"}catch(e){}}
+    const my=flow;
+    Promise.resolve(genExpressions()).finally(()=>{if(view!=="flow"||flow!==my)return;if(todayExpr.length)renderFlow();else{const l=$("flLoad");if(l)l.outerHTML=`<div class="tt-fbx"><p>오늘의 표현을 받지 못했어요. 인터넷 연결을 확인해 주세요.</p></div><button class="tt-btn2" data-act="fl-retry" style="margin-top:12px">다시 받기</button>`}});
+    return;
+  }
+  if(!flow.items.length)flow.items=todayExpr.map(x=>({en:x.en,ko:x.ko,tag:x.tag||"",src:"expr"}));
+  sayRender({step:"expr",kicker:"오늘의 표현",coach:"이렇게 한번 말해보세요.",doneTitle:"오늘의 표현 완료!",doneSub:"이제 Julia와 대화하면서 직접 써볼 거예요.",next:"Julia와 스몰톡 시작하기"});
+}
+function speakItems(){
+  const out=[], seen=new Set(), today=dayKey();
+  const add=(en,ko,ctx,src)=>{en=String(en||"").trim();const k=en.toLowerCase();if(!en||hasKo(en)||seen.has(k))return;seen.add(k);out.push({en,ko:ko||"",ctx:ctx||"",src})};
+  notes.filter(n=>n&&n.model&&n.at&&dayKey(new Date(n.at))===today).slice().reverse().forEach(n=>{if(out.filter(x=>x.src==="fix").length<2){const ko=hasKo(n.said);add(n.model,ko?smoothKo(n.said):"",ko?"":`내가 한 말: ${n.said}`,"fix")}});
+  todayExpr.slice().sort((a,b)=>(a.used?1:0)-(b.used?1:0)).forEach(x=>{if(out.length<3)add(x.en,x.ko,"","expr")});
+  return out;
+}
+function renderFlowSpeak(){
+  if(!flow.items.length)flow.items=speakItems();
+  if(!flow.items.length){$("ttFlow").innerHTML=flHead("speak")+`<div class="tt-fbody tt-center"><h2 class="tt-h2">다시 말할 문장이 아직 없어요</h2><p class="tt-p">오늘의 표현을 받거나 Julia와 대화하면 여기에 문장이 생겨요.</p></div><div class="tt-cta"><button class="tt-btn" data-act="fl-next">오늘의 챌린지 ${TI.arrow}</button></div>`;flow.o={step:"speak"};return}
+  sayRender({step:"speak",kicker:"다시 말해보기",coach:"Can you try saying this sentence?",coachKo:"이 문장을 직접 말해 볼까요?",doneTitle:"다시 말해보기 완료!",doneSub:"입으로 말한 문장은 훨씬 오래 기억에 남아요.",next:"오늘의 챌린지"});
+}
+function sayRender(o){
+  flow.o=o; const b=$("ttFlow"), it=flow.items[flow.i], n=flow.items.length;
+  if(!it){
+    rtMark(o.step); rtClockStop();
+    b.innerHTML=flHead(o.step)+`<div class="tt-fbody tt-center"><div class="tt-donebig">${TI.checkBig}</div><h2 class="tt-h2">${esc(o.doneTitle)}</h2><p class="tt-p">${esc(o.doneSub)}</p></div><div class="tt-cta"><button class="tt-btn" data-act="fl-next">${esc(o.next)} ${TI.arrow}</button><button class="tt-btn2" data-act="fl-again">처음부터 다시 하기</button></div>`;
+    return;
+  }
+  flow.tries=0;
+  b.innerHTML=flHead(o.step)+`<div class="tt-fbody">
+    <div class="tt-kicker">${esc(o.kicker)} <b>${flow.i+1}</b> / ${n}</div>
+    <div class="tt-card tt-say">${it.tag?`<span class="tt-tag">${esc(it.tag)}</span>`:""}<div class="tt-en" id="flEn">${esc(it.en)}</div>${it.ko?`<div class="tt-ko">${esc(it.ko)}</div>`:""}${it.ctx?`<div class="tt-ctx">${esc(it.ctx)}</div>`:""}<button class="tt-spk" data-act="fl-play" aria-label="듣기">${PLAY_THIN}</button></div>
+    <div class="tt-coach"><span class="tt-cn">Coach Sam</span><p>${esc(o.coach)}</p>${o.coachKo?`<small>${esc(o.coachKo)}</small>`:""}</div>
+    <div class="tt-fb" id="flFb" aria-live="polite"></div></div>
+  <div class="tt-micbox">
+    <div class="listen qz-ls tt-ls" id="flLs" hidden aria-live="polite"><span class="lv" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="ls-t"><b>듣고 있어요</b><small></small></span></div>
+    <div class="tt-type" id="flType" hidden><input id="flInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="영어로 입력하세요" enterkeyhint="done"><button class="tt-okb" data-act="fl-ok">확인</button></div>
+    <div class="tt-mrow"><button class="tt-mside" data-act="fl-kb" aria-label="글로 입력하기">${TI.kb}</button><button class="tt-mbig" id="flMic" data-act="fl-mic" aria-label="말해보기">${TI.mic}</button><button class="tt-mside" data-act="fl-skip" aria-label="다음으로">${TI.skip}</button></div>
+    <div class="tt-mlab">마이크를 누르고 말해보세요</div></div>`;
+  const inp=$("flInput"); if(inp)inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();flJudge(inp.value)}});
+  if(o.step==="expr"&&voiceOn&&flow.opt.auto!==false)sleep(350).then(()=>{if(view==="flow"&&flow.items[flow.i]===it&&!ql.on&&!ql.busy){const pb=document.querySelector('#ttFlow [data-act="fl-play"]');if(pb)playBtn(pb,it.en)}});   // the sentence is read once when it appears
+}
+function flMic(){
+  const it=flow.items[flow.i]; if(!it||ql.busy)return;
+  if(ql.on){qlStop(true);return}
+  stopAudio();
+  qlStart({bar:$("flLs"),btn:$("flMic"),hint:`He is trying to say this English sentence: "${it.en}".`,onText:t=>flJudge(t),long:true});
+}
+function flJudge(text){
+  const it=flow.items[flow.i], fb=$("flFb"); if(!it||!fb)return;
+  const t=String(text||"").trim(); if(!t)return;
+  const inp=$("flInput"); if(inp)inp.value="";
+  if(hesitation(t)==="filler"){fb.innerHTML=`<div class="tt-fbm">천천히 생각하고 말해도 괜찮아요. 준비되면 다시 눌러서 말해보세요.</div>`;return}
+  const ko=hasKo(t), sim=ko?0:similarity(t,it.en), ov=ko?0:wordOverlap(t,it.en);
+  flow.tries++;
+  if(sim>=0.75){
+    sfx("right"); it.ok=true;
+    if(flow.o.step==="expr"){const x=todayExpr.find(e=>e.en===it.en);if(x&&!x.said){x.said=true;saveDayExpr();dAdd("ep");saveDaily()}}
+    else{dAdd("sp");saveDaily()}
+    fb.innerHTML=`<div class="tt-fbok">${TI.check}<b>좋아요!</b><span>${esc(t)}</span></div>`;
+    const my=flow.i, f0=flow; setTimeout(()=>{if(view==="flow"&&flow===f0&&flow.i===my){flow.i++;renderFlow()}},1300);
+    return;
+  }
+  sfx("wrong");
+  const say=()=>sleep(sfxLeft()+80).then(()=>{if(view==="flow"&&flow.items[flow.i]===it&&voiceOn)playSeq([{text:it.en,who:"coach"}]).catch(()=>{})});
+  if(sim<0.4&&ov<0.5){   // something else: Sam brings him back to this sentence
+    fb.innerHTML=`<div class="tt-fbx"><span class="tt-cn">Coach Sam</span><p>좋아요. 그런데 방금 문장 말고, '${esc(it.en)}'라고 한번 말해볼게요.</p><div class="tt-mine">내가 한 말: ${esc(t)}</div></div>`;
+    say(); return;
+  }
+  fb.innerHTML=`<div class="tt-fbx"><p>${flow.tries>=3?"거의 다 왔어요. 다음으로 넘어가도 괜찮아요.":"조금 다르게 들렸어요. 표시한 부분을 살려서 한 번 더 말해 볼까요?"}</p><div class="tt-hint">${highlightModel(t,it.en)}</div><div class="tt-mine">내가 한 말: ${esc(t)}</div></div>`;
+  say();
+}
+function renderFlowResult(){
+  const L=load("oc_last_talk",null)||{}, b=$("ttFlow");
+  const secs=L.secs||0, mm=Math.floor(secs/60), ss=secs%60, enough=(L.turns||0)>=3;
+  const used=todayExpr.filter(x=>x.used).length, fx=(L.learned||[]).slice(-3), p=L.target?Math.min(100,Math.round((L.words||0)/L.target*100)):0;
+  b.innerHTML=flHead("talk","오늘의 학습 결과")+`<div class="tt-fbody"><div class="tt-res">
+    <div class="tt-respic"><img src="${EMO.happy}" alt="Julia"></div>
+    <h2 class="tt-h2">${enough?"오늘의 10분 완료! 🎉":"대화를 마쳤어요"}</h2>
+    <p class="tt-p">${mm?`${mm}분 `:""}${ss}초 동안 대화했어요.${enough?"":" 조금 더 이야기하면 다음 단계가 열려요."}</p>
+    <div class="tt-stats"><div><b>${todayExpr.length}</b><span>배운 표현</span><small>${used}개 사용</small></div><div><b>${L.fixes||0}</b><span>교정 표현</span><small>${L.turns||0}번 말함</small></div><div><b>${p}%</b><span>대화 발화량</span><small>${L.words||0}단어</small></div></div>
+    <div class="tt-sec"><h3>오늘 배운 표현</h3>${todayExpr.length?todayExpr.map((x,i)=>`<div class="tt-li"><span class="tx"><b>${esc(x.en)}</b><span>${esc(x.ko)}</span>${x.used?`<span class="ok">대화에서 썼어요</span>`:""}</span><button class="tt-pl" data-act="pl-ex" data-i="${i}" aria-label="듣기">${PLAY_THIN}</button></div>`).join(""):`<div class="tt-empty">오늘의 표현이 아직 없어요</div>`}</div>
+    <div class="tt-sec"><h3>오늘의 교정</h3>${fx.length?fx.map((x,i)=>`<div class="tt-li"><span class="xx" aria-hidden="true">✕</span><span class="tx"><span><s>${esc(x.said)}</s></span><b><ins>${esc(x.model)}</ins></b></span><button class="tt-pl" data-act="pl-fx" data-i="${i}" aria-label="듣기">${PLAY_THIN}</button></div>`).join(""):`<div class="tt-empty">이번 대화에서는 고칠 문장이 없었어요</div>`}</div>
+  </div></div>
+  <div class="tt-cta">${enough?`<button class="tt-btn" data-act="go-speak">다시 말해보기 ${TI.arrow}</button>`:`<button class="tt-btn" data-act="talk-again">대화 이어서 하기 ${TI.arrow}</button>`}<div class="tt-row2"><button class="tt-btn2" data-act="res-detail">학습 결과 보기</button><button class="tt-btn2" data-act="talk-again">다시 대화하기</button></div></div>`;
+  flow.fx=fx;
+}
+function renderFlowDetail(){
+  const L=load("oc_last_talk",null)||{}, tab=flow.tab||"ex", today=dayKey();
+  const fixes=notes.filter(n=>n&&n.model&&n.at&&dayKey(new Date(n.at))===today).slice().reverse();
+  const tabs=[["ex","배운 표현",todayExpr.length],["fx","교정",fixes.length],["sum","대화 요약",""]];
+  let body="";
+  if(tab==="ex")body=todayExpr.length?todayExpr.map((x,i)=>`<div class="tt-li"><span class="tx"><b>${esc(x.en)}</b><span>${esc(x.ko)}</span>${x.used?`<span class="ok">대화에서 썼어요</span>`:x.said?`<span class="ok">따라 말했어요</span>`:""}</span><button class="tt-pl" data-act="pl-ex" data-i="${i}" aria-label="듣기">${PLAY_THIN}</button></div>`).join(""):`<div class="tt-empty">오늘의 표현이 아직 없어요</div>`;
+  else if(tab==="fx"){flow.fx=fixes.map(n=>({said:n.said,model:n.model}));body=fixes.length?fixes.map((n,i)=>`<div class="tt-li"><span class="xx" aria-hidden="true">✕</span><span class="tx"><span><s>${esc(n.said)}</s></span><b><ins>${esc(n.model)}</ins></b>${n.why?`<span>${esc(clean(n.why))}</span>`:""}</span><button class="tt-pl" data-act="pl-fx" data-i="${i}" aria-label="듣기">${PLAY_THIN}</button></div>`).join(""):`<div class="tt-empty">오늘은 고친 문장이 없어요</div>`}
+  else body=L.sum?`<div class="tt-rep">${reportHTML(L.sum)}</div>`:`<div class="tt-empty">아직 대화 기록이 없어요</div>`;
+  $("ttFlow").innerHTML=flHead("talk","학습 결과 보기")+`<div class="tt-fbody"><div class="tt-tabs3">${tabs.map(([v,n,c])=>`<button data-act="dt-tab" data-v="${v}" aria-pressed="${v===tab}">${n}${c!==""?`<span>${c}</span>`:""}</button>`).join("")}</div>${body}</div><div class="tt-cta"><button class="tt-btn" data-act="go-speak">다시 말해보기 ${TI.arrow}</button></div>`;
+}
+function renderFlowDone(){
+  const d=dayRec(), ch=chalStatus(), st=streakDays(), L=load("oc_last_talk",null)||{};
+  $("ttFlow").innerHTML=`<div class="tt-fh"><button class="tt-ib" data-act="fl-back" aria-label="뒤로">${TI.back}</button><div class="tt-fhT"><b>오늘의 10분 학습</b><span>모든 단계 완료</span></div><span class="tt-ib0"></span></div>
+  <div class="tt-fbody"><div class="tt-res"><div class="tt-respic"><img src="${EMO.happy}" alt="Julia"></div>
+   <h2 class="tt-h2">오늘의 학습 완료! 🎉</h2><p class="tt-p">${st>1?`${st}일 연속으로 공부했어요.`:"오늘도 영어로 충분히 말했어요."}</p>
+   <div class="tt-sum"><div><span>Julia와 스몰톡</span><b>${Math.max(1,Math.round((L.secs||0)/60))}분</b></div><div><span>오늘의 표현</span><b>${todayExpr.filter(x=>x.said||x.used).length} / ${todayExpr.length}</b></div><div><span>오늘의 챌린지</span><b>${ch.score} / 5</b></div><div><span>복습하기</span><b>${d.qo||0} / ${d.qt||0}</b></div></div>
+   <div class="tt-sec"><h3>내일은 이렇게 이어져요</h3><div class="tt-li"><span class="tx"><b>오늘 배운 표현으로 새로운 대화</b><span>내일 Julia가 오늘 표현과 고친 문장을 다른 상황에서 다시 꺼내요.</span></span></div></div>
+  </div></div>
+  <div class="tt-cta"><button class="tt-btn" data-act="go-home">홈으로</button><button class="tt-btn2" data-act="go-rp">상황극 해보기</button></div>`;
+}
+document.addEventListener("click",e=>{
+  const a=e.target.closest&&e.target.closest("#ttFlow [data-act],#ttHome [data-act],#ttLearn [data-act],#ttLearn [data-step],#ttLearn [data-go],#ttRec [data-act],#ttRec [data-per]");
+  if(!a)return;
+  const act=a.dataset.act, it=flow.items&&flow.items[flow.i];
+  if(a.dataset.step){rtStart(a.dataset.step);return}
+  if(a.dataset.go==="rp"){routine=false;showView("rp");return}
+  if(a.dataset.go==="notes"){openNotes();return}
+  if(a.dataset.go==="result"){routine=true;openFlow("result");return}
+  if(a.dataset.per){renderRec.per=a.dataset.per;renderRec();return}
+  switch(act){
+    case "settings":openSettings();break;
+    case "rt-start":rtStart();break;
+    case "talk-again":routineTalk(true);break;
+    case "fl-back":closeFlow();break;
+    case "fl-mic":flMic();break;
+    case "fl-play":if(it)playBtn(a,it.en);break;
+    case "fl-kb":{const t=$("flType");if(t){t.hidden=!t.hidden;if(!t.hidden)setTimeout(()=>{try{$("flInput").focus()}catch(x){}},30)}break}
+    case "fl-ok":{const i=$("flInput");if(i&&i.value.trim())flJudge(i.value);break}
+    case "fl-skip":if(ql.on||ql.busy)qlStop(false,true);stopAudio();flow.i++;renderFlow();break;
+    case "fl-again":flow.i=0;flow.items.forEach(x=>x.ok=false);rtClockStart(flow.kind);renderFlow();break;
+    case "fl-retry":renderFlow();break;
+    case "fl-next":rtGo(flow.o&&flow.o.step||flow.kind);break;
+    case "go-speak":rtMark("talk");rtStart("speak");break;
+    case "res-detail":flow.kind="detail";flow.tab="ex";renderFlow();break;
+    case "dt-tab":flow.tab=a.dataset.v;renderFlow();break;
+    case "pl-ex":{const x=todayExpr[+a.dataset.i];if(x)playBtn(a,x.en);break}
+    case "pl-fx":{const x=(flow.fx||[])[+a.dataset.i];if(x)playBtn(a,x.model);break}
+    case "go-home":routine=false;showView("home");break;
+    case "go-rp":routine=false;showView("rp");break;
+    case "rec-link":recLink(a.dataset.v);break;
+  }
+});
+
+/* ---------- 2 Julia와 스몰톡 inside the routine ---------- */
+function routineTalk(fresh){
+  routine=true;
+  if(!cfg.key){noKeyNote();return}
+  if(!rp&&callEnded){setEnded(false);showView("call");startTalk(false);micAutoStart();return}
+  if(fresh&&!rp&&phase!=="idle"&&!callEnded&&callStats.turns>0){showView("call");micAutoStart();return}
+  enterFree();
+}
+function afterTalkEnd(sum){
+  if(rp||!sum)return;
+  const L={day:dayKey(),secs:sum.secs||0,turns:sum.turns||0,fixes:sum.fixes||0,words:sum.words||0,target:sum.target||0,learned:(sum.learned||[]).slice(-5),sum};
+  store("oc_last_talk",L);
+  if(L.turns>=3)rtMark("talk");
+  if(routine&&view==="call")setTimeout(()=>{if(routine&&!rp&&callEnded&&view==="call")openFlow("result")},1100);
+}
+function callHeadSync(){const t=$("callTitle");if(!t)return;t.innerHTML=rp?`<b>${esc(rp.name)}</b><span>상황극</span>`:`<b>Julia와 스몰톡</b><span>${routine?`오늘의 10분 학습 2 / ${RT_STEPS.length}`:"자유 대화"}</span>`}
+
+/* ---------- 기록: habit first (days, time, sentences, expressions, review), details below ---------- */
+function recStats(per){
+  const t=new Date();t.setHours(12,0,0,0); let from=null;
+  if(per==="week"){from=new Date(t);from.setDate(t.getDate()-t.getDay())}
+  else if(per==="month"){from=new Date(t.getFullYear(),t.getMonth(),1,12)}
+  const fk=from?dayKey(from):"0000", tk=dayKey();
+  const s={days:0,ms:0,t:0,ex:0,rv:0,ch:0};
+  Object.keys(daily).forEach(k=>{if(k<fk||k>tk)return;const r=daily[k]||{};if(learnedDay(k))s.days++;s.ms+=(r.ms||0)+(r.st||0);s.t+=r.t||0;s.ex+=Math.max(r.ep||0,r.eu||0);s.rv+=r.qt||0;s.ch+=r.cn||0});
+  s.min=Math.round(s.ms/60000); return s;
+}
+function renderRec(){
+  const el=$("ttRec"); if(!el)return;
+  const per=renderRec.per||"week", s=recStats(per), wk=weekInfo(), W="일월화수목금토";
+  const goalDays=per==="week"?5:per==="month"?20:0, rate=goalDays?Math.min(100,Math.round(s.days/goalDays*100)):null;
+  const tile=(c,p,k,v,u)=>`<div class="tt-tile"><i style="background:${c}">${ic2(p,20)}</i><div><span>${k}</span><b>${v}<small>${u}</small></b></div></div>`;
+  const head=per==="week"?`<div class="tt-ctop"><b>이번 주 학습</b><span class="tt-pill">${wk.n} / 5일</span></div><div class="tt-dots">${wk.days.map(x=>`<div class="d${x.ok?" ok":""}${x.today?" today":""}${x.fut?" fut":""}"><small>${W[x.d.getDay()]}</small><i>${x.ok?TI.check:""}</i></div>`).join("")}</div><div class="tt-time"><span>주간 달성률 <b>${rate}%</b></span><span>목표 5일</span></div><div class="tt-bar"><i style="width:${rate}%"></i></div>`
+    :per==="month"?`<div class="tt-ctop"><b>이번 달 학습</b><span class="tt-pill">${s.days}일</span></div><div class="tt-time"><span>월간 달성률 <b>${rate}%</b></span><span>목표 20일</span></div><div class="tt-bar"><i style="width:${rate}%"></i></div>`
+    :`<div class="tt-ctop"><b>지금까지</b><span class="tt-pill">총 ${s.days}일</span></div><div class="tt-time"><span>연속 학습 <b>${streakDays()}일</b></span><span>${firstDay()?`${firstDay().slice(5).replace("-","월 ")}일부터`:""}</span></div>`;
+  const rows=[]; for(let i=0;i<14;i++){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);const k=dayKey(d),r=daily[k];if(!r||!((r.t||0)+(r.qt||0)+(r.cn||0)+(r.st||0)))continue;
+    const parts=[`${Math.max(1,Math.round(((r.ms||0)+(r.st||0))/60000))}분`,`${r.t||0}문장`];if(r.ep||r.eu)parts.push(`표현 ${Math.max(r.ep||0,r.eu||0)}개`);if(r.cn)parts.push(`챌린지 ${r.cs||0}/${r.cn}`);if(r.qt)parts.push(`복습 ${r.qo||0}/${r.qt}`);
+    rows.push(`<div class="tt-dr${learnedDay(k)?" ok":""}"><span class="dk">${learnedDay(k)?TI.check:d.getDate()}</span><span class="tx"><b>${d.getMonth()+1}월 ${d.getDate()}일 ${W[d.getDay()]}요일${k===dayKey()?" (오늘)":""}</b><span>${parts.join(" / ")}</span></span></div>`)}
+  el.innerHTML=`<div class="tt-tabs3">${[["week","이번 주"],["month","이번 달"],["all","전체"]].map(([v,n])=>`<button data-per="${v}" aria-pressed="${v===per}">${n}</button>`).join("")}</div>
+   <div class="tt-card">${head}</div>
+   <div class="tt-tiles">${tile("#3a72ff",P_CLOCK,"총 학습 시간",s.min,"분")}${tile("#7c5cff",P_QUOTE,"총 발화량",s.t,"문장")}${tile("#e3a008",P_BOOK,"학습한 표현",s.ex,"개")}${tile("#16a34a",P_QUIZ,"복습 완료",s.rv,"개")}${tile("#e8513f",P_FLAME,"연속 학습",streakDays(),"일")}${tile("#0ea5e9",P_TARGET,per==="all"?"총 학습일":"학습한 날",s.days,"일")}</div>
+   <div class="tt-card tt-days"><div class="tt-ctop"><b>날짜별 학습 기록</b><span>최근 14일</span></div>${rows.length?rows.join(""):`<div class="tt-empty">학습을 시작하면 날짜별 기록이 쌓여요</div>`}</div>
+   <div class="tt-xsec">자세히 보기</div>
+   <button class="tt-x" data-act="rec-link" data-v="notes"><span class="th"><img src="${CAT2.notes}" alt=""></span><span class="t"><b>오답노트</b><span>${notes.length?`고친 문장 ${notes.length}개, 발음 문법 표현별로`:"틀린 문장이 여기에 모여요"}</span></span>${TI.chev}</button>
+   <button class="tt-x" data-act="rec-link" data-v="report"><span class="th"><img src="${CAT2.review}" alt=""></span><span class="t"><b>주간 리포트와 캘린더</b><span>지난주와 비교, 자주 하는 실수</span></span>${TI.chev}</button>
+   <button class="tt-x" data-act="rec-link" data-v="calls"><span class="th"><img src="${EMO.happy}" alt=""></span><span class="t"><b>지난 대화</b><span>${callHistory.length?`대화 ${callHistory.length}번의 리포트`:"대화를 마치면 리포트가 쌓여요"}</span></span>${TI.chev}</button>`;
+}
+function recLink(t){sideTab(t==="notes"?"notes":t==="calls"?"calls":"report");$("side").classList.add("det");try{$("side").scrollTop=0;document.querySelector("#side .sd-body").scrollTop=0}catch(e){}}
+function openNotes(){if(innerWidth>900){renderSide();renderRec();recLink("notes");return}routine=false;showView("rec");recLink("notes")}   // desktop: the record column is always there
+
+/* ---------- 오답노트: 전체 / 발음 / 문법 / 표현 ---------- */
+const NOTE_GRAMMAR=/시제|과거|현재|미래|완료|관사|전치사|복수|단수|주어|동사|어순|형태|일치|문법|비교|조동사|수동|대명사|접속사|부정|의문|진행/;
+function noteCat(n){const l=String(n&&n.label||"");if(/발음/.test(l))return "pron";if(NOTE_GRAMMAR.test(l))return "grammar";return "expr"}
+const PN_KEY="oc_pnotes";
+function savePronNote(text,weak,score){if(!text||!weak||!weak.length)return;let a=load(PN_KEY,[]);if(!Array.isArray(a))a=[];a=a.filter(x=>x&&x.text!==text);a.push({at:Date.now(),text,weak:weak.slice(0,4),score});store(PN_KEY,a.slice(-40))}
+function markWeak(text,weak){let s=esc(text);(weak||[]).forEach(w=>{w=String(w||"").replace(/[^A-Za-z']/g,"");if(w)s=s.replace(new RegExp("\\b("+w+")\\b","i"),"<em>$1</em>")});return s}
+function pronNotes(){const a=load(PN_KEY,[]);return Array.isArray(a)?a:[]}
+
+/* ---------- today's expressions: their voices are kept on the device (no new voice when the app opens again) ---------- */
+const TTSP_MAX=12;
+function ttsKeep(text,who){return who==="coach"&&todayExpr.some(x=>x.en===text)}
+function ttspKey(text,who){return "oc_ttsp|"+ttsBody(text,who).key+"|"+text}
+function ttspGet(text,who){try{return localStorage.getItem(ttspKey(text,who))}catch(e){return null}}
+function ttspPut(text,who,blob){try{const k=ttspKey(text,who),fr=new FileReader();fr.onload=()=>{try{let idx=load("oc_ttsp_idx",[]);if(!Array.isArray(idx))idx=[];idx=idx.filter(x=>x!==k);idx.push(k);while(idx.length>TTSP_MAX){const o=idx.shift();localStorage.removeItem(o)}localStorage.setItem(k,fr.result);store("oc_ttsp_idx",idx)}catch(e){}};fr.readAsDataURL(blob)}catch(e){}}
+
+$("talkLen").value=String(cfg.talkLen===0.7||cfg.talkLen===1.3?cfg.talkLen:1); $("talkLen").addEventListener("change",e=>{cfg.talkLen=+e.target.value;saveCfg()});
+$("tickSw").onclick=()=>{cfg.qtSound=cfg.qtSound===false;saveCfg();syncSettingsUI()};
+$("recBack").onclick=()=>{$("side").classList.remove("det");try{$("side").scrollTop=0}catch(e){}renderRec()};
+$("noteChips").addEventListener("click",e=>{const b=e.target.closest("[data-nf]");if(!b)return;renderSide.nf=b.dataset.nf;renderSide()});
+if(oldCfg.v9&&!oldCfg.v100){try{if(window.ocTheme&&ocTheme.pref()!=="dark")ocTheme.set("dark")}catch(e){}}   // (v10 is an old flag from v1.0, so the redesign uses v100)
+if(!cfg.v100){cfg.v100=1;if(oldCfg.v9&&cfg.exprOn===0){cfg.exprOn=1;try{$("exprOn").value="1"}catch(e){}}saveCfg()}   // 오늘의 표현 is step 1 now (opening step 1 also turns it on)
+syncSettingsUI();
 /* Keep the layout inside the visible screen (iPhone keyboard) and keep the chat pinned to the newest message */
 (function(){
   const vv=window.visualViewport, root=document.documentElement; let baseH=0, kbOn=false;
@@ -7864,6 +8494,7 @@ $("closeSide").onclick=()=>showView(lastView&&lastView!=="rec"?lastView:"home");
 
 renderSide(); renderHistory();
 {let v0=null;try{v0=sessionStorage.getItem("oc_view")}catch(e){}
+if(v0==="flow")v0="learn";   // v10.0: a step screen does not survive a reload
 if(cfg.key&&restoreCall()){updateStudyBar();showView(v0||"home")}   // v8.6: no note when a call is restored after a reload
 else if(v0==="call"){
   if(cfg.key)startTalk(true);
