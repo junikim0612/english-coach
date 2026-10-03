@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="영어회화">
 <meta name="theme-color" content="#121214">
-<title>영어회화 코치 v8.4</title>
+<title>영어회화 코치 v8.5</title>
 <script>(function(){var K="oc_theme";var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
 function pref(){try{var v=localStorage.getItem(K);return v==="light"||v==="dark"||v==="system"?v:"dark"}catch(e){return "dark"}}
 function apply(){var p=pref(),t=p==="system"?(mq&&mq.matches?"dark":"light"):p;document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#121214":"#f5f5f7");return t}
@@ -1301,26 +1301,18 @@ body.kbm #settings .setsheet{height:calc(var(--appH,100dvh) - 12px)!important;ma
 .set-keyon .ko-dot{width:9px;height:9px;border-radius:50%;background:#16a34a;flex:none}
 .set-keyon button{border:0;background:var(--b-tint);color:var(--b-primaryT);font-weight:700;font-size:13.5px;border-radius:999px;padding:8px 14px;white-space:nowrap}
 
-/* v8.3 one-screen home: shorter hero, 4 practice cards in one row, one-line sentence rows */
-.hv-top{margin:10px 0 14px!important}
-.hv-title{font-size:27px!important}
-.hv-sec{margin:18px 2px 10px!important}
-.hv-hero .hero{min-height:0;grid-template-columns:minmax(0,1fr) clamp(108px,38vw,160px)}
-.hv-hero .tx{padding:13px 4px 11px 16px;gap:3px}
-.hv-hero .pill{font-size:11.5px;padding:3px 9px}
-.hv-hero .hn{font-size:clamp(17px,4.8vw,19px);margin-top:3px}
-.hv-hero .hsub{font-size:12.5px}
-.hv-hero .go{margin-top:8px;height:44px;font-size:15px}
-.hv-hero .last{font-size:11.5px;margin-top:1px}
-#homeRail{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px!important;overflow:visible!important;margin:0!important;padding:0!important;scroll-snap-type:none!important}
-#homeRail .rc,#homeRail .rc:not(.big){width:auto!important;height:auto!important;border-radius:16px!important;min-width:0}
-#homeRail .rc .vis{flex:none!important;aspect-ratio:1/0.92;min-height:0}
-#homeRail .rc .lab{height:auto!important;padding:7px 8px 9px!important;display:block!important}
-#homeRail .rc .lab b{font-size:12.5px!important;letter-spacing:-.4px!important;white-space:nowrap}
-#homeRail .rc .lab span{font-size:10.5px!important;letter-spacing:-.2px;white-space:nowrap;margin-top:1px}
-#homeRail .rc .vis.ill .cnt{right:6px;top:6px;min-width:22px;height:22px;padding:0 6px;font-size:11px}
-#homeRail + .rail-dots{display:none!important}
-@media (max-width:359px){#homeRail{grid-template-columns:repeat(2,minmax(0,1fr))}#homeRail .rc .vis{aspect-ratio:1/0.62}}
+/* v8.5: header and Julia card back to the v8.1 sizes (the 4-in-a-row layout is gone); one-line sentence rows stay */
+/* v8.5 home rail: 2 big cards per view, swipe a page (2 cards) at a time, dots below; card height fills the first screen down to the 오늘의 문장 title */
+#homeRail{display:flex!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;margin:0!important;padding:2px 0 4px!important;scroll-snap-type:x mandatory!important;scroll-padding:0!important;scrollbar-width:none}
+#homeRail::-webkit-scrollbar{display:none}
+#homeRail .rc,#homeRail .rc:not(.big){flex:none!important;width:calc((100% - 12px) / 2)!important;height:var(--railH,250px)!important;border-radius:22px!important;scroll-snap-align:start;min-width:0}
+#homeRail .rc:nth-child(2n){scroll-snap-align:none}
+#homeRail .rc .vis{flex:1 1 auto!important;min-height:0}
+#homeRail .rc .lab{height:auto!important;padding:11px 14px 13px!important}
+#homeRail .rc .lab b{font-size:15.5px!important;letter-spacing:-.3px!important;white-space:nowrap}
+#homeRail .rc .lab span{font-size:12.5px!important;white-space:nowrap;margin-top:2px}
+#homeRail .rc .vis.ill .cnt{right:10px;top:10px;min-width:26px;height:26px;padding:0 8px;font-size:13px}
+@media (min-width:700px){#homeRail .rc,#homeRail .rc:not(.big){width:220px!important;height:250px!important}#homeRail .rc:nth-child(2n){scroll-snap-align:start}}
 #hvSent{gap:8px}
 #hvSent .hs{display:grid;grid-template-columns:74px minmax(0,1fr) 34px;align-items:center;gap:10px;padding:11px 12px 11px 12px}
 #hvSent .hs .t{display:contents}
@@ -1329,6 +1321,9 @@ body.kbm #settings .setsheet{height:calc(var(--appH,100dvh) - 12px)!important;ma
 #hvSent .hs .t > span:not(.tg){grid-column:2;grid-row:2;align-self:start;font-size:12.5px;margin-top:-8px}
 #hvSent .hs .t .tg{grid-row:1/span 2}
 #hvSent .hs .pl{grid-column:3;grid-row:1/span 2}
+#hvSent .hs:not(.tagged){grid-template-columns:minmax(0,1fr) 34px}
+#hvSent .hs:not(.tagged) .t b,#hvSent .hs:not(.tagged) .t > span:not(.tg){grid-column:1}
+#hvSent .hs:not(.tagged) .pl{grid-column:2}
 @media (max-width:359px){#hvSent .hs{grid-template-columns:minmax(0,1fr) 34px}#hvSent .hs .t{display:block;grid-column:1}#hvSent .hs .t .tg{margin-bottom:5px}#hvSent .hs .pl{grid-column:2;grid-row:1}}
 /* review / challenge answer row: mic inside the box, 확인 as a rounded button */
 #quizSheet .qz-in,#chalSheet .qz-in{grid-template-columns:minmax(0,1fr) auto!important}
@@ -4330,7 +4325,7 @@ html[data-theme="dark"] .set-keyon button {
     border-radius: 999px
 }
 html[data-theme="dark"] #homeRail .rc,html[data-theme="dark"] #homeRail .rc:not(.big) {
-    border-radius: 16px !important
+    border-radius: 22px !important
 }
 html[data-theme="dark"] #quizSheet .qz-in input,html[data-theme="dark"] #chalSheet .qz-in input {
     border-radius: 14px
@@ -4442,7 +4437,7 @@ html[data-theme="dark"] #homeRail .rc .vis.ill .cnt.sc{background:#1c1d21;color:
 <div class="app">
   <header>
     <button class="gear ico" id="backHome" aria-label="홈으로" title="홈으로"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <h1>영어회화 코치 <span class="ver-h">v8.4</span></h1>
+    <h1>영어회화 코치 <span class="ver-h">v8.5</span></h1>
     <div class="modeseg" id="modeSeg" role="group" aria-label="대화 종류"><button id="modeFree" aria-pressed="true">기본 대화</button><button id="modeRp" aria-pressed="false">상황극</button></div>
     <span class="sub">Julia와 화상통화하듯 대화하고, Coach Sam이 더 자연스러운 표현을 알려줘요.</span>
     <button class="gear only-m" id="openSide">기록</button>
@@ -4454,7 +4449,7 @@ html[data-theme="dark"] #homeRail .rc .vis.ill .cnt.sc{background:#1c1d21;color:
     <div class="hv-top"><div><div class="hv-date" id="hvDate"></div><h2 class="hv-title" id="hvTitle"><span class="hv-name">Jaden!</span><br>Julia와 10분 스몰톡 어때요?</h2></div><button class="hv-gear" id="hvSettings" aria-label="설정"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
     <div class="hv-hero" id="hvHero"></div>
     <div class="hv-sec"><b>더 연습하기</b></div>
-    <div class="rail" id="homeRail" role="list"></div>
+    <div class="rail" id="homeRail" role="list" data-paged="1"></div>
     <div class="hv-sec"><b>오늘의 문장</b><span>매일 업데이트 돼요</span></div>
     <div class="hv-sent" id="hvSent"></div>
     <div class="hv-sec"><b>이번 주 학습</b><span class="rng" id="hvRange"></span></div>
@@ -4719,7 +4714,7 @@ html[data-theme="dark"] #homeRail .rc .vis.ill .cnt.sc{background:#1c1d21;color:
           </details>
         </div>
       </div>
-      <div class="set-ver">영어회화 코치 v8.4<br>API 키와 학습 기록은 이 기기에만 저장돼요.<div class="set-upd"><button id="updBtn" type="button">업데이트</button><span id="updState" aria-live="polite"></span></div></div>
+      <div class="set-ver">영어회화 코치 v8.5<br>API 키와 학습 기록은 이 기기에만 저장돼요.<div class="set-upd"><button id="updBtn" type="button">업데이트</button><span id="updState" aria-live="polite"></span></div></div>
     </div>
   </div>
 </div>
@@ -5467,11 +5462,26 @@ function exprPick(){const a=EXPR_AREAS.slice();for(let i=a.length-1;i>0;i--){con
 // today's 3 sentences stay the same all day and change at midnight (oc_expr_day)
 let exprBusy=null;
 function loadDayExpr(){const d=load("oc_expr_day",null);return d&&d.day===dayKey()&&Array.isArray(d.items)&&d.items.length?d:null}
-function saveDayExpr(){if(todayExpr.length)store("oc_expr_day",{day:todayExpr.day||dayKey(),items:todayExpr.map(x=>({en:x.en,ko:x.ko,match:x.match,tag:x.tag||"",used:!!x.used}))})}
+function saveDayExpr(){if(todayExpr.length)store("oc_expr_day",{day:todayExpr.day||dayKey(),tagTried:!!todayExpr.tagTried,items:todayExpr.map(x=>({en:x.en,ko:x.ko,match:x.match,tag:x.tag||"",used:!!x.used}))})}
+/* v8.5: sentences picked before tags existed (or without one) get a situation tag once, the sentences stay the same */
+const TAG_SYS=`For each English sentence, write a short Korean label for the situation where it is used: 2 to 6 Korean characters, natural, e.g. 의견 말하기, 주문하기, 사과하기, 부탁하기, 감사하기, 약속 잡기. Reply ONLY JSON {"tags":["..."]} with one label per sentence, in the same order. Never use the middle dot.`;
+let tagBusy=null;
+function exprTagFill(){
+  if(tagBusy||!cfg.key||!todayExpr.length||todayExpr.tagTried||todayExpr.every(x=>x.tag))return tagBusy;
+  todayExpr.tagTried=true; const list=todayExpr; saveDayExpr();
+  tagBusy=(async()=>{try{
+    const r=await chatJSON([{role:"system",content:TAG_SYS},{role:"user",content:JSON.stringify({sentences:list.map(x=>x.en)})}]);
+    const tags=r&&Array.isArray(r.tags)?r.tags:[];
+    if(todayExpr!==list)return;
+    list.forEach((x,i)=>{const t=clean(String(tags[i]||"")).replace(/[·]/g," ").trim().slice(0,10);if(!x.tag&&t&&/[가-힣]/.test(t))x.tag=t});
+    saveDayExpr(); if(view==="home")renderHome();
+  }catch(e){logErr("오늘의 문장 태그",e)}finally{tagBusy=null}})();
+  return tagBusy;
+}
 async function genExpressions(force){
   if(cfg.exprOn===0||!cfg.key)return;
   const d=loadDayExpr();
-  if(d&&!force){todayExpr=d.items.map(x=>Object.assign({},x));todayExpr.day=d.day;if(phase!=="idle")renderExprCard();saveCallSoon();updateStudyBar();if(!$("exprSheet").hidden)renderExprSheet();return}
+  if(d&&!force){todayExpr=d.items.map(x=>Object.assign({},x));todayExpr.day=d.day;todayExpr.tagTried=!!d.tagTried;exprTagFill();if(phase!=="idle")renderExprCard();saveCallSoon();updateStudyBar();if(!$("exprSheet").hidden)renderExprSheet();if(view==="home")renderHome();return}
   if(exprBusy)return exprBusy;
   exprBusy=(async()=>{
     try{
@@ -5479,9 +5489,9 @@ async function genExpressions(force){
       const r=await chatJSON([{role:"system",content:EXPR_SYS},{role:"user",content:JSON.stringify({level:$("level").value,areas:exprPick(),avoid:seen.slice(-60)})}]);
       const ex=(r&&Array.isArray(r.expressions)?r.expressions:[]).filter(x=>x&&x.en&&x.match).slice(0,3).map(x=>({en:String(x.en).trim(),ko:clean(String(x.ko||"")),match:norm(String(x.match).replace(/\.\.\.|…/g," ")).join(" "),tag:clean(String(x.tag||"")).replace(/[·]/g," ").trim().slice(0,10),used:false})).filter(x=>x.match);
       if(!ex.length)return;
-      todayExpr=ex; todayExpr.day=day; saveDayExpr();
+      todayExpr=ex; todayExpr.day=day; saveDayExpr(); exprTagFill();
       store("oc_expr_seen",(load("oc_expr_seen",[])||[]).concat(ex.map(x=>x.en)).slice(-90)); dAdd("et",ex.length); saveDaily();
-      if(phase!=="idle")renderExprCard(); saveCallSoon(); updateStudyBar(); if(!$("exprSheet").hidden)renderExprSheet();
+      if(phase!=="idle")renderExprCard(); saveCallSoon(); updateStudyBar(); if(!$("exprSheet").hidden)renderExprSheet(); if(view==="home")renderHome();
     }catch(e){logErr("오늘의 표현",e)}
     finally{exprBusy=null}
   })();
@@ -5704,6 +5714,11 @@ function railDots(rail){
   if(!d||!d.classList.contains("rail-dots")){d=document.createElement("div");d.className="rail-dots";d.setAttribute("aria-hidden","true");rail.after(d);rail.addEventListener("scroll",()=>{if(!railDots.q){railDots.q=1;requestAnimationFrame(()=>{railDots.q=0;railDots(rail)})}},{passive:true})}
   const cards=[...rail.children], over=rail.scrollWidth>rail.clientWidth+4;
   d.hidden=!over||cards.length<2; if(d.hidden)return;
+  if(rail.dataset.paged==="1"){   // v8.5: one dot per page of cards that fit the view
+    const gap=parseFloat(getComputedStyle(rail).columnGap)||0, cw=cards[0].offsetWidth+gap, per=Math.max(1,Math.round((rail.clientWidth+gap)/cw)), pages=Math.ceil(cards.length/per);
+    if(d.children.length!==pages)d.innerHTML="<i></i>".repeat(pages);
+    const mx=rail.scrollWidth-rail.clientWidth, pa=rail.scrollLeft>=mx-4?pages-1:Math.min(pages-1,Math.round(rail.scrollLeft/(per*cw)));
+    [...d.children].forEach((x,i)=>x.classList.toggle("on",i===pa)); return}
   if(d.children.length!==cards.length)d.innerHTML=cards.map(()=>"<i></i>").join("");
   const max=rail.scrollWidth-rail.clientWidth, x0=cards[0].offsetLeft; let a=0;
   if(rail.scrollLeft>=max-4)a=cards.length-1; else{let best=1e9;cards.forEach((c,i)=>{const dd=Math.abs(c.offsetLeft-x0-rail.scrollLeft);if(dd<best){best=dd;a=i}})}
@@ -5984,7 +5999,7 @@ function restoreCall(c){
   const x=c.rp&&ROLEPLAYS.find(r=>r.id===c.rp); rp=x?Object.assign({},x,{done:!!c.rpDone}):null;
   log.innerHTML=c.html; log.querySelectorAll(".rev-acts").forEach(n=>n.remove());
   turns=c.turns; callFacts=c.callFacts||[]; callFixes=c.callFixes||[]; if(c.lastJulia)lastJulia=c.lastJulia; lastEmo=c.lastEmo||"calm";
-  pending=c.pending||null; tries=c.tries||0; callStats=Object.assign(newStats(),c.stats||{}); {const d=loadDayExpr();todayExpr=d?d.items.map(x=>Object.assign({},x)):[];if(d)todayExpr.day=d.day} callId++;
+  pending=c.pending||null; tries=c.tries||0; callStats=Object.assign(newStats(),c.stats||{}); {const d=loadDayExpr();todayExpr=d?d.items.map(x=>Object.assign({},x)):[];if(d){todayExpr.day=d.day;todayExpr.tagTried=!!d.tagTried}} callId++;
   if(c.phase==="repeat"&&pending)setPhase("repeat"); else{log.querySelectorAll(".rep-acts").forEach(n=>n.remove());setPhase("answer")}
   setEnded(false);
   pausedAt=0; document.body.classList.remove("paused");
@@ -6909,6 +6924,18 @@ function markMatch(en,m){const t=String(en||""),w=norm(m||"");if(!w.length)retur
   const re=new RegExp("\\b"+w.map(x=>x.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/'/g,"['\u2019]")).join("[^A-Za-z0-9'\u2019]+")+"\\b","i"),x=re.exec(t);
   if(!x)return esc(t);return esc(t.slice(0,x.index))+"<em>"+esc(x[0])+"</em>"+esc(t.slice(x.index+x[0].length))}
 function lastCallTxt(){const h=callHistory.filter(x=>x&&!x.roleplay&&x.at).slice(-1)[0];if(!h)return "10분이면 충분해요";const d=new Date(h.at);d.setHours(12,0,0,0);const t=new Date();t.setHours(12,0,0,0);const g=Math.round((t-d)/864e5);return `지난 대화 ${h.minutes||1}분 / ${g<=0?"오늘":g===1?"어제":g<7?g+"일 전":(d.getMonth()+1)+"월 "+d.getDate()+"일"}`}
+function fitHomeRail(){
+  const rail=$("homeRail"),hv=$("homeView"),tb=$("tabBar"),sec=$("hvSent")&&$("hvSent").previousElementSibling;
+  if(!rail||!hv||!sec||!rail.offsetParent||innerWidth>=700)return;
+  const card=rail.querySelector(".rc"); if(!card)return;
+  railDots(rail);
+  const tr=tb?tb.getBoundingClientRect():null, tbTop=tr&&tr.height>0&&tr.top<innerHeight?tr.top:innerHeight;
+  const cur=card.getBoundingClientRect().height, secBottom=sec.getBoundingClientRect().bottom+hv.scrollTop;
+  const h=Math.max(210,Math.min(340,Math.round(cur+(tbTop-6)-secBottom)));
+  if(Math.abs(h-cur)>1){document.documentElement.style.setProperty("--railH",h+"px");railDots(rail)}
+}
+addEventListener("resize",()=>{try{fitHomeRail()}catch(e){}});
+try{document.fonts&&document.fonts.ready.then(()=>{try{fitHomeRail()}catch(e){}})}catch(e){}
 function renderHome(){
   if(!$("homeRail"))return;
   const now=new Date(), W="일월화수목금토";
@@ -6922,13 +6949,14 @@ function renderHome(){
   const pillTx=callLive?(pausedAt?"일시정지 ":"대화 중 ")+$("timer").textContent:live?"일시정지":!rp&&callEnded?"대화 종료":"Julia 대기 중";
   $("hvHero").innerHTML=`<button class="hero" data-go="call" aria-label="${live?"대화 이어서 하기":"대화 시작하기"}"><span class="tx"><span class="pill ${live?"live":""}${live&&(pausedAt||rp)?" paused":""}"><i></i><em id="hvLive" style="font-style:normal">${pillTx}</em></span><span class="hn">Julia와 10분 스몰톡</span><span class="hsub">${esc((LEVEL_NAME[$("level").value]||"초급")+" / "+(TOPIC_NAME[$("topic").value]||TOPIC_NAME.daily))}</span><span class="go">${PHONE_SVG}${live?"대화 이어서 하기":"대화 시작하기"}</span><span class="last">${esc(lastCallTxt())}</span></span><span class="ph"><img src="${EMO.happy}" alt=""></span></button>`;
   const cards=[
-    `<button class="rc" data-go="rp" role="listitem"><span class="vis ill"><img src="${CAT2.rp}" alt=""></span><span class="lab"><b>상황극</b><span>실전 상황</span></span></button>`,
-    `<button class="rc" data-go="chal" role="listitem"><span class="vis ill"><img src="${CAT2.chal}" alt=""><span class="cnt sc${ch.done?" done":""}">${ch.score}/5</span></span><span class="lab"><b>챌린지</b><span>${ch.done?"오늘 완료":ch.n?"푸는 중":"오늘 5문장"}</span></span></button>`,
-    `<button class="rc" data-go="quiz" role="listitem"><span class="vis ill"><img src="${CAT2.review}" alt="">${qn?`<span class="cnt">${qn}</span>`:""}</span><span class="lab"><b>복습하기</b><span>${qn?`${qn}문제 남음`:"다시 말하기"}</span></span></button>`,
-    `<button class="rc" data-go="notes" role="listitem"><span class="vis ill"><img src="${CAT2.notes}" alt=""></span><span class="lab"><b>오답노트</b><span>틀린 문장</span></span></button>`];
+    `<button class="rc" data-go="rp" role="listitem"><span class="vis ill"><img src="${CAT2.rp}" alt=""></span><span class="lab"><b>상황극</b><span>공항 / 호텔 / 식당</span></span></button>`,
+    `<button class="rc" data-go="chal" role="listitem"><span class="vis ill"><img src="${CAT2.chal}" alt=""><span class="cnt sc${ch.done?" done":""}">${ch.score}/5</span></span><span class="lab"><b>오늘의 챌린지</b><span>${ch.done?`오늘 ${ch.score} / 5 맞혔어요`:ch.n?`${ch.n} / 5 푸는 중`:"매일 새로운 5문장"}</span></span></button>`,
+    `<button class="rc" data-go="quiz" role="listitem"><span class="vis ill"><img src="${CAT2.review}" alt="">${qn?`<span class="cnt">${qn}</span>`:""}</span><span class="lab"><b>복습하기</b><span>${qn?`${qn}문제 남았어요`:"다시 말해보기"}</span></span></button>`,
+    `<button class="rc" data-go="notes" role="listitem"><span class="vis ill"><img src="${CAT2.notes}" alt=""></span><span class="lab"><b>오답노트</b><span>틀린 문장 모음</span></span></button>`];
   const rail=$("homeRail"), sl=rail.scrollLeft; rail.innerHTML=cards.join(""); rail.scrollLeft=sl; railDots(rail); railNudge(rail,"oc_nudge_home");
+  requestAnimationFrame(()=>{try{fitHomeRail()}catch(e){}});
   const sent=$("hvSent");
-  sent.innerHTML=et?todayExpr.map((x,i)=>`<div class="hs${x.used?" used":""}"><div class="t">${x.tag?`<span class="tg">${esc(x.tag)}</span>`:""}<b>${markMatch(x.en,x.match)}</b><span>${esc(x.ko)}${x.used?" / 대화에서 썼어요":""}</span></div><button class="pl" data-i="${i}" aria-label="듣기">${PLAY_THIN}</button></div>`).join(""):`<div class="hv-empty">${cfg.exprOn===0?"설정에서 오늘의 표현을 켜면 매일 실용 문장 3개가 나와요.":!cfg.key?"API 키를 넣으면 오늘의 문장 3개가 나와요.":"오늘의 문장을 받고 있어요."}</div>`;
+  sent.innerHTML=et?todayExpr.map((x,i)=>`<div class="hs${x.used?" used":""}${x.tag?" tagged":""}"><div class="t">${x.tag?`<span class="tg">${esc(x.tag)}</span>`:""}<b>${markMatch(x.en,x.match)}</b><span>${esc(x.ko)}${x.used?" / 대화에서 썼어요":""}</span></div><button class="pl" data-i="${i}" aria-label="듣기">${PLAY_THIN}</button></div>`).join(""):`<div class="hv-empty">${cfg.exprOn===0?"설정에서 오늘의 표현을 켜면 매일 실용 문장 3개가 나와요.":!cfg.key?"API 키를 넣으면 오늘의 문장 3개가 나와요.":"오늘의 문장을 받고 있어요."}</div>`;
   sent.querySelectorAll(".pl").forEach(b=>b.onclick=()=>{const t=todayExpr[+b.dataset.i];if(t)playBtn(b,t.en)});
   prefetchExpr();
   {const st=new Date();st.setHours(12,0,0,0);st.setDate(st.getDate()-st.getDay());const en=new Date(st);en.setDate(st.getDate()+6);
